@@ -1,0 +1,284 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		57F1082916AC2DCD00907CBE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082816AC2DCD00907CBE /* UIKit.framework */; };
+		57F1082B16AC2DCD00907CBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082A16AC2DCD00907CBE /* Foundation.framework */; };
+		57F1082D16AC2DCD00907CBE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082C16AC2DCD00907CBE /* CoreGraphics.framework */; };
+		57F1083316AC2DCD00907CBE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 57F1083116AC2DCD00907CBE /* InfoPlist.strings */; };
+		57F1083516AC2DCD00907CBE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F1083416AC2DCD00907CBE /* main.m */; };
+		57F1083916AC2DCD00907CBE /* PWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F1083816AC2DCD00907CBE /* PWAppDelegate.m */; };
+		57F1083B16AC2DCD00907CBE /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 57F1083A16AC2DCD00907CBE /* Default.png */; };
+		57F1083D16AC2DCD00907CBE /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 57F1083C16AC2DCD00907CBE /* Default@2x.png */; };
+		57F1083F16AC2DCD00907CBE /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 57F1083E16AC2DCD00907CBE /* Default-568h@2x.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		57F1082416AC2DCD00907CBE /* Stereogram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stereogram.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		57F1082816AC2DCD00907CBE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		57F1082A16AC2DCD00907CBE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		57F1082C16AC2DCD00907CBE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		57F1083016AC2DCD00907CBE /* Stereogram-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Stereogram-Info.plist"; sourceTree = "<group>"; };
+		57F1083216AC2DCD00907CBE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		57F1083416AC2DCD00907CBE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		57F1083616AC2DCD00907CBE /* Stereogram-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Stereogram-Prefix.pch"; sourceTree = "<group>"; };
+		57F1083716AC2DCD00907CBE /* PWAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PWAppDelegate.h; sourceTree = "<group>"; };
+		57F1083816AC2DCD00907CBE /* PWAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PWAppDelegate.m; sourceTree = "<group>"; };
+		57F1083A16AC2DCD00907CBE /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		57F1083C16AC2DCD00907CBE /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		57F1083E16AC2DCD00907CBE /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		57F1082116AC2DCD00907CBE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57F1082916AC2DCD00907CBE /* UIKit.framework in Frameworks */,
+				57F1082B16AC2DCD00907CBE /* Foundation.framework in Frameworks */,
+				57F1082D16AC2DCD00907CBE /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		57F1081916AC2DCD00907CBE = {
+			isa = PBXGroup;
+			children = (
+				57F1082E16AC2DCD00907CBE /* Stereogram */,
+				57F1082716AC2DCD00907CBE /* Frameworks */,
+				57F1082516AC2DCD00907CBE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		57F1082516AC2DCD00907CBE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				57F1082416AC2DCD00907CBE /* Stereogram.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		57F1082716AC2DCD00907CBE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				57F1082816AC2DCD00907CBE /* UIKit.framework */,
+				57F1082A16AC2DCD00907CBE /* Foundation.framework */,
+				57F1082C16AC2DCD00907CBE /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		57F1082E16AC2DCD00907CBE /* Stereogram */ = {
+			isa = PBXGroup;
+			children = (
+				57F1083716AC2DCD00907CBE /* PWAppDelegate.h */,
+				57F1083816AC2DCD00907CBE /* PWAppDelegate.m */,
+				57F1082F16AC2DCD00907CBE /* Supporting Files */,
+			);
+			path = Stereogram;
+			sourceTree = "<group>";
+		};
+		57F1082F16AC2DCD00907CBE /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				57F1083016AC2DCD00907CBE /* Stereogram-Info.plist */,
+				57F1083116AC2DCD00907CBE /* InfoPlist.strings */,
+				57F1083416AC2DCD00907CBE /* main.m */,
+				57F1083616AC2DCD00907CBE /* Stereogram-Prefix.pch */,
+				57F1083A16AC2DCD00907CBE /* Default.png */,
+				57F1083C16AC2DCD00907CBE /* Default@2x.png */,
+				57F1083E16AC2DCD00907CBE /* Default-568h@2x.png */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		57F1082316AC2DCD00907CBE /* Stereogram */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 57F1084216AC2DCD00907CBE /* Build configuration list for PBXNativeTarget "Stereogram" */;
+			buildPhases = (
+				57F1082016AC2DCD00907CBE /* Sources */,
+				57F1082116AC2DCD00907CBE /* Frameworks */,
+				57F1082216AC2DCD00907CBE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Stereogram;
+			productName = Stereogram;
+			productReference = 57F1082416AC2DCD00907CBE /* Stereogram.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		57F1081B16AC2DCD00907CBE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = PW;
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = "Patrick Wallace";
+			};
+			buildConfigurationList = 57F1081E16AC2DCD00907CBE /* Build configuration list for PBXProject "Stereogram" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 57F1081916AC2DCD00907CBE;
+			productRefGroup = 57F1082516AC2DCD00907CBE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				57F1082316AC2DCD00907CBE /* Stereogram */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		57F1082216AC2DCD00907CBE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57F1083316AC2DCD00907CBE /* InfoPlist.strings in Resources */,
+				57F1083B16AC2DCD00907CBE /* Default.png in Resources */,
+				57F1083D16AC2DCD00907CBE /* Default@2x.png in Resources */,
+				57F1083F16AC2DCD00907CBE /* Default-568h@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		57F1082016AC2DCD00907CBE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57F1083516AC2DCD00907CBE /* main.m in Sources */,
+				57F1083916AC2DCD00907CBE /* PWAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		57F1083116AC2DCD00907CBE /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				57F1083216AC2DCD00907CBE /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		57F1084016AC2DCD00907CBE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		57F1084116AC2DCD00907CBE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		57F1084316AC2DCD00907CBE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Stereogram/Stereogram-Prefix.pch";
+				INFOPLIST_FILE = "Stereogram/Stereogram-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		57F1084416AC2DCD00907CBE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Stereogram/Stereogram-Prefix.pch";
+				INFOPLIST_FILE = "Stereogram/Stereogram-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		57F1081E16AC2DCD00907CBE /* Build configuration list for PBXProject "Stereogram" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				57F1084016AC2DCD00907CBE /* Debug */,
+				57F1084116AC2DCD00907CBE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		57F1084216AC2DCD00907CBE /* Build configuration list for PBXNativeTarget "Stereogram" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				57F1084316AC2DCD00907CBE /* Debug */,
+				57F1084416AC2DCD00907CBE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 57F1081B16AC2DCD00907CBE /* Project object */;
+}

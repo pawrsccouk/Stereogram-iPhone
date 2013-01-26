@@ -7,6 +7,9 @@
 //
 
 #import "PWAppDelegate.h"
+#import "PWPhotoViewController.h"
+#import "PWPhotoStore.h"
+#import "NSError_AlertSupport.h"
 
 @implementation PWAppDelegate
 
@@ -14,8 +17,21 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
+    
+        // Perform some setup on the photo store (such as reading the filenames of available photos etc).
+    NSError *error = nil;
+    if(! [PWPhotoStore setupStore:&error])
+        [error showAlertWithTitle:@"Startup error"];
+    
+
+    PWPhotoViewController *photoVC = [[PWPhotoViewController alloc] init];
+    UINavigationController *rootVC = [[UINavigationController alloc] initWithRootViewController:photoVC];
+    self.window.rootViewController = rootVC;
+    
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+    
+    
     return YES;
 }
 

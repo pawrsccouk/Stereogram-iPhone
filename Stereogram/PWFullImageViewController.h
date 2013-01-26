@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface PWFullImageViewController : UIViewController
+@interface PWFullImageViewController : UIViewController <UIScrollViewDelegate>
 {
     IBOutlet UIImageView  *imageView;
     IBOutlet UIScrollView  *scrollView;

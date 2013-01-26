@@ -36,15 +36,24 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+        // Calculate the size of the underlying image, and then use that to set the scrollview's bounds.
     imageView.image = image;
     [imageView sizeToFit];
-    scrollView.contentSize = imageView.bounds.size;
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    
+        // Called on a resize or autorotate. This will change the scrollview's scaling factors so recalculate them.
+    [self setupScrollviewAnimated:YES];
 }
 
 -(void)logData
@@ -56,4 +65,31 @@
     NSLog(@"ImageView = %@, Image = %@ Image size = (%f,%f)", imageView, imageView.image, imageView.image.size.width, imageView.image.size.height);
     NSLog(@"ScrollView = %@, contentSize = (%f, %f)\n\n", scrollView, scrollView.contentSize.width, scrollView.contentSize.height);
 }
+
+
+#pragma mark - Scrollview delegate
+
+-(UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
+{
+    return imageView;
+}
+
+
+#pragma mark - Private methods
+
+-(void)setupScrollviewAnimated:(BOOL) animated
+{
+    scrollView.contentSize = imageView.bounds.size;
+    
+        // Set the zoom info so the image fits in the window by default, but can be zoomed in. Respect the aspect ratio.
+    CGSize imageSize = imageView.image.size, viewSize = scrollView.bounds.size;
+    scrollView.maximumZoomScale = 1.0;  // Cannot zoom in past the 1:1 ratio.
+    scrollView.minimumZoomScale = MIN(viewSize.width / imageSize.width, viewSize.height / imageSize.height);
+        // Default to showing the whole image.
+    [scrollView setZoomScale:scrollView.minimumZoomScale animated:animated];
+}
+
+
+
+
 @end

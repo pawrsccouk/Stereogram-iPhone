@@ -29,11 +29,13 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
         UIBarButtonItem *takePhotoItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
                                                                                        target:self
                                                                                        action:@selector(takePicture)];
-//        UIBarButtonItem *refreshItem = [[UIBarButtonItem alloc] initWithTitle:@"Refresh"
-//                                                                        style:UIBarButtonItemStylePlain
-//                                                                       target:self
-//                                                                       action:@selector(refreshView)];
+        exportItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                   target:self
+                                                                   action:@selector(exportMenu)];
+        editItem = self.editButtonItem;
         self.navigationItem.rightBarButtonItems = @[takePhotoItem];
+        self.navigationItem.leftBarButtonItems  = @[exportItem, editItem];
+        self.editing = NO;
     }
     return self;
 }
@@ -44,6 +46,8 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
     // Do any additional setup after loading the view from its nib.
     
     [photoCollection registerClass:[PWImageThumbnailCell class] forCellWithReuseIdentifier:IMAGE_THUMBNAIL_CELL_ID];
+    photoCollection.allowsSelection = YES;
+    photoCollection.allowsMultipleSelection = YES;
     
         // Set the thumbnail size from the store.
     NSAssert([photoCollection.collectionViewLayout isKindOfClass:[UICollectionViewFlowLayout class]], @"Photo collection layout is not a flow layout");
@@ -69,45 +73,73 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
         return;
     }
     
-    UIImagePickerController *cameraController = [[UIImagePickerController alloc] init];
-    cameraController.sourceType = UIImagePickerControllerSourceTypeCamera;
-    cameraController.mediaTypes = @[ (NSString*)kUTTypeImage ];
-    cameraController.delegate = self;
+    UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+    imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+    imagePickerController.mediaTypes = @[ (NSString*)kUTTypeImage ];
+    imagePickerController.delegate = self;
+    imagePickerController.showsCameraControls = NO;
     
     cameraOverlayController = [[PWCameraOverlayViewController alloc] init];
-    cameraController.cameraOverlayView = cameraOverlayController.view;
+    imagePickerController.cameraOverlayView = cameraOverlayController.view;
+    cameraOverlayController.instructionLabel.text = @"Take the first photo";
+    cameraOverlayController.imagePickerController = imagePickerController;
     
-    [self presentViewController:cameraController animated:YES completion:nil];
+    [self presentViewController:imagePickerController animated:YES completion:nil];
 }
 
--(void)refreshView
+static NSString * const photoGalleryButtonText = @"Photo Gallery", * const cancelButtonText = @"Cancel";
+
+-(void)exportMenu
 {
-    [photoCollection reloadData];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Export to"
+                                                             delegate:self
+                                                    cancelButtonTitle:cancelButtonText
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:photoGalleryButtonText, nil];
+    [actionSheet showFromBarButtonItem:exportItem animated:YES];
 }
+
+
+
 
 #pragma mark - ImagePicker delegate
 
+static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict)
+{
+    UIImage *photo =       infoDict[UIImagePickerControllerEditedImage];
+    return photo ? photo : infoDict[UIImagePickerControllerOriginalImage];
+}
+
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    PWPhotoStore *photoStore = [PWPhotoStore sharedStore];
-    
-    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage] ? [info objectForKey:UIImagePickerControllerEditedImage]
-                                                                            : [info objectForKey:UIImagePickerControllerOriginalImage];
-    if(image) {
-        NSError *error = nil;
-        if(! [photoStore addImage:image error:&error])
-            [error showAlertWithTitle:@"Error saving photo"];
-        [photoCollection reloadData];
+        // We need to get 2 photos, so the first time we enter here, we store the image and prompt the user to take the second photo.
+        // Next time we enter here, we compose the 2 photos into the final montage and this is what we store. We also dismiss the photo chooser at this point.
+    if(! firstPhoto) {
+        firstPhoto = imageFromPickerInfoDict(info);
+        cameraOverlayController.instructionLabel.text = @"Take the second photo";
     }
+    else {
+        UIImage *secondPhoto = imageFromPickerInfoDict(info);
+        if(firstPhoto && secondPhoto) {
+            PWPhotoStore *photoStore = [PWPhotoStore sharedStore];
+            UIImage *finalPhoto = [photoStore makeStereogramWith:firstPhoto and:secondPhoto];
+            NSError *error = nil;
+            if(! [photoStore addImage:finalPhoto error:&error])
+                [error showAlertWithTitle:@"Error saving photo"];
+            [photoCollection reloadData];
+        }
 
-    [picker dismissViewControllerAnimated:YES completion:nil];
-    cameraOverlayController = nil;
+        [picker dismissViewControllerAnimated:YES completion:nil];
+        cameraOverlayController = nil;
+        firstPhoto = nil;
+    }
 }
 
 -(void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
     [picker dismissViewControllerAnimated:YES completion:nil];
     cameraOverlayController = nil;
+    firstPhoto = nil;
 }
 
 #pragma mark - UICollectionView data source
@@ -143,14 +175,44 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSError *error;
-    UIImage *image = [[PWPhotoStore sharedStore] imageAtIndex:indexPath.item error:&error];
-    if (! image) {
-        [error showAlertWithTitle:[NSString stringWithFormat:@"Error accessing image at index %d", indexPath.item]];
-        return;
+    if(! self.editing) {
+        NSError *error;
+        UIImage *image = [[PWPhotoStore sharedStore] imageAtIndex:indexPath.item error:&error];
+        if (! image) {
+            [error showAlertWithTitle:[NSString stringWithFormat:@"Error accessing image at index %d", indexPath.item]];
+            return;
+        }
+        PWFullImageViewController *imageViewController = [[PWFullImageViewController alloc] initWithImage:image];
+        [self.navigationController pushViewController:imageViewController animated:YES];
     }
-    PWFullImageViewController *imageViewController = [[PWFullImageViewController alloc] initWithImage:image];
-    [self.navigationController pushViewController:imageViewController animated:YES];
+}
+
+
+#pragma mark - Action Sheet delegate
+
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+    if([buttonTitle isEqualToString:photoGalleryButtonText]) {
+        PWPhotoStore *photoStore = [PWPhotoStore sharedStore];
+            // get the selected items from the collection view, and then write them to the camera roll.
+        for (NSIndexPath *indexPath in [photoCollection indexPathsForSelectedItems]) {
+            NSError *error = nil;
+            UIImage *image = [photoStore imageAtIndex:indexPath.item error:&error];
+            if (image) {
+                UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
+                [photoCollection deselectItemAtIndexPath:indexPath animated:YES];
+            }
+            else {
+                NSAssert(error, @"No error provided.");
+                [error showAlertWithTitle:@"Error exporting image"];
+                return; // Break out to avoid showing the user multiple identical errors.
+            }
+        }
+    }
+    else
+        NSAssert([buttonTitle isEqualToString:cancelButtonText], @"%@: Unknown button index %d, title %@",
+                                                                 NSStringFromSelector(_cmd), buttonIndex, buttonTitle);    
 }
 
 @end

@@ -110,6 +110,28 @@
     return 50;
 }
 
+static NSString *stringFromSize(CGSize size) { return [NSString stringWithFormat:@"(%f,%f)", size.width, size.height]; }
+
+-(UIImage *)makeStereogramWith:(UIImage *)firstPhoto and:(UIImage *)secondPhoto
+{
+    NSAssert(firstPhoto.scale == secondPhoto.scale, @"Image scales %f and %f need to be the same.", firstPhoto.scale, secondPhoto.scale);
+    CGSize stereogramSize = CGSizeMake(firstPhoto.size.width + secondPhoto.size.width, MAX(firstPhoto.size.height, secondPhoto.size.height));
+    UIImage *stereogram = nil;
+    UIGraphicsBeginImageContextWithOptions(stereogramSize, NO, firstPhoto.scale);
+    @try {
+        [firstPhoto drawAtPoint:CGPointMake(0, 0)];
+        [secondPhoto drawAtPoint:CGPointMake(firstPhoto.size.width, 0)];
+        stereogram = UIGraphicsGetImageFromCurrentImageContext();
+    }
+    @finally {
+        UIGraphicsEndImageContext();
+    }
+    NSAssert(stereogram, @"Stereogram not created.");
+        // Halve the stereogram size as otherwise these end up way too big, since we've doubled the width of the image.
+        // TODO: Make this an option to be checked in the preferences.
+    return [stereogram resizedImage:CGSizeMake(stereogram.size.width / 2, stereogram.size.height / 2) interpolationQuality:kCGInterpolationHigh];
+}
+
 
 #pragma mark - Private methods
 

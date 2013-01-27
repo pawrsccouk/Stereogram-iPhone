@@ -40,4 +40,8 @@
     // Like imageAtIndex but receives a smaller thumbnail image.
 -(UIImage *)thumbnailAtIndex:(NSUInteger)index error:(NSError**)error;
 
+    // Compose the two photos given to make a stereogram 
+-(UIImage *)makeStereogramWith:(UIImage *)firstPhoto and:(UIImage *)secondPhoto;
+
+
 @end

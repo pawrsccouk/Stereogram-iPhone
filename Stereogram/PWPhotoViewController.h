@@ -12,9 +12,14 @@
 @interface PWPhotoViewController : UIViewController <UIImagePickerControllerDelegate,
                                                      UINavigationControllerDelegate,
                                                      UICollectionViewDataSource,
-                                                     UICollectionViewDelegate>
+                                                     UICollectionViewDelegate,
+                                                     UIActionSheetDelegate>
 {
     IBOutlet UICollectionView __weak *photoCollection;
     PWCameraOverlayViewController *cameraOverlayController;
+    UIBarButtonItem *exportItem, *editItem;
+    UIImage *firstPhoto;
 }
+
+
 @end

@@ -8,10 +8,6 @@
 
 #import "PWCameraOverlayViewController.h"
 
-@interface PWCameraOverlayViewController ()
-
-@end
-
 @implementation PWCameraOverlayViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -35,4 +31,9 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)takePhoto:(id)sender
+{
+    NSAssert(self.imagePickerController, @"cameraController is nil");
+    [self.imagePickerController takePicture];
+}
 @end

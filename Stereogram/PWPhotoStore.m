@@ -92,6 +92,26 @@
     return written;
 }
 
+-(BOOL)deleteImageAtIndex:(NSUInteger)index error:(NSError *__autoreleasing *)error
+{
+    NSString *filePath = storedFilenames[index];
+    BOOL deleted = [[NSFileManager defaultManager] removeItemAtPath:filePath error:error];
+    if(deleted) {
+        [self deleteThumbnailFromCache:filePath];    // Keep the cache & filename list up to date.
+        [storedFilenames removeObjectAtIndex:index];
+    }
+    return deleted;
+}
+
+-(BOOL)copyImageToCameraRoll:(NSUInteger)index error:(NSError**)error
+{
+    UIImage *image = [self imageAtIndex:index error:error];
+    if (image)
+        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
+    return (image != nil);
+};
+
+
     // Called by the notification centre when it receives a low-memory warning notification.
 -(void)clearCache:(NSNotification*)notification
 {
@@ -107,7 +127,7 @@
 
 -(NSUInteger)thumbnailSize
 {
-    return 50;
+    return 100;
 }
 
 static NSString *stringFromSize(CGSize size) { return [NSString stringWithFormat:@"(%f,%f)", size.width, size.height]; }
@@ -181,6 +201,11 @@ static NSString *stringFromSize(CGSize size) { return [NSString stringWithFormat
     if(! thumbnailCache)
         thumbnailCache = [NSMutableDictionary dictionary];
     return thumbnailCache[key];
+}
+
+-(void)deleteThumbnailFromCache:(id)key
+{
+    [thumbnailCache removeObjectForKey:key];
 }
 
 

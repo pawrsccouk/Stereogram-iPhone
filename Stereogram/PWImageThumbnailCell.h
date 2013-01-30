@@ -11,8 +11,13 @@
 @interface PWImageThumbnailCell : UICollectionViewCell
 {
     UIImageView __weak *imageView;
+    UIImageView __weak *selectionOverlayView;
 }
 
 @property (nonatomic, weak) UIImage *image;
+
+    // Images which are overlaid on the thumbnail to indicate if it is selected or not.
++(UIImage*)unselectedImage;
++(UIImage*)selectedImage;
 
 @end

@@ -43,5 +43,10 @@
     // Compose the two photos given to make a stereogram 
 -(UIImage *)makeStereogramWith:(UIImage *)firstPhoto and:(UIImage *)secondPhoto;
 
+    // Deletes the image at position <index>. Returns YES if successful, NO and sets *error on failure.
+-(BOOL)deleteImageAtIndex:(NSUInteger)index error:(NSError**)error;
+
+    // Copies the image at position <index> into the camera roll. Returns YES if successful, NO and sets *error on failure.
+-(BOOL)copyImageToCameraRoll:(NSUInteger)index error:(NSError**)error;
 
 @end

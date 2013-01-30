@@ -8,12 +8,12 @@
 
 #import <UIKit/UIKit.h>
 @class PWCameraOverlayViewController;
+@class PWActionSheet, PWAlertView;
 
 @interface PWPhotoViewController : UIViewController <UIImagePickerControllerDelegate,
                                                      UINavigationControllerDelegate,
                                                      UICollectionViewDataSource,
-                                                     UICollectionViewDelegate,
-                                                     UIActionSheetDelegate>
+                                                     UICollectionViewDelegate>
 {
     IBOutlet UICollectionView __weak *photoCollection;
     PWCameraOverlayViewController *cameraOverlayController;

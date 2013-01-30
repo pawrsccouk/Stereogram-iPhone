@@ -13,6 +13,8 @@
 #import "PWImageThumbnailCell.h"
 #import "PWFullImageViewController.h"
 #import "PWCameraOverlayViewController.h"
+#import "PWAlertView.h"
+#import "PWActionSheet.h"
 
 static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail";
 
@@ -66,10 +68,10 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
 -(void)takePicture
 {
     if (! [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No camera"
+        UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:@"No camera"
                                                             message:@"This device does not have a camera attached."
                                                            delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
-        [alertView show];
+        [errorView show];
         return;
     }
     
@@ -87,28 +89,35 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
     [self presentViewController:imagePickerController animated:YES completion:nil];
 }
 
-static NSString * const photoGalleryButtonText = @"Photo Gallery", * const cancelButtonText = @"Cancel";
 
 -(void)exportMenu
 {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Export to"
-                                                             delegate:self
+    NSString * const photoGalleryButtonText = @"Copy to photo gallery",
+             * const deleteButtonText = @"Delete",
+             * const cancelButtonText = @"Cancel";
+    NSDictionary *titlesAndActions = @{
+    cancelButtonText       : ^{},
+    deleteButtonText       : ^{ deletePhotos(photoCollection);           },
+    photoGalleryButtonText : ^{ copyPhotosToCameraRoll(photoCollection); }
+    };
+    PWActionSheet *actionSheet = [[PWActionSheet alloc] initWithTitle:@"Action"
+                                                buttonTitlesAndBlocks:titlesAndActions
                                                     cancelButtonTitle:cancelButtonText
-                                               destructiveButtonTitle:nil
-                                                    otherButtonTitles:photoGalleryButtonText, nil];
+                                               destructiveButtonTitle:deleteButtonText];
     [actionSheet showFromBarButtonItem:exportItem animated:YES];
 }
 
 
-
+-(void)setEditing:(BOOL)editing
+{
+    [super setEditing:editing];
+        // On turning off the editing option, clear the selection.
+    if(!editing)
+        for (NSIndexPath *path in photoCollection.indexPathsForSelectedItems)
+            [photoCollection deselectItemAtIndexPath:path animated:NO];
+}
 
 #pragma mark - ImagePicker delegate
-
-static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict)
-{
-    UIImage *photo =       infoDict[UIImagePickerControllerEditedImage];
-    return photo ? photo : infoDict[UIImagePickerControllerOriginalImage];
-}
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
@@ -175,7 +184,11 @@ static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict)
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+        // In editing mode, this doesn't need to do anything as the status flag on the cell has already been updated.
+        // In viewing mode, we need to revert this status-flag update, and then pop the full-image view onto the navigation stack.
     if(! self.editing) {
+        [collectionView deselectItemAtIndexPath:indexPath animated:NO];
+
         NSError *error;
         UIImage *image = [[PWPhotoStore sharedStore] imageAtIndex:indexPath.item error:&error];
         if (! image) {
@@ -188,31 +201,81 @@ static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict)
 }
 
 
-#pragma mark - Action Sheet delegate
+//#pragma mark - Action Sheet delegate
+//
+//-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+//{
+//    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+//    NSArray *selectedPaths = ;
+//    
+//    if     ([buttonTitle isEqualToString:deleteButtonText      ])  
+//    else if([buttonTitle isEqualToString:photoGalleryButtonText])  
+//    else {
+//        NSAssert([buttonTitle isEqualToString:cancelButtonText], @"%@: Unknown button index %d, title %@",
+//                                                                 NSStringFromSelector(_cmd), buttonIndex, buttonTitle);    
+//    }
+//}
 
--(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+#pragma mark - Private methods
+
+static NSString *formatDeleteMessage(NSUInteger numToDelete)
 {
-    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
-    if([buttonTitle isEqualToString:photoGalleryButtonText]) {
-        PWPhotoStore *photoStore = [PWPhotoStore sharedStore];
-            // get the selected items from the collection view, and then write them to the camera roll.
-        for (NSIndexPath *indexPath in [photoCollection indexPathsForSelectedItems]) {
-            NSError *error = nil;
-            UIImage *image = [photoStore imageAtIndex:indexPath.item error:&error];
-            if (image) {
-                UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
-                [photoCollection deselectItemAtIndexPath:indexPath animated:YES];
-            }
-            else {
-                NSAssert(error, @"No error provided.");
-                [error showAlertWithTitle:@"Error exporting image"];
-                return; // Break out to avoid showing the user multiple identical errors.
-            }
-        }
-    }
-    else
-        NSAssert([buttonTitle isEqualToString:cancelButtonText], @"%@: Unknown button index %d, title %@",
-                                                                 NSStringFromSelector(_cmd), buttonIndex, buttonTitle);    
+    NSString * const postscript = @"This operation cannot be undone.";
+    return numToDelete == 1 ? [NSString stringWithFormat:@"Do you really want to delete this photo?\n%@", postscript]
+                            : [NSString stringWithFormat:@"Do you really want to delete these %d photos?\n%@", numToDelete, postscript];
 }
+
+static void copyPhotosToCameraRoll(UICollectionView *photoCollection)
+{
+    PWPhotoStore *photoStore = [PWPhotoStore sharedStore];
+    NSError *error = nil;
+    for (NSIndexPath *indexPath in photoCollection.indexPathsForSelectedItems) {
+        if(! [photoStore copyImageToCameraRoll:indexPath.item error:&error]) {
+            [error showAlertWithTitle:@"Error exporting to camera roll"];
+            return; // Exit to avoid showing the user multiple errors
+        }
+        [photoCollection deselectItemAtIndexPath:indexPath animated:NO];
+    }
+}
+
+
+static void deletePhotos(UICollectionView *photoCollection)
+{
+    NSArray *indexPaths = photoCollection.indexPathsForSelectedItems;
+    PWPhotoStore *photoStore = [PWPhotoStore sharedStore];
+    if(indexPaths.count > 0) {
+        
+        void (^doDelete)() =  ^(){
+            @try {
+                NSError *error = nil;
+                for(NSIndexPath *indexPath in indexPaths) {
+                    if(! [photoStore deleteImageAtIndex:indexPath.item error:&error]) {
+                        [error showAlertWithTitle:@"Error deleting photos"];
+                        return; // Abort to prevent a cascade of error messages.
+                    }
+                }
+            }
+            @finally {
+                [photoCollection reloadData];  // Reload to prevent thumbnails being out of sync with photos.
+            }
+        };
+        
+        PWAlertView *alertView = [[PWAlertView alloc] initWithTitle:@"Confirm deletion"
+                                                            message:formatDeleteMessage(indexPaths.count)
+                                                 confirmButtonTitle:@"Delete"
+                                                       confirmBlock:doDelete
+                                                  cancelButtonTitle:@"Cancel"
+                                                        cancelBlock: ^{}];
+        [alertView show];
+    }
+};
+
+static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict)
+{
+    UIImage *photo =       infoDict[UIImagePickerControllerEditedImage];
+    return photo ? photo : infoDict[UIImagePickerControllerOriginalImage];
+}
+
+
 
 @end

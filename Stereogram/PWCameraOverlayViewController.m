@@ -19,21 +19,22 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view.
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+-(NSString *)helpText { return helpTextItem.title; }
+-(void)setHelpText:(NSString *)text { helpTextItem.title = text; }
 
 - (IBAction)takePhoto:(id)sender
 {
-    NSAssert(self.imagePickerController, @"cameraController is nil");
+    NSAssert(self.imagePickerController, @"camera controller is nil.");
     [self.imagePickerController takePicture];
+}
+
+-(IBAction)cancel:(id)sender
+{
+    UIImagePickerController *picker = self.imagePickerController;
+    NSAssert(picker && picker.delegate, @"camera controller is nil or has a nil delegate.");
+    NSAssert([picker.delegate respondsToSelector:@selector(imagePickerControllerDidCancel:)],
+             @"Delegate %@ doesn't respond to cancel message", picker.delegate);
+
+    [picker.delegate imagePickerControllerDidCancel:picker];
 }
 @end

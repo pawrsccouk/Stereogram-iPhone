@@ -14,13 +14,17 @@
 @interface PWCameraOverlayViewController : UIViewController
 {
     __weak IBOutlet UIButton *takePhotoButton;
+    __weak IBOutlet UIBarButtonItem *helpTextItem;
+    __weak IBOutlet UITextView * instructionLabel;
 }
-@property IBOutlet UITextView __weak * instructionLabel;
 @property UIImagePickerController *imagePickerController;
 
+    // Set the help text to display to the user.
+@property (nonatomic, copy) NSString *helpText;
 
-    // I am replacing the standard button with my own, so I need to forward the message to the
+
+    // I am replacing the standard buttons with my own, so I need to forward the messages to the
     // image picker.
 - (IBAction)takePhoto:(id)sender;
-
+-(IBAction)cancel:(id)sender;
 @end

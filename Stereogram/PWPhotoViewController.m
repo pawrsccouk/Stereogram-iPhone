@@ -90,7 +90,7 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
     cameraOverlayController.view.frame = imagePickerController.view.frame;
 
     imagePickerController.cameraOverlayView = cameraOverlayController.view;
-    cameraOverlayController.instructionLabel.text = @"Take the first photo";
+    cameraOverlayController.helpText = @"Take the first photo";
     cameraOverlayController.imagePickerController = imagePickerController;
     
     [self presentViewController:imagePickerController animated:YES completion:nil];
@@ -171,7 +171,7 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
         // Next time we enter here, we compose the 2 photos into the final montage and this is what we store. We also dismiss the photo chooser at that point.
     if(! firstPhoto) {
         firstPhoto = imageFromPickerInfoDict(info);
-        cameraOverlayController.instructionLabel.text = @"Take the second photo";
+        cameraOverlayController.helpText = @"Take the second photo";
     }
     else {
         UIImage *secondPhoto = imageFromPickerInfoDict(info);

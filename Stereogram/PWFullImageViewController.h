@@ -15,6 +15,9 @@
     UIImage *image;
 }
 
--(id)initWithImage:(UIImage*)image;
+    // Block which will be called if the user approved the image.
+@property (nonatomic, copy) void (^approvalBlock)(void);
+
+-(id)initWithImage:(UIImage*)image forApproval:(BOOL)approval;
 
 @end

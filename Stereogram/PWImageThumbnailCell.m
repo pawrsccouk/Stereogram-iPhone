@@ -22,7 +22,10 @@
         [self.contentView addSubview:imgView];
         imageView = imgView;
             // Now add the overlay view which will show when the object is selected.
-        imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+        CGSize selImageSize = self.selectedImageSize;
+        CGPoint selImageOrigin = CGPointMake(frame.size.width - selImageSize.width, frame.size.height - selImageSize.height);
+        CGRect selectOverlayFrame = { .origin = selImageOrigin, .size = selImageSize };
+        imgView = [[UIImageView alloc] initWithFrame:selectOverlayFrame];
         imgView.image = [self.class unselectedImage];
         [self.contentView addSubview:imgView];
         selectionOverlayView = imgView;
@@ -39,6 +42,8 @@
     }
 }
 
+-(CGSize)selectedImageSize { return CGSizeMake(46, 46); }
+
 -(NSString *)description
 {
     return [NSString stringWithFormat:@"%@ imageView=%@", [super description], imageView];
@@ -54,7 +59,7 @@
 {
     static UIImage *selectedImage;
     if(! selectedImage)
-        selectedImage = [UIImage imageNamed:@"Selected Overlay"];
+        selectedImage = [UIImage imageNamed:@"Tick"];
     return selectedImage;
 }
 

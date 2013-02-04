@@ -19,6 +19,7 @@
     PWCameraOverlayViewController *cameraOverlayController;
     UIBarButtonItem *exportItem, *editItem;
     UIImage *firstPhoto;
+    UIImage *stereogram;
 }
 
 

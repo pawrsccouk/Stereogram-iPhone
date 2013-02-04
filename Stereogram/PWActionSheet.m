@@ -21,19 +21,27 @@ destructiveButtonTitle:(NSString *)destructiveTitle
         destructiveButtonTitle = [destructiveTitle copy];
         cancelButtonTitle      = [cancelTitle copy];
         
+        NSMutableDictionary *otherButtons = [NSMutableDictionary dictionaryWithDictionary:buttonTitlesAndBlocks];
+        if(cancelButtonTitle     ) { [otherButtons removeObjectForKey:cancelButtonTitle     ]; }
+        if(destructiveButtonTitle) { [otherButtons removeObjectForKey:destructiveButtonTitle]; }
+
         actionSheet = [[UIActionSheet alloc] initWithTitle:title
                                                   delegate:self
                                          cancelButtonTitle:nil
                                     destructiveButtonTitle:nil
                                          otherButtonTitles:nil];
-        NSInteger cancelIndex = -1, destructiveIndex = -1;
-        for(NSString *title in buttonTitlesAndBlocks.allKeys) {
-            NSInteger index = [actionSheet addButtonWithTitle:title];
-            if     ([title isEqualToString:cancelButtonTitle     ])  cancelIndex      = index;
-            else if([title isEqualToString:destructiveButtonTitle])  destructiveIndex = index;
-        }
-        if(cancelIndex      >= 0) { actionSheet.cancelButtonIndex      = cancelIndex;      }
-        if(destructiveIndex >= 0) { actionSheet.destructiveButtonIndex = destructiveIndex; }
+        
+        // Add the destructive button first (if any) and the cancel button last.
+        // Note that the iPad action sheet will always hide the cancel button as you are supposed to click outside
+        // the sheet to cancel it. This will generate a call to the delegate with the index of the cancel button automatically.
+        if(destructiveButtonTitle)
+            actionSheet.destructiveButtonIndex = [actionSheet addButtonWithTitle:destructiveButtonTitle];
+        
+        for(NSString *title in otherButtons.allKeys)
+            [actionSheet addButtonWithTitle:title];
+        
+        if(cancelButtonTitle)
+            actionSheet.cancelButtonIndex = [actionSheet addButtonWithTitle:cancelButtonTitle];
     }
     return self;
 }
@@ -74,12 +82,23 @@ destructiveButtonTitle:(NSString *)destructTitle
 
 -(void)actionSheet:(UIActionSheet *)sheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    NSString *buttonTitle = [sheet buttonTitleAtIndex:buttonIndex];
-    PWActionSheet_Action action = [buttonTitlesAndBlocks objectForKey:buttonTitle];
-    NSAssert(action, @"No action found for button title [%@] index %d", buttonTitle, buttonIndex);
-    if(action)
-        action();
-    [self.class removeAReference:self];
+    @try {
+            // If the user didn't specify a cancel handler, the system can trigger a cancel anyway under some conditions
+            // e.g. user clicks outside the popover on an iPad. In that case the system should return the cancel index, but it
+            // actually returns -1. Handle both these conditions.
+        if( (buttonIndex == -1) || ( (! cancelButtonTitle) && (buttonIndex == actionSheet.cancelButtonIndex)) )
+            return;
+        
+            // Otherwise the user clicked a button. Get the action for that button and execute it.
+        NSString *buttonTitle = [sheet buttonTitleAtIndex:buttonIndex];
+        PWActionSheet_Action action = [buttonTitlesAndBlocks objectForKey:buttonTitle];
+        NSAssert(action, @"No action found for button title [%@] index %d", buttonTitle, buttonIndex);
+        if(action)
+            action();
+    }
+    @finally {
+        [self.class removeAReference:self];
+    }
 }
 
 #pragma mark - Private methods

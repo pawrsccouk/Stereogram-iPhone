@@ -22,9 +22,11 @@
 		577108E216B3A76A007D32DA /* UIImage+RoundedCorner.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108DF16B3A76A007D32DA /* UIImage+RoundedCorner.m */; };
 		577108E516B5C5BD007D32DA /* Take Photo Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 577108E416B5C5BD007D32DA /* Take Photo Icon.png */; };
 		577108E816B8A8BB007D32DA /* Unselected Overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 577108E616B8A8BB007D32DA /* Unselected Overlay.png */; };
-		577108E916B8A8BB007D32DA /* Selected Overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 577108E716B8A8BB007D32DA /* Selected Overlay.png */; };
 		577108EC16B8B5CB007D32DA /* PWAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108EB16B8B5CA007D32DA /* PWAlertView.m */; };
 		577108EF16B8CC1E007D32DA /* PWActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108EE16B8CC1E007D32DA /* PWActionSheet.m */; };
+		577108F816BF5BFA007D32DA /* Notes.txt in Resources */ = {isa = PBXBuildFile; fileRef = 577108F716BF5BFA007D32DA /* Notes.txt */; };
+		577108FB16BF7A16007D32DA /* Tick.png in Resources */ = {isa = PBXBuildFile; fileRef = 577108F916BF7A15007D32DA /* Tick.png */; };
+		577108FC16BF7A16007D32DA /* Tick@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 577108FA16BF7A15007D32DA /* Tick@2x.png */; };
 		57F1082916AC2DCD00907CBE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082816AC2DCD00907CBE /* UIKit.framework */; };
 		57F1082B16AC2DCD00907CBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082A16AC2DCD00907CBE /* Foundation.framework */; };
 		57F1082D16AC2DCD00907CBE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082C16AC2DCD00907CBE /* CoreGraphics.framework */; };
@@ -68,11 +70,13 @@
 		577108DF16B3A76A007D32DA /* UIImage+RoundedCorner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+RoundedCorner.m"; sourceTree = "<group>"; };
 		577108E416B5C5BD007D32DA /* Take Photo Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Take Photo Icon.png"; sourceTree = "<group>"; };
 		577108E616B8A8BB007D32DA /* Unselected Overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Unselected Overlay.png"; sourceTree = "<group>"; };
-		577108E716B8A8BB007D32DA /* Selected Overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Selected Overlay.png"; sourceTree = "<group>"; };
 		577108EA16B8B5C9007D32DA /* PWAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlertView.h; sourceTree = "<group>"; };
 		577108EB16B8B5CA007D32DA /* PWAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlertView.m; sourceTree = "<group>"; };
 		577108ED16B8CC1D007D32DA /* PWActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWActionSheet.h; sourceTree = "<group>"; };
 		577108EE16B8CC1E007D32DA /* PWActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWActionSheet.m; sourceTree = "<group>"; };
+		577108F716BF5BFA007D32DA /* Notes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Notes.txt; sourceTree = "<group>"; };
+		577108F916BF7A15007D32DA /* Tick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tick.png; sourceTree = "<group>"; };
+		577108FA16BF7A15007D32DA /* Tick@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Tick@2x.png"; sourceTree = "<group>"; };
 		57F1082416AC2DCD00907CBE /* Stereogram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stereogram.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		57F1082816AC2DCD00907CBE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		57F1082A16AC2DCD00907CBE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -126,6 +130,40 @@
 			path = "UIImage-categories";
 			sourceTree = "<group>";
 		};
+		577108F016B9E04B007D32DA /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				57640F4616AF6A0D00A94EC8 /* PWFullImageView.xib */,
+				57F1084716AC2EC600907CBE /* PWPhotoView.xib */,
+				572CB27116B19069002CB1B9 /* PWCameraOverlayView.xib */,
+				57640F3B16AF399400A94EC8 /* PWImageThumbnailCell.h */,
+				57640F3C16AF399400A94EC8 /* PWImageThumbnailCell.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		577108F116B9E064007D32DA /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				57F1084A16AC300400907CBE /* PWPhotoStore.h */,
+				57F1084B16AC300400907CBE /* PWPhotoStore.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		577108F216B9E07C007D32DA /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				57640F4316AF615600A94EC8 /* PWFullImageViewController.h */,
+				57640F4416AF615600A94EC8 /* PWFullImageViewController.m */,
+				57F1084516AC2EC600907CBE /* PWPhotoViewController.h */,
+				57F1084616AC2EC600907CBE /* PWPhotoViewController.m */,
+				572CB27616B1936D002CB1B9 /* PWCameraOverlayViewController.h */,
+				572CB27716B1936D002CB1B9 /* PWCameraOverlayViewController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
 		57F1081916AC2DCD00907CBE = {
 			isa = PBXGroup;
 			children = (
@@ -158,30 +196,20 @@
 		57F1082E16AC2DCD00907CBE /* Stereogram */ = {
 			isa = PBXGroup;
 			children = (
+				577108F116B9E064007D32DA /* Model */,
+				577108F016B9E04B007D32DA /* Views */,
+				577108F216B9E07C007D32DA /* Controllers */,
 				57640F3E16AF574300A94EC8 /* PWFunctional.h */,
 				57640F3F16AF574300A94EC8 /* PWFunctional.m */,
 				57F1083716AC2DCD00907CBE /* PWAppDelegate.h */,
 				57F1083816AC2DCD00907CBE /* PWAppDelegate.m */,
-				57640F4616AF6A0D00A94EC8 /* PWFullImageView.xib */,
-				57640F4316AF615600A94EC8 /* PWFullImageViewController.h */,
-				57640F4416AF615600A94EC8 /* PWFullImageViewController.m */,
-				57F1084516AC2EC600907CBE /* PWPhotoViewController.h */,
-				57F1084616AC2EC600907CBE /* PWPhotoViewController.m */,
 				577108EA16B8B5C9007D32DA /* PWAlertView.h */,
 				577108EB16B8B5CA007D32DA /* PWAlertView.m */,
-				57F1084716AC2EC600907CBE /* PWPhotoView.xib */,
-				572CB27616B1936D002CB1B9 /* PWCameraOverlayViewController.h */,
-				572CB27716B1936D002CB1B9 /* PWCameraOverlayViewController.m */,
-				572CB27116B19069002CB1B9 /* PWCameraOverlayView.xib */,
-				57640F3B16AF399400A94EC8 /* PWImageThumbnailCell.h */,
-				57640F3C16AF399400A94EC8 /* PWImageThumbnailCell.m */,
-				57F1084A16AC300400907CBE /* PWPhotoStore.h */,
-				57F1084B16AC300400907CBE /* PWPhotoStore.m */,
+				577108ED16B8CC1D007D32DA /* PWActionSheet.h */,
+				577108EE16B8CC1E007D32DA /* PWActionSheet.m */,
 				57640F2F16ADE68B00A94EC8 /* NSError_AlertSupport.h */,
 				57640F3116ADE6EC00A94EC8 /* NSError_AlertSupport.m */,
 				57F1082F16AC2DCD00907CBE /* Supporting Files */,
-				577108ED16B8CC1D007D32DA /* PWActionSheet.h */,
-				577108EE16B8CC1E007D32DA /* PWActionSheet.m */,
 			);
 			path = Stereogram;
 			sourceTree = "<group>";
@@ -189,8 +217,9 @@
 		57F1082F16AC2DCD00907CBE /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				577108F916BF7A15007D32DA /* Tick.png */,
+				577108FA16BF7A15007D32DA /* Tick@2x.png */,
 				577108E616B8A8BB007D32DA /* Unselected Overlay.png */,
-				577108E716B8A8BB007D32DA /* Selected Overlay.png */,
 				577108E416B5C5BD007D32DA /* Take Photo Icon.png */,
 				572CB27416B1931B002CB1B9 /* Crosshair.png */,
 				57640F4816AF797400A94EC8 /* Sample Picture 1.jpg */,
@@ -206,6 +235,7 @@
 				57F1083A16AC2DCD00907CBE /* Default.png */,
 				57F1083C16AC2DCD00907CBE /* Default@2x.png */,
 				57F1083E16AC2DCD00907CBE /* Default-568h@2x.png */,
+				577108F716BF5BFA007D32DA /* Notes.txt */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -278,7 +308,9 @@
 				572CB27516B1931B002CB1B9 /* Crosshair.png in Resources */,
 				577108E516B5C5BD007D32DA /* Take Photo Icon.png in Resources */,
 				577108E816B8A8BB007D32DA /* Unselected Overlay.png in Resources */,
-				577108E916B8A8BB007D32DA /* Selected Overlay.png in Resources */,
+				577108F816BF5BFA007D32DA /* Notes.txt in Resources */,
+				577108FB16BF7A16007D32DA /* Tick.png in Resources */,
+				577108FC16BF7A16007D32DA /* Tick@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

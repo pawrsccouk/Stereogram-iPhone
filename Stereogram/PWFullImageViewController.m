@@ -19,16 +19,23 @@
     return [super initWithNibName:@"PWFullImageView" bundle:nibBundleOrNil];
 }
 
--(id)initWithImage:(UIImage *)img
+-(id)initWithImage:(UIImage *)img forApproval:(BOOL)approval
 {
     self = [self init];
-    if(self) {
-//        UIBarButtonItem *testButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
-//        target:self
-//        action:@selector(logData)];
-//        self.navigationItem.rightBarButtonItem = testButton;
-        
+    if(self) {        
         image = img;
+        if(approval) {
+            UIBarButtonItem *keepButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Keep"
+                                                                               style:UIBarButtonItemStyleBordered
+                                                                              target:self
+                                                                              action:@selector(keepPhoto)];
+            UIBarButtonItem *discardButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Discard"
+                                                                                  style:UIBarButtonItemStyleBordered
+                                                                                 target:self
+                                                                                 action:@selector(discardPhoto)];
+            self.navigationItem.leftBarButtonItem = keepButtonItem;
+            self.navigationItem.rightBarButtonItem = discardButtonItem;
+        }
     }
     return self;
 }
@@ -54,6 +61,18 @@
     
         // Called on a resize or autorotate. This will change the scrollview's scaling factors so recalculate them.
     [self setupScrollviewAnimated:YES];
+}
+
+-(void)keepPhoto
+{
+    if(self.approvalBlock)
+        self.approvalBlock();
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void)discardPhoto
+{
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void)logData

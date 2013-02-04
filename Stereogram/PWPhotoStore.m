@@ -92,15 +92,17 @@
     return written;
 }
 
--(BOOL)deleteImageAtIndex:(NSUInteger)index error:(NSError *__autoreleasing *)error
+-(BOOL)deleteImagesAtIndexPaths:(NSArray*)indexPaths error:(NSError *__autoreleasing *)error
 {
-    NSString *filePath = storedFilenames[index];
-    BOOL deleted = [[NSFileManager defaultManager] removeItemAtPath:filePath error:error];
-    if(deleted) {
-        [self deleteThumbnailFromCache:filePath];    // Keep the cache & filename list up to date.
-        [storedFilenames removeObjectAtIndex:index];
+    NSArray *paths = [indexPaths transformedArrayUsingBlock:^id(NSIndexPath *path) { return storedFilenames[path.item]; }];
+    for (NSString *filePath in paths) {
+        BOOL deleted = [[NSFileManager defaultManager] removeItemAtPath:filePath error:error];
+        if(deleted) {
+            [self deleteThumbnailFromCache:filePath];    // Keep the cache & filename list up to date.
+            [storedFilenames removeObject:filePath];
+        } else return NO;   // A delete failed. Return the error.
     }
-    return deleted;
+    return YES; // Everything successful.
 }
 
 -(BOOL)copyImageToCameraRoll:(NSUInteger)index error:(NSError**)error
@@ -257,7 +259,7 @@ static NSString *photoFolder(NSError **error)
     NSArray *folders = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *photoDir = [folders[0] stringByAppendingPathComponent:@"Pictures"];
     
-    NSLog(@"Using path [%@] for storing photos.", photoDir);
+//    NSLog(@"Using path [%@] for storing photos.", photoDir);
     if(! createPhotoFolder(photoDir, error)) return nil;
     return photoDir;
 }

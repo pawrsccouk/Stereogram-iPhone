@@ -1,0 +1,5 @@
+TODO:
+
+3. Add a progress bar or spinner when creating the stereogram.
+5. Add Dropbox support.
+6. Draw a better crosshair and take photo button.

@@ -9,10 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface PWImageThumbnailCell : UICollectionViewCell
-{
-    UIImageView __weak *imageView;
-    UIImageView __weak *selectionOverlayView;
-}
 
     // Image which will be displayed in the image view.
 @property (nonatomic, strong) UIImage *image;

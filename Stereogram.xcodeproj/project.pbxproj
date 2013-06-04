@@ -410,6 +410,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Stereogram/Stereogram-Prefix.pch";
 				INFOPLIST_FILE = "Stereogram/Stereogram-Info.plist";
+				"OTHER_CFLAGS[arch=*]" = (
+					"-Wall",
+					"-Wextra",
+					"-Wno-unused-parameter",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -421,6 +426,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Stereogram/Stereogram-Prefix.pch";
 				INFOPLIST_FILE = "Stereogram/Stereogram-Info.plist";
+				"OTHER_CFLAGS[arch=*]" = (
+					"-Wall",
+					"-Wextra",
+					"-Wno-unused-parameter",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

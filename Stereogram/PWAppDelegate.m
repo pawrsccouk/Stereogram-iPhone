@@ -19,8 +19,8 @@
     // Override point for customization after application launch.
     
         // Perform some setup on the photo store (such as reading the filenames of available photos etc).
-    NSError *error = nil;
-    if(! [PWPhotoStore setupStore:&error])
+    NSError *error = [PWPhotoStore setupStore];
+    if(error)
         [error showAlertWithTitle:@"Startup error"];
     
 
@@ -43,8 +43,28 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        // Ask the system for a little more time to save the data.  It creates a task-id and gives us a few seconds to save.
+        // Then it calls the expiration handler, which must finish the task. If not, the app is killed.
+        
+    __block UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
+            // This is called when time runs out for your background task.
+        NSLog(@"Background task terminated early.");
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    }];
+    
+        // This starts the task on a background thread. Here we save the data.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        NSError *error = [[PWPhotoStore sharedStore] saveProperties];
+            // Can't inform the user here, as the app has been replaced. Do we present it for them when the app restores?
+        if(error)
+            NSLog(@"Error saving the image properties. Error %@ user info %@", error, error.userInfo);
+        
+        NSLog(@"Background task save complete.");
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    });
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application

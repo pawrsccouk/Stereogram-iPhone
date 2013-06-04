@@ -8,6 +8,15 @@
 
 #import "PWActionSheet.h"
 
+@interface PWActionSheet ()
+{
+    NSDictionary *buttonTitlesAndBlocks;
+    NSString *cancelButtonTitle;
+    NSString *destructiveButtonTitle;
+    UIActionSheet *actionSheet;
+}
+@end
+
 @implementation PWActionSheet
 
 -(id)    initWithTitle:(NSString *)title

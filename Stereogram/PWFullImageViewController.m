@@ -9,7 +9,9 @@
 #import "PWFullImageViewController.h"
 
 @interface PWFullImageViewController ()
-
+{
+    UIImage *image;
+}
 @end
 
 @implementation PWFullImageViewController

@@ -12,12 +12,14 @@
 {
     IBOutlet UIImageView  *imageView;
     IBOutlet UIScrollView  *scrollView;
-    UIImage *image;
 }
 
     // Block which will be called if the user approved the image.
 @property (nonatomic, copy) void (^approvalBlock)(void);
 
--(id)initWithImage:(UIImage*)image forApproval:(BOOL)approval;
+    // Initialise the image view to display the given image.
+    // If forApproval is YES, the view gets a 'Keep' button, and if pressed, calls approvalBlock
+    // which should copy the image to permanent storage.
+-(id)initWithImage:(UIImage*)image forApproval:(BOOL)forApproval;
 
 @end

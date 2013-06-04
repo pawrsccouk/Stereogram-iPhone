@@ -9,6 +9,14 @@
 #import "PWAlertView.h"
 #import "PWFunctional.h"
 
+@interface PWAlertView ()
+{
+    UIAlertView *alertView;
+    NSString *destructiveButtonTitle, *cancelButtonTitle;
+    NSDictionary *buttonTitlesAndBlocks;
+}
+@end
+
 @implementation PWAlertView
 
 -(id)   initWithTitle:(NSString*)title

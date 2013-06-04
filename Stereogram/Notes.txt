@@ -1,5 +1,18 @@
 TODO:
 
-3. Add a progress bar or spinner when creating the stereogram.
-5. Add Dropbox support.
-6. Draw a better crosshair and take photo button.
+. Draw better crosshairs
+. Allow the user to crop the image to get rid of odd objects at the edge of focus.
+. Add preferences for:
+    Cross-eye or wall-eye steregrams
+    Adding a help-bar to the top of each image.
+. Allow user to change crosshair types
+
+. Add Dropbox support
+. Add Facebook support
+. Add Flickr support
+
+
+Done:
+. Allow user to change an image from cross-eye to wall-eye and back
+. Only show one half of the image in the thumbnails.
+. Add a progress bar or spinner when creating the stereogram.

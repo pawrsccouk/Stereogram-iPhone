@@ -9,12 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface PWActionSheet : NSObject <UIActionSheetDelegate>
-{
-    NSDictionary *buttonTitlesAndBlocks;
-    NSString *cancelButtonTitle;
-    NSString *destructiveButtonTitle;
-    UIActionSheet *actionSheet;
-}
 
     // Type of an action to perform.
 typedef void (^PWActionSheet_Action)(void);

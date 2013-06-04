@@ -7,8 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-@class PWCameraOverlayViewController;
-@class PWActionSheet, PWAlertView;
 
 @interface PWPhotoViewController : UIViewController <UIImagePickerControllerDelegate,
                                                      UINavigationControllerDelegate,
@@ -16,10 +14,6 @@
                                                      UICollectionViewDelegate>
 {
     IBOutlet UICollectionView __weak *photoCollection;
-    PWCameraOverlayViewController *cameraOverlayController;
-    UIBarButtonItem *exportItem, *editItem;
-    UIImage *firstPhoto;
-    UIImage *stereogram;
 }
 
 

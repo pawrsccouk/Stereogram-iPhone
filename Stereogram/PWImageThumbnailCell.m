@@ -8,6 +8,12 @@
 
 #import "PWImageThumbnailCell.h"
 
+@interface PWImageThumbnailCell ()
+{
+    UIImageView __weak *imageView;
+    UIImageView __weak *selectionOverlayView;
+}
+@end
 
 @implementation PWImageThumbnailCell
 @synthesize image = _image;

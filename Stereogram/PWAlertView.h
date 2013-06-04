@@ -12,11 +12,7 @@
 // Internally calls UIAlertView with the delegate set to self, and handles the button text.
 
 @interface PWAlertView : NSObject <UIAlertViewDelegate>
-{
-    UIAlertView *alertView;
-    NSString *destructiveButtonTitle, *cancelButtonTitle;
-    NSDictionary *buttonTitlesAndBlocks;
-}
+
 typedef void(^PWAlertView_Action)(void);
 
 -(id)    initWithTitle:(NSString*)title

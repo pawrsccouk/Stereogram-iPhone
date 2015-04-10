@@ -41,27 +41,7 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
 @implementation PWPhotoStore
 
 
-+(NSError*)setupStore
-{
-    PWPhotoStore *store = [self sharedStore];
-    return store ? [store setup]
-                 : [NSError errorWithDomain:kPWErrorDomainPhotoStore
-                                       code:kPWErrorCodesCouldntCreateSharedStore
-                                   userInfo:@{ (NSString*)kCFErrorDescriptionKey : @"Error creating shared photo store" }];
-}
-
-+(PWPhotoStore *)sharedStore
-{
-        // Allocate memory for the store the first time it is used. Otherwise, just pass the shared pointer back.
-    static PWPhotoStore *singleStore = nil;
-    if(!singleStore)
-        singleStore = [[super allocWithZone:nil] init];
-
-    return singleStore;
-}
-
--(id)init
-{
+-(instancetype)init: (NSError **)errorPtr {
     self = [super init];
     if(self) {
 
@@ -71,22 +51,30 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
                selector:@selector(clearCache:)
                    name:UIApplicationDidReceiveMemoryWarningNotification
                  object:nil];
+        
+        if (![self setup:errorPtr]) {
+            return nil;
+        }
     }
     return self;
 }
 
--(NSError *)setup
-{
-    NSError *error ;
-    propertiesFilePath = propertiesFile();
-    photoFolderPath    = photoFolder(&error);
-    if(! photoFolderPath) return error;
-    
-    return [self loadProperties];
+- (instancetype)init {
+    self = [self init:nil];
+    NSAssert(NO, @"Don't use [init], use [init:] instead.");
+    return self;
 }
 
--(NSError *)saveProperties
-{
+-(BOOL) setup: (NSError **)errorPtr {
+    propertiesFilePath = propertiesFile();
+    photoFolderPath    = photoFolder(errorPtr);
+    if(! photoFolderPath) {
+        return NO;
+    }
+    return [self loadProperties:errorPtr];
+}
+
+-(BOOL) saveProperties: (NSError **)errorPtr {
         // Make a copy of the properties that doesn't contain the thumbnails.
     NSMutableDictionary *propsToSave = [NSMutableDictionary dictionaryWithCapacity:imageProperties.count];
     for(NSString *filePath in imageProperties) {
@@ -99,27 +87,27 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
     
         // and write it to the properties file.
     BOOL ok = [propsToSave writeToFile:propertiesFilePath atomically:YES];
-    return ok ? nil : [NSError errorWithDomain:kPWErrorDomainPhotoStore
-                                          code:kPWErrorCodesUnknownError
-                                      userInfo:@{ (NSString*)kCFErrorDescriptionKey : @"Error saving the image properties." }];
+    if (!ok && errorPtr) {
+        *errorPtr = [NSError errorWithDomain:kPWErrorDomainPhotoStore
+                                        code:kPWErrorCodesUnknownError
+                                    userInfo:@{ (NSString*)kCFErrorDescriptionKey : @"Error saving the image properties." }];
+    }
+    return ok;
 }
 
--(UIImage *)imageAtIndex:(NSUInteger)index error:(NSError**)error
-{
+-(UIImage *) imageAtIndex: (NSUInteger)index error: (NSError**)error {
     NSString *path = filePathForIndex(index, [self thumbnailPaths]);
     if(! path) {
         *error = makeOutOfBoundsError(index);
         return nil;
     }
     UIImage *image = [self imageFromFile:path error:error];
-//    if(image)
-//        [self addThumbnailToCache:image forKey:path];
     return image;
 }
 
 
--(UIImage *)thumbnailAtIndex:(NSUInteger)index error:(NSError *__autoreleasing *)error
-{
+-(UIImage *) thumbnailAtIndex: (NSUInteger)index
+                        error: (NSError **)error {
     NSString *path = filePathForIndex(index, [self thumbnailPaths]);
     UIImage  *thumb = imageProperties[path][kPWImagePropertyThumbnail];
     if(thumb) return thumb;
@@ -128,8 +116,9 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
     return image ? [self addThumbnailToCache:image forKey:path] : nil;
 }
 
--(NSError *)addImage:(UIImage *)image dateTaken:(NSDate *)dateTaken
-{
+-(BOOL) addImage: (UIImage *)image
+       dateTaken: (NSDate *)dateTaken
+           error: (NSError **)errorPtr {
     NSData *fileData = UIImageJPEGRepresentation(image, 1.0);
     NSString *filePath = getUniqueFilename(photoFolderPath);
     NSError *error;
@@ -142,8 +131,9 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
     return error ? error : makeUnknownError();
 }
 
--(NSError *)replaceImageAtIndex:(NSUInteger)index withImage:(UIImage *)newImage
-{
+-(BOOL) replaceImageAtIndex: (NSUInteger)index
+                  withImage: (UIImage *)newImage
+                      error: (NSError **)errorPtr {
     NSString *filePath = filePathForIndex(index, [self thumbnailPaths]);
     if(! filePath)
         return makeOutOfBoundsError(index);
@@ -158,8 +148,8 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
     return nil;
 }
 
--(NSError *)deleteImagesAtIndexPaths:(NSArray*)indexPaths
-{
+-(BOOL) deleteImagesAtIndexPaths: (NSArray*)indexPaths
+                           error: (NSError **)errorPtr {
     NSArray *storedFilenames = [self thumbnailPaths];
     NSArray *paths = [indexPaths transformedArrayUsingBlock:^id(NSIndexPath *path) { return storedFilenames[path.item]; }];
     for (NSString *filePath in paths) {
@@ -171,8 +161,8 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
     return nil; // Everything successful.
 }
 
--(NSError*)copyImageToCameraRoll:(NSUInteger)index
-{
+-(BOOL) copyImageToCameraRoll: (NSUInteger)index
+                        error: (NSError **)errorPtr {
     NSError *error;
     UIImage *image = [self imageAtIndex:index error:&error];
     if (image) {
@@ -183,9 +173,8 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
 };
 
    // Function to return half an image.
-enum WhichHalf { RightHalf, LeftHalf };
-static UIImage *getHalfOfImage(UIImage * image, enum WhichHalf whichHalf)
-{
+typedef NS_ENUM(NSUInteger, WhichHalf) { RightHalf, LeftHalf };
+static UIImage *getHalfOfImage(UIImage * image, WhichHalf whichHalf) {
     CGRect rectToKeep = (whichHalf == LeftHalf) ? CGRectMake(0, 0, image.size.width / 2.0, image.size.height)
                                                 : CGRectMake(image.size.width / 2.0, 0, image.size.width / 2.0, image.size.height );
     
@@ -195,46 +184,45 @@ static UIImage *getHalfOfImage(UIImage * image, enum WhichHalf whichHalf)
     return imgPart;
 };
 
--(NSError *)changeViewingMethod:(NSUInteger)index
-{
-    NSError *error;
-    UIImage *image = [self imageAtIndex:index error:&error];
+-(BOOL) changeViewingMethod: (NSUInteger)index
+                      error: (NSError **)errorPtr {
+    UIImage *image = [self imageAtIndex:index error:errorPtr];
     if(image) {
         UIImage *swappedImage = [self makeStereogramWith:getHalfOfImage(image, RightHalf)
                                                      and:getHalfOfImage(image, LeftHalf)];
         NSAssert(CGSizeEqualToSize(swappedImage.size, image.size), @"Error swapping the image. Size (%f,%f) doesn't match original (%f, %f)",
                  swappedImage.size.width, swappedImage.size.height, image.size.width, image.size.height);
 
-        [self replaceImageAtIndex:index withImage:swappedImage];
-        return nil; // Success
+        [self replaceImageAtIndex:index withImage:swappedImage error:errorPtr];
+        return YES; // Success
     }
         // If we reach here something went wrong. Return what.
-    return error ? error : makeUnknownError();
+    if (errorPtr && !*errorPtr) {
+        *errorPtr = makeUnknownError();
+    }
+    return NO;
 }
 
     // Called by the notification centre when it receives a low-memory warning notification.
--(void)clearCache:(NSNotification*)notification
-{
+-(void) clearCache: (NSNotification*)notification {
         // Remove all the thumbnails.
     for(NSString *key in imageProperties) {
         [imageProperties[key] removeObjectForKey:kPWImagePropertyThumbnail];
     }
 }
 
--(NSUInteger)count
-{
+-(NSUInteger) count {
     NSAssert(imageProperties, @"imageProperties not created.");
     return imageProperties ? imageProperties.count : 0;
 }
 
 
--(NSUInteger)thumbnailSize
-{
+-(NSUInteger) thumbnailSize {
     return 100;
 }
 
--(UIImage *)makeStereogramWith:(UIImage *)leftPhoto and:(UIImage *)rightPhoto
-{
+-(UIImage *) makeStereogramWith: (UIImage *)leftPhoto
+                            and: (UIImage *)rightPhoto {
     NSAssert(leftPhoto.scale == rightPhoto.scale, @"Image scales %f and %f need to be the same.", leftPhoto.scale, rightPhoto.scale);
     CGSize stereogramSize = CGSizeMake(leftPhoto.size.width + rightPhoto.size.width, MAX(leftPhoto.size.height, rightPhoto.size.height));
     UIImage *stereogram = nil;
@@ -252,49 +240,50 @@ static UIImage *getHalfOfImage(UIImage * image, enum WhichHalf whichHalf)
 }
 
 
+- (NSString *) description {
+    NSString *superDescription = [super description];
+    NSString *desc = [NSString stringWithFormat:@"%@ <%lu images loaded>", superDescription, (unsigned long)self.count];
+    return desc;
+}
+
 #pragma mark - Private methods
 
--(NSArray *)thumbnailPaths
-{
+-(NSArray *) thumbnailPaths {
         // Note: Candidate for cacheing if speed becomes a problem.
     NSAssert(imageProperties, @"imageProperties hasn't been created.");
     return [imageProperties.allKeys sortedArrayUsingSelector:@selector(compare:)];
 }
 
--(UIImage*) imageFromFile:(NSString*)filePath error:(NSError**)error
-{
+-(UIImage*) imageFromFile: (NSString*)filePath
+                    error: (NSError**)error {
     NSAssert(filePath && [[NSFileManager defaultManager] fileExistsAtPath:filePath], @"filePath [%@] does not point to a file.", filePath);
     return [UIImage imageWithData:[NSData dataWithContentsOfFile:filePath options:0 error:error]];
 }
 
 
 
-static NSString *filePathForIndex(NSUInteger index, NSArray *storedFilenames)
-{
+static NSString *filePathForIndex(NSUInteger index, NSArray *storedFilenames) {
     if(storedFilenames.count <= index)
-        [NSException raise:NSRangeException format:@"object requested at index %d, but there were only %d images available.",
-         index, storedFilenames.count];
+        [NSException raise:NSRangeException format:@"object requested at index %lu, but there were only %lu images available.",
+         (unsigned long)index, (unsigned long)storedFilenames.count];
     return storedFilenames[index];
 }
 
 
-static NSError *makeUnknownError()
-{
+static NSError *makeUnknownError() {
     return [NSError errorWithDomain:kPWErrorDomainPhotoStore
                                code:kPWErrorCodesUnknownError
                            userInfo:@{ (NSString*)kCFErrorDescriptionKey : @"Unknown error" }];
 }
 
-static NSError *makeOutOfBoundsError(NSInteger index)
-{
-    NSString *errorText = [NSString stringWithFormat:@"Index %d is out of bounds", index];
+static NSError *makeOutOfBoundsError(NSInteger index) {
+    NSString *errorText = [NSString stringWithFormat:@"Index %ld is out of bounds", (long)index];
     return [NSError errorWithDomain:kPWErrorDomainPhotoStore
                                code:kPWErrorCodesIndexOutOfBounds
                            userInfo:@{ (NSString*)kCFErrorDescriptionKey : errorText }];
 }
 
-static NSMutableDictionary *loadImageProperties(NSString *propertiesFilePath)
-{
+static NSMutableDictionary *loadImageProperties(NSString *propertiesFilePath) {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithContentsOfFile:propertiesFilePath];
         // If the dict exists, check if the version ID is valid.
     if(dictionary) {
@@ -308,56 +297,51 @@ static NSMutableDictionary *loadImageProperties(NSString *propertiesFilePath)
 }
 
     // Return all the filenames in the image directory.
-static NSSet *loadImageFilenames(NSString *photoFolderPath, NSError **error)
-{
+static NSSet *loadImageFilenames(NSString *photoFolderPath, NSError **errorPtr) {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *fileNames = [fileManager contentsOfDirectoryAtPath:photoFolderPath error:error];
-    if(!fileNames) return nil;
-    
+    NSArray *fileNames = [fileManager contentsOfDirectoryAtPath:photoFolderPath error:errorPtr];
+    if(!fileNames) {
+        return nil;
+    }
     return [NSSet setWithArray:[fileNames transformedArrayUsingBlock:^NSString *(NSString *object) {
         return [photoFolderPath stringByAppendingPathComponent:object];
     }]];
 }
 
--(NSError*)loadProperties
-{
+-(BOOL) loadProperties: (NSError**)errorPtr {
         // Load the image properties and then compare them to the actual images, adding or removing entries until they match.
-    NSError *error;
     NSMutableDictionary *allProperties = loadImageProperties(propertiesFilePath);
-    if(error) return error;
-    
+    if (!allProperties) {
+        NSLog(@"Error loading image properties.");
+        return NO;
+    }
     NSSet *propertyFilenames = [NSSet setWithArray:allProperties.allKeys];
-    NSSet *filesystemFilenames = loadImageFilenames(photoFolderPath, &error);
-    if(error) return error;
+    NSSet *filesystemFilenames = loadImageFilenames(photoFolderPath, errorPtr);
+    if (!filesystemFilenames) {
+        return NO;
+    }
     
         // Remove any entries in propertyFilenames not in filesystemFilenames.
     NSSet *filesToRemove = [propertyFilenames objectsPassingTest:^BOOL(id obj, BOOL *stop) {
         return ![filesystemFilenames containsObject:obj];
     }];
-    for(NSString *file in filesToRemove)
+    for (NSString *file in filesToRemove) {
         [allProperties removeObjectForKey:file];
-    
+    }
         // Add any entries in filesystemFilenames not in propertyFilenames
     NSSet *filesToAdd = [filesystemFilenames objectsPassingTest:^BOOL(id obj, BOOL *stop) {
         return ![propertyFilenames containsObject:obj];
     }];
-    for(NSString *file in filesToAdd)
+    for (NSString *file in filesToAdd) {
         allProperties[file] = [NSMutableDictionary dictionary];
-    
+    }
     imageProperties = allProperties;
-    return nil;
+    return YES;
 }
 
 
-
-+(id)allocWithZone:(NSZone *)zone
-{
-    [NSException raise:@"Logic exception" format:@"PWPhotoStore is a singleton. Use the sharedStore method instead of allocing your own copy."];
-    return nil;
-}
-
--(UIImage *)addThumbnailToCache:(UIImage *)image forKey:(id)key
-{
+-(UIImage *)addThumbnailToCache:(UIImage *)image
+                         forKey:(id<NSCopying>)key {
         // The thumbnail should be of one half of the image, so the user can recognise it.
     UIImage *leftHalf = getHalfOfImage(image, LeftHalf);
     UIImage *thumbnail = [leftHalf thumbnailImage:[self thumbnailSize] transparentBorder:0 cornerRadius:0 interpolationQuality:kCGInterpolationLow];
@@ -370,36 +354,33 @@ static NSSet *loadImageFilenames(NSString *photoFolderPath, NSError **error)
     return thumbnail;
 }
 
-static NSString *photoFolder(NSError **error)
-{
+static NSString *photoFolder(NSError **errorPtr) {
     NSArray *folders = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *photoDir = [folders[0] stringByAppendingPathComponent:@"Pictures"];
-        
+
     NSFileManager *fileManager = [NSFileManager defaultManager];
     BOOL isDirectory = NO, fileExists = [fileManager fileExistsAtPath:photoDir isDirectory:&isDirectory];
-    if(fileExists && isDirectory) return photoDir;
-    
+    if(fileExists && isDirectory) {
+        return photoDir;
+    }
         // If the directory doesn't exist, then let the file manager try and create it.
-    return [fileManager createDirectoryAtPath:photoDir withIntermediateDirectories:NO attributes:nil error:error]
+    return [fileManager createDirectoryAtPath:photoDir withIntermediateDirectories:NO attributes:nil error:errorPtr]
         ? photoDir : nil;
 }
 
-static NSString *propertiesFile()
-{
+static NSString *propertiesFile() {
     NSArray *folders = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *propertiesPath = [folders[0] stringByAppendingPathComponent:@"Properties"];
     return propertiesPath;
 }
 
-static BOOL fileExists(NSString *fullPath)
-{
+static BOOL fileExists(NSString *fullPath) {
     return [[NSFileManager defaultManager] fileExistsAtPath:fullPath];
 }
 
         // Create a CF GUID, then turn it into a string, which we will return.
         // Add the object into the backing store using this key.
-static NSString *getUniqueFilename(NSString *photoDir)
-{
+static NSString *getUniqueFilename(NSString *photoDir) {
     CFUUIDRef newUID = CFUUIDCreate(kCFAllocatorDefault);
     CFStringRef newUIDString = CFUUIDCreateString(kCFAllocatorDefault, newUID);
     

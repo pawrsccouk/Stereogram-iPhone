@@ -18,7 +18,7 @@ typedef void(^PWAlertView_Action)(void);
 -(id)    initWithTitle:(NSString*)title
                message:(NSString*)message
  buttonTitlesAndBlocks:(NSDictionary *)titlesAndBlocks
-     cancelButtonTitle:(NSString *)cancelTitle;
+     cancelButtonTitle:(NSString *)cancelTitle NS_DESIGNATED_INITIALIZER;
 
 -(id)initWithTitle:(NSString*)title
            message:(NSString*)message

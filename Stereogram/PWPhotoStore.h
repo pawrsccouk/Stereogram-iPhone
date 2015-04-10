@@ -42,42 +42,43 @@ enum PWViewModes {
     // Size of a thumbnail in pixels.  Thumbnails are square, so this is the width and the height of it.
 @property (nonatomic, readonly) NSUInteger thumbnailSize;
 
-
-    // This class method should be called before the store is first used.
-    // I've put some setup here that requires an error object, so the user gets a chance to see the error.
-+(NSError *)setupStore;
-
-    // Returns the shared pointer used by all accessors of the store. NB the store is not thread-safe yet.
-+(PWPhotoStore*)sharedStore;
+    // Constructor. If something fails it returns nil and an error.
+-(instancetype)init: (NSError **)error NS_DESIGNATED_INITIALIZER;
 
     // Save the image property file.
--(NSError*) saveProperties;
+-(BOOL) saveProperties: (NSError **)errorPtr;
 
 #pragma mark - Handling images
 
     // Attempts to add the image to the store. dateTaken is when the original photo was taken, which is added to the properties.
--(NSError *)addImage:(UIImage*)image dateTaken:(NSDate*) dateTaken;
+-(BOOL) addImage:(UIImage*)image
+       dateTaken:(NSDate*) dateTaken
+           error:(NSError **)errorPtr;
 
     // Retrieves the image in the collection which is at index position <index>.
--(UIImage *)imageAtIndex:(NSUInteger)index error:(NSError**)error;
+-(UIImage *)imageAtIndex:(NSUInteger)index
+                   error:(NSError**)error;
 
     // Like imageAtIndex but receives a smaller thumbnail image.
--(UIImage *)thumbnailAtIndex:(NSUInteger)index error:(NSError**)error;
+-(UIImage *)thumbnailAtIndex:(NSUInteger)index
+                       error:(NSError**)error;
 
     // Compose the two photos given to make a stereogram.
--(UIImage *)makeStereogramWith:(UIImage *)leftPhoto and:(UIImage *)rightPhoto;
+-(UIImage *)makeStereogramWith:(UIImage *)leftPhoto
+                           and:(UIImage *)rightPhoto;
 
     // Deletes the images at the specified index paths.
--(NSError *)deleteImagesAtIndexPaths:(NSArray*)indexPaths;
+-(BOOL) deleteImagesAtIndexPaths: (NSArray*)indexPaths
+                           error:(NSError **)errorPtr;
 
     // Overwrites the image at the given position with a new image.
     // Returns an error if there is no image at index already.
--(NSError *)replaceImageAtIndex:(NSUInteger)index withImage:(UIImage*)newImage;
+-(BOOL) replaceImageAtIndex:(NSUInteger)index withImage:(UIImage*)newImage error:(NSError **)errorPtr;
 
     // Copies the image at position <index> into the camera roll.
--(NSError *)copyImageToCameraRoll:(NSUInteger)index;
+-(BOOL) copyImageToCameraRoll:(NSUInteger)index error:(NSError **)errorPtr;
 
     // Toggles the viewing method from crosseye to walleye and back for the image at position <index>.
--(NSError *)changeViewingMethod:(NSUInteger) index;
+-(BOOL) changeViewingMethod:(NSUInteger) index error:(NSError **)errorPtr;
 
 @end

@@ -9,8 +9,7 @@
 #import "Stereogram_Unit_Tests.h"
 #import "PWPhotoStore.h"
 
-@interface Stereogram_Unit_Tests ()
-{
+@interface Stereogram_Unit_Tests () {
     PWPhotoStore *_photoStore;
 }
 @end
@@ -22,13 +21,13 @@
     [super setUp];
     
     // Set-up code here -  Code is run before each testXX method.
-    NSError *error = [PWPhotoStore setupStore];
-    if(error) {
+    NSError *error = nil;
+    _photoStore = [[PWPhotoStore alloc] init:&error];
+    if (!_photoStore) {
         @throw [NSException exceptionWithName:@"Setup Error"
                                        reason:error.localizedDescription
                                      userInfo:error.userInfo];
     }
-    _photoStore = [PWPhotoStore sharedStore];
 }
 
 - (void)tearDown

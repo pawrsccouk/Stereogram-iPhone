@@ -12,12 +12,10 @@
 @implementation NSError (AlertSupport)
 
     // Shows the error text in an alert window, with a "Close" button.
--(void)showAlertWithTitle:(NSString*)title
-{
+-(void) showAlertWithTitle: (NSString *)title {
     NSString *errorText = self.helpAnchor ? self.helpAnchor
                                           : self.localizedFailureReason ? self.localizedFailureReason
                                                                         : self.localizedDescription;
-    
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
                                                         message:errorText
                                                        delegate:nil

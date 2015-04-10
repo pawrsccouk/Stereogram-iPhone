@@ -19,8 +19,7 @@
 @synthesize image = _image;
 
 
-- (id)initWithFrame:(CGRect)frame
-{
+- (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
             // Initialization code - Create and add the image thumbnail view

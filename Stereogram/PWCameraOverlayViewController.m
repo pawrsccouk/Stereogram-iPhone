@@ -12,12 +12,14 @@
 {
     UIActivityIndicatorView *activityView;
 }
+-(instancetype) initWithNibName: (NSString *)nibNameOrNil
+                         bundle: (NSBundle *)nibBundleOrNil NS_DESIGNATED_INITIALIZER;
 @end
 
 @implementation PWCameraOverlayViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
+-(instancetype) initWithNibName: (NSString *)nibNameOrNil
+                         bundle: (NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:@"PWCameraOverlayView" bundle:nibBundleOrNil];
     if (self) {
         // Create the activity view, but don't attach it to anything yet.
@@ -26,21 +28,24 @@
     return self;
 }
 
--(NSString *)helpText { return helpTextItem.title; }
--(void)setHelpText:(NSString *)text { helpTextItem.title = text; }
-
-    // Return the frame used for the activity view, given the parent bounds and the child's size.
-static CGRect activityFrame(CGRect parentBounds, CGSize activitySize)
-{
-    CGRect actFrame;
-    actFrame.origin = CGPointMake((parentBounds.size.width / 2) - (activitySize.width / 2),
-                                  (parentBounds.size.height / 2) - (activitySize.height / 2));
-    actFrame.size = activitySize;
-    return actFrame;
+-(NSString *) helpText {
+    return helpTextItem.title;
 }
 
--(void)showWaitIcon:(BOOL) showIcon
-{
+-(void) setHelpText: (NSString *)text {
+    helpTextItem.title = text;
+}
+
+    // Return the frame used for the activity view, given the parent bounds and the child's size.
+static CGRect activityFrame(CGRect parentBounds, CGSize activitySize) {
+    return (CGRect){
+        .origin = CGPointMake((parentBounds.size.width  / 2) - (activitySize.width  / 2),
+                              (parentBounds.size.height / 2) - (activitySize.height / 2)),
+        .size = activitySize
+    };
+}
+
+-(void) showWaitIcon: (BOOL)showIcon {
     if(showIcon) {
         crosshair.hidden = YES;
         activityView.frame = activityFrame(self.view.bounds, activityView.bounds.size);
@@ -55,14 +60,12 @@ static CGRect activityFrame(CGRect parentBounds, CGSize activitySize)
 }
 
 
-- (IBAction)takePhoto:(id)sender
-{
+-(IBAction) takePhoto: (id)sender {
     NSAssert(self.imagePickerController, @"camera controller is nil.");
     [self.imagePickerController takePicture];
 }
 
--(IBAction)cancel:(id)sender
-{
+-(IBAction) cancel: (id)sender {
     UIImagePickerController *picker = self.imagePickerController;
     NSAssert(picker && picker.delegate, @"camera controller is nil or has a nil delegate.");
     NSAssert([picker.delegate respondsToSelector:@selector(imagePickerControllerDidCancel:)],

@@ -11,6 +11,12 @@
 #import "PWPhotoStore.h"
 #import "NSError_AlertSupport.h"
 
+@interface PWAppDelegate () {
+    PWPhotoStore *_photoStore;
+}
+
+@end
+
 @implementation PWAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -18,13 +24,15 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     
-        // Perform some setup on the photo store (such as reading the filenames of available photos etc).
-    NSError *error = [PWPhotoStore setupStore];
-    if(error)
+    NSError *error = nil;
+    _photoStore = [[PWPhotoStore alloc] init:&error];
+    if (!_photoStore) {
+        NSLog(@"Error creating the photo store: %@", error);
         [error showAlertWithTitle:@"Startup error"];
+    }
     
 
-    PWPhotoViewController *photoVC = [[PWPhotoViewController alloc] init];
+    PWPhotoViewController *photoVC = [[PWPhotoViewController alloc] initWithPhotoStore:_photoStore];
     UINavigationController *rootVC = [[UINavigationController alloc] initWithRootViewController:photoVC];
     self.window.rootViewController = rootVC;
     
@@ -56,11 +64,11 @@
         // This starts the task on a background thread. Here we save the data.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        NSError *error = [[PWPhotoStore sharedStore] saveProperties];
+        NSError *error = nil;
+        if (![_photoStore saveProperties:&error]) {
             // Can't inform the user here, as the app has been replaced. Do we present it for them when the app restores?
-        if(error)
             NSLog(@"Error saving the image properties. Error %@ user info %@", error, error.userInfo);
-        
+        }
         NSLog(@"Background task save complete.");
         [application endBackgroundTask:bgTask];
         bgTask = UIBackgroundTaskInvalid;

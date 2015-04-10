@@ -21,7 +21,7 @@ typedef void (^PWActionSheet_Action)(void);
 -(id)    initWithTitle:(NSString*)title
  buttonTitlesAndBlocks:(NSDictionary *)buttonTitlesAndBlocks
      cancelButtonTitle:(NSString*)cancelButtonTitle
-destructiveButtonTitle:(NSString*)destructiveTitle;
+destructiveButtonTitle:(NSString*)destructiveTitle NS_DESIGNATED_INITIALIZER;
 
 
 // Shorthand constructor for an action sheet with an OK and Cancel buttons (and blocks to match them).

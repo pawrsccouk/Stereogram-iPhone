@@ -16,15 +16,13 @@
 
 @implementation PWFullImageViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    return [super initWithNibName:@"PWFullImageView" bundle:nibBundleOrNil];
-}
+//- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+//    return [super initWithNibName:@"PWFullImageView" bundle:nibBundleOrNil];
+//}
 
--(id)initWithImage:(UIImage *)img forApproval:(BOOL)approval
-{
-    self = [self init];
-    if(self) {        
+-(id)initWithImage:(UIImage *)img forApproval:(BOOL)approval {
+    self = [super initWithNibName:@"PWFullImageView" bundle:nil];
+    if (self) {        
         image = img;
         if(approval) {
             UIBarButtonItem *keepButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Keep"

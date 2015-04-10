@@ -20,6 +20,6 @@
     // Initialise the image view to display the given image.
     // If forApproval is YES, the view gets a 'Keep' button, and if pressed, calls approvalBlock
     // which should copy the image to permanent storage.
--(id)initWithImage:(UIImage*)image forApproval:(BOOL)forApproval;
-
+-(instancetype) initWithImage: (UIImage*)image
+                  forApproval: (BOOL)forApproval NS_DESIGNATED_INITIALIZER;
 @end

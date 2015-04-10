@@ -312,7 +312,7 @@
 			name = "Stereogram Unit Tests";
 			productName = "Stereogram Unit Tests";
 			productReference = 57B650E21780C57C00743FF3 /* Stereogram Unit Tests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productType = "com.apple.product-type.bundle.ocunit-test";
 		};
 		57F1082316AC2DCD00907CBE /* Stereogram */ = {
 			isa = PBXNativeTarget;
@@ -338,6 +338,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = PW;
+				LastTestingUpgradeCheck = 0620;
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Patrick Wallace";
 			};
@@ -596,6 +597,7 @@
 				57B650F31780C57D00743FF3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		57F1081E16AC2DCD00907CBE /* Build configuration list for PBXProject "Stereogram" */ = {
 			isa = XCConfigurationList;

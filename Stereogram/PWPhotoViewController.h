@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@class PWPhotoStore;
 
 @interface PWPhotoViewController : UIViewController <UIImagePickerControllerDelegate,
                                                      UINavigationControllerDelegate,
@@ -16,5 +17,6 @@
     IBOutlet UICollectionView __weak *photoCollection;
 }
 
+-(instancetype) initWithPhotoStore: (PWPhotoStore*)photoStore NS_DESIGNATED_INITIALIZER;
 
 @end

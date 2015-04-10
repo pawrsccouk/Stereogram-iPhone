@@ -10,7 +10,7 @@
 
 @interface NSError (AlertSupport)
 
-    // Shows the error text in an alert window, with a "Close" button.
--(void)showAlertWithTitle:(NSString*)title;
+    /// Shows the error text in an alert window, with a "Close" button.
+-(void) showAlertWithTitle: (NSString*)title;
 
 @end

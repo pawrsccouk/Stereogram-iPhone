@@ -140,7 +140,7 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
     NSError *error;
     UIImage *image = [[PWPhotoStore sharedStore] imageAtIndex:indexPath.item error:&error];
     if (! image) {
-        [error showAlertWithTitle:[NSString stringWithFormat:@"Error accessing image at index %d", indexPath.item]];
+        [error showAlertWithTitle:[NSString stringWithFormat:@"Error accessing image at index %ld", (long)indexPath.item]];
         return;
     }
     PWFullImageViewController *imageViewController = [[PWFullImageViewController alloc] initWithImage:image forApproval:NO];

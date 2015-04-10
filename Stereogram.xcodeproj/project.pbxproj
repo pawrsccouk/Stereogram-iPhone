@@ -27,6 +27,11 @@
 		577108F816BF5BFA007D32DA /* Notes.txt in Resources */ = {isa = PBXBuildFile; fileRef = 577108F716BF5BFA007D32DA /* Notes.txt */; };
 		577108FB16BF7A16007D32DA /* Tick.png in Resources */ = {isa = PBXBuildFile; fileRef = 577108F916BF7A15007D32DA /* Tick.png */; };
 		577108FC16BF7A16007D32DA /* Tick@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 577108FA16BF7A15007D32DA /* Tick@2x.png */; };
+		57B650E41780C57C00743FF3 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B650E31780C57C00743FF3 /* SenTestingKit.framework */; };
+		57B650E51780C57C00743FF3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082816AC2DCD00907CBE /* UIKit.framework */; };
+		57B650E61780C57C00743FF3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082A16AC2DCD00907CBE /* Foundation.framework */; };
+		57B650EC1780C57D00743FF3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 57B650EA1780C57D00743FF3 /* InfoPlist.strings */; };
+		57B650EF1780C57D00743FF3 /* Stereogram_Unit_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B650EE1780C57D00743FF3 /* Stereogram_Unit_Tests.m */; };
 		57F1082916AC2DCD00907CBE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082816AC2DCD00907CBE /* UIKit.framework */; };
 		57F1082B16AC2DCD00907CBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082A16AC2DCD00907CBE /* Foundation.framework */; };
 		57F1082D16AC2DCD00907CBE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082C16AC2DCD00907CBE /* CoreGraphics.framework */; };
@@ -77,6 +82,13 @@
 		577108F716BF5BFA007D32DA /* Notes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Notes.txt; sourceTree = "<group>"; };
 		577108F916BF7A15007D32DA /* Tick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tick.png; sourceTree = "<group>"; };
 		577108FA16BF7A15007D32DA /* Tick@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Tick@2x.png"; sourceTree = "<group>"; };
+		57B650E21780C57C00743FF3 /* Stereogram Unit Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Stereogram Unit Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		57B650E31780C57C00743FF3 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		57B650E91780C57D00743FF3 /* Stereogram Unit Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Stereogram Unit Tests-Info.plist"; sourceTree = "<group>"; };
+		57B650EB1780C57D00743FF3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		57B650ED1780C57D00743FF3 /* Stereogram_Unit_Tests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Stereogram_Unit_Tests.h; sourceTree = "<group>"; };
+		57B650EE1780C57D00743FF3 /* Stereogram_Unit_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Stereogram_Unit_Tests.m; sourceTree = "<group>"; };
+		57B650F01780C57D00743FF3 /* Stereogram Unit Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Stereogram Unit Tests-Prefix.pch"; sourceTree = "<group>"; };
 		57F1082416AC2DCD00907CBE /* Stereogram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stereogram.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		57F1082816AC2DCD00907CBE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		57F1082A16AC2DCD00907CBE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -103,6 +115,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		57B650DE1780C57C00743FF3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57B650E41780C57C00743FF3 /* SenTestingKit.framework in Frameworks */,
+				57B650E51780C57C00743FF3 /* UIKit.framework in Frameworks */,
+				57B650E61780C57C00743FF3 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		57F1082116AC2DCD00907CBE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -164,11 +186,39 @@
 			name = Controllers;
 			sourceTree = "<group>";
 		};
+		57B650DC1780C4A100743FF3 /* Unit Tests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Unit Tests";
+			sourceTree = "<group>";
+		};
+		57B650E71780C57C00743FF3 /* Stereogram Unit Tests */ = {
+			isa = PBXGroup;
+			children = (
+				57B650ED1780C57D00743FF3 /* Stereogram_Unit_Tests.h */,
+				57B650EE1780C57D00743FF3 /* Stereogram_Unit_Tests.m */,
+				57B650E81780C57C00743FF3 /* Supporting Files */,
+			);
+			path = "Stereogram Unit Tests";
+			sourceTree = "<group>";
+		};
+		57B650E81780C57C00743FF3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				57B650E91780C57D00743FF3 /* Stereogram Unit Tests-Info.plist */,
+				57B650EA1780C57D00743FF3 /* InfoPlist.strings */,
+				57B650F01780C57D00743FF3 /* Stereogram Unit Tests-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		57F1081916AC2DCD00907CBE = {
 			isa = PBXGroup;
 			children = (
 				577108D916B3A76A007D32DA /* UIImage-categories */,
 				57F1082E16AC2DCD00907CBE /* Stereogram */,
+				57B650E71780C57C00743FF3 /* Stereogram Unit Tests */,
 				57F1082716AC2DCD00907CBE /* Frameworks */,
 				57F1082516AC2DCD00907CBE /* Products */,
 			);
@@ -178,6 +228,7 @@
 			isa = PBXGroup;
 			children = (
 				57F1082416AC2DCD00907CBE /* Stereogram.app */,
+				57B650E21780C57C00743FF3 /* Stereogram Unit Tests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -189,6 +240,7 @@
 				57F1082816AC2DCD00907CBE /* UIKit.framework */,
 				57F1082A16AC2DCD00907CBE /* Foundation.framework */,
 				57F1082C16AC2DCD00907CBE /* CoreGraphics.framework */,
+				57B650E31780C57C00743FF3 /* SenTestingKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -196,6 +248,7 @@
 		57F1082E16AC2DCD00907CBE /* Stereogram */ = {
 			isa = PBXGroup;
 			children = (
+				57B650DC1780C4A100743FF3 /* Unit Tests */,
 				577108F116B9E064007D32DA /* Model */,
 				577108F016B9E04B007D32DA /* Views */,
 				577108F216B9E07C007D32DA /* Controllers */,
@@ -243,6 +296,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		57B650E11780C57C00743FF3 /* Stereogram Unit Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 57B650F11780C57D00743FF3 /* Build configuration list for PBXNativeTarget "Stereogram Unit Tests" */;
+			buildPhases = (
+				57B650DD1780C57C00743FF3 /* Sources */,
+				57B650DE1780C57C00743FF3 /* Frameworks */,
+				57B650DF1780C57C00743FF3 /* Resources */,
+				57B650E01780C57C00743FF3 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Stereogram Unit Tests";
+			productName = "Stereogram Unit Tests";
+			productReference = 57B650E21780C57C00743FF3 /* Stereogram Unit Tests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
 		57F1082316AC2DCD00907CBE /* Stereogram */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 57F1084216AC2DCD00907CBE /* Build configuration list for PBXNativeTarget "Stereogram" */;
@@ -283,11 +354,20 @@
 			projectRoot = "";
 			targets = (
 				57F1082316AC2DCD00907CBE /* Stereogram */,
+				57B650E11780C57C00743FF3 /* Stereogram Unit Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		57B650DF1780C57C00743FF3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57B650EC1780C57D00743FF3 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		57F1082216AC2DCD00907CBE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -316,7 +396,31 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		57B650E01780C57C00743FF3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		57B650DD1780C57C00743FF3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57B650EF1780C57D00743FF3 /* Stereogram_Unit_Tests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		57F1082016AC2DCD00907CBE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -341,6 +445,14 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		57B650EA1780C57D00743FF3 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				57B650EB1780C57D00743FF3 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		57F1083116AC2DCD00907CBE /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -352,6 +464,44 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		57B650F21780C57D00743FF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Stereogram Unit Tests/Stereogram Unit Tests-Prefix.pch";
+				INFOPLIST_FILE = "Stereogram Unit Tests/Stereogram Unit Tests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		57B650F31780C57D00743FF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Stereogram Unit Tests/Stereogram Unit Tests-Prefix.pch";
+				INFOPLIST_FILE = "Stereogram Unit Tests/Stereogram Unit Tests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
 		57F1084016AC2DCD00907CBE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -439,6 +589,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		57B650F11780C57D00743FF3 /* Build configuration list for PBXNativeTarget "Stereogram Unit Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				57B650F21780C57D00743FF3 /* Debug */,
+				57B650F31780C57D00743FF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		57F1081E16AC2DCD00907CBE /* Build configuration list for PBXProject "Stereogram" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

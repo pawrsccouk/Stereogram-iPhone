@@ -13,9 +13,6 @@
 #import "UIImage+Resize.h"
 #import "NSError_AlertSupport.h"
 
-inline static NSString *cast_NSString(CFStringRef stringRef) { return (__bridge NSString *)stringRef; }
-inline static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict);
-
     /// This controller can be in multiple states. Capture these here.
 typedef NS_ENUM(NSInteger, State) {
         /// The photo process has not started yet.
@@ -28,6 +25,8 @@ typedef NS_ENUM(NSInteger, State) {
     Complete
 };
 
+inline static NSString *cast_NSString(CFStringRef stringRef) { return (__bridge NSString *)stringRef; }
+inline static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict);
 inline static NSString *stringFromState(State state);
 
 @interface StereogramViewController () {
@@ -36,9 +35,6 @@ inline static NSString *stringFromState(State state);
     PWCameraOverlayViewController *_cameraOverlayController;
     UIImagePickerController *_pickerController;
 }
-
-
-
 @end
 
 
@@ -49,11 +45,13 @@ inline static NSString *stringFromState(State state);
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do view setup here.
+    NSAssert(_state == Ready, @"viewDidLoad invalid state of %d", _state);
 }
 
-- (instancetype)initWithDelegate:(id<StereogramViewControllerDelegate>)delegate {
+- (instancetype) initWithDelegate: (id<StereogramViewControllerDelegate>)delegate {
     self = [super init];
     if (!self) { return nil; }
+    _state = Ready;
     _firstPhoto = nil;
     _stereogram = nil;
     _delegate = delegate;
@@ -79,13 +77,14 @@ inline static NSString *stringFromState(State state);
     }
 }
 
-- (void)reset {
+-(void) reset {
     _state = Ready;
     _cameraOverlayController.helpText = @"Take the first photo";
     _firstPhoto = _stereogram = nil;
 }
 
-- (void)takePicture:(UIViewController *)parentController {
+-(void) takePicture: (UIViewController *)parentController {
+    NSAssert(_state == Ready, @"takePicture: invalid state is %d, should be Ready (%d)", _state, Ready);
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No camera"
                                                             message:@"This device does not have a camera attached"
@@ -110,12 +109,16 @@ inline static NSString *stringFromState(State state);
             picker.showsCameraControls = NO;
 
                 // Set up a custom overlay view for the camera. Ensure our custom view frame fits within the camera view's frame.
+            if (!_cameraOverlayController) {
+                _cameraOverlayController= [[PWCameraOverlayViewController alloc] init];
+            }
             _cameraOverlayController.view.frame = picker.view.frame;
             picker.cameraOverlayView = _cameraOverlayController.view;
             _cameraOverlayController.imagePickerController = picker;
             _cameraOverlayController.helpText = @"Take the first photo";
-            [_parentController presentViewController:picker animated: YES completion: nil];
-            
+            [_parentController presentViewController:picker
+                                            animated:YES
+                                          completion:nil];
             _state = TakingFirstPhoto;
             if ([_delegate respondsToSelector:@selector(stereogramViewController:takingPhoto:)]) {
                 [_delegate stereogramViewController:self takingPhoto:1];
@@ -151,10 +154,8 @@ inline static NSString *stringFromState(State state);
     UIImage *stereogram = [ImageManager makeStereogramWithLeftPhoto:firstPhoto
                                                          rightPhoto:secondPhoto];
     if (!stereogram) { return nil; }
-    
     UIImage *resizedStereogram = [stereogram resizedImage:CGSizeMake(stereogram.size.width / 2, stereogram.size.height / 2)
                                      interpolationQuality:kCGInterpolationHigh];
-    if (!resizedStereogram) { return nil; }
     return resizedStereogram;
 }
 
@@ -223,7 +224,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info {
 @end
 
     /// Get the edited photo from the info dictionary if the user has edited it. If there is no edited photo, get the original photo. If there is no original photo, terminate with an error.
-static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict) {
+inline static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict) {
     UIImage *photo = infoDict[UIImagePickerControllerEditedImage];
     if (photo) {
         return photo;
@@ -233,11 +234,11 @@ static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict) {
 
     /// Human-readable description of the current state.
 inline static NSString *stringFromState(State state) {
-       switch (state) {
-    case Ready:             return @"Ready";
-    case TakingFirstPhoto:  return @"TakingFirstPhoto";
-    case TakingSecondPhoto: return @"TakingSecondPhoto";
-    case Complete:          return @"Complete";
-    default:                return [NSString stringWithFormat:@"Unknown state: %d", state];
+    switch (state) {
+        case Ready:             return @"Ready";
+        case TakingFirstPhoto:  return @"TakingFirstPhoto";
+        case TakingSecondPhoto: return @"TakingSecondPhoto";
+        case Complete:          return @"Complete";
+        default:                return [NSString stringWithFormat:@"Unknown state: %d", state];
     }
 }

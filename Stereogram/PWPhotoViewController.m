@@ -7,15 +7,13 @@
 //
 
 #import "PWPhotoViewController.h"
-#import "MobileCoreServices/UTCoreTypes.h"
 #import "PWPhotoStore.h"
 #import "NSError_AlertSupport.h"
+#import "UIImage+Resize.h"
 #import "PWImageThumbnailCell.h"
 #import "PWFullImageViewController.h"
-#import "PWCameraOverlayViewController.h"
 #import "PWAlertView.h"
 #import "PWActionSheet.h"
-#import "UIImage+Resize.h"
 #import "ImageManager.h"
 #import "CollectionViewThumbnailProvider.h"
 
@@ -23,16 +21,14 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
 
 static NSString *formatDeleteMessage(NSUInteger numToDelete);
 static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id layout);
-static inline UIImage *imageFromPickerInfoDict(NSDictionary *infoDict);
 
 #pragma mark - 
 
 @interface PWPhotoViewController () {
-    PWCameraOverlayViewController *_cameraOverlayController;
     UIBarButtonItem *_exportItem, *_editItem;
-    UIImage *_firstPhoto, *_stereogram;
     UIActivityIndicatorView *_activityIndicator;
     CollectionViewThumbnailProvider *_thumbnailProvider;
+    StereogramViewController *_stereogramViewController;
     PWAlertView *_alertView;
     PWActionSheet *_actionSheet;
 }
@@ -45,8 +41,6 @@ static inline UIImage *imageFromPickerInfoDict(NSDictionary *infoDict);
     self = [super initWithNibName:@"PWPhotoView" bundle:nil];
     if (self) {
         _photoStore = photoStore;
-        _cameraOverlayController = [[PWCameraOverlayViewController alloc] init];
-        _stereogram = nil;
         _thumbnailProvider = nil;
         _actionSheet = nil;
         _alertView = nil;
@@ -86,37 +80,12 @@ static inline UIImage *imageFromPickerInfoDict(NSDictionary *infoDict);
                                                                           collection:photoCollectionView];
 }
 
-- (void) didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
     /// Kick off the picture-taking process. Present the camera view controller with our custom overlay on top.
 -(void) takePicture {
-    if (! [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:@"No camera"
-                                                            message:@"This device does not have a camera attached."
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"Close"
-                                                  otherButtonTitles:nil];
-        [errorView show];
-        return;
+    if (!_stereogramViewController) {
+        _stereogramViewController = [[StereogramViewController alloc] initWithDelegate:self];
     }
-    
-    UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
-    imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-    imagePickerController.mediaTypes = @[ (NSString*)kUTTypeImage ];
-    imagePickerController.delegate = self;
-    imagePickerController.showsCameraControls = NO;
-    
-        // setup our custom overlay view for the camera and ensure that our custom view's frame fits within the parent frame
-    _cameraOverlayController.view.frame = imagePickerController.view.frame;
-
-    imagePickerController.cameraOverlayView = _cameraOverlayController.view;
-    _cameraOverlayController.helpText = @"Take the first photo";
-    _cameraOverlayController.imagePickerController = imagePickerController;
-    
-    [self presentViewController:imagePickerController animated:YES completion:nil];
+    [_stereogramViewController takePicture:self];
 }
 
     /// Create and display an action menu with the items available for a set of the collection items.
@@ -148,7 +117,7 @@ static inline UIImage *imageFromPickerInfoDict(NSDictionary *infoDict);
 -(void) setEditing: (BOOL)editing {
     [super setEditing:editing];
         // On turning off the editing option, clear the selection.
-    if(!editing) {
+    if (!editing) {
         for (NSIndexPath *path in photoCollectionView.indexPathsForSelectedItems) {
             [photoCollectionView deselectItemAtIndexPath:path animated:NO];
         }
@@ -173,12 +142,6 @@ static inline UIImage *imageFromPickerInfoDict(NSDictionary *infoDict);
     /// Event called when the view appears.
 -(void) viewDidAppear: (BOOL)animated {
     [super viewDidAppear:animated];
-    NSLog(@"PhotoViewController viewDidAppear: self = %@", self);
-        // If stereogram is set, we have just reappeared from under the camera controller, and we need to pop up an approval window for the user to accept the new stereogram.
-    if(_stereogram) {
-        [self showApprovalWindowForImage:_stereogram];
-        _stereogram = nil;
-    }
 }
 
     /// Display the FullImageViewController in "Approval" mode (which adds "Keep" and "Delete" buttons).
@@ -198,6 +161,22 @@ static inline UIImage *imageFromPickerInfoDict(NSDictionary *infoDict);
     return desc;
 }
 
+#pragma mark StereogramViewController delegate
+
+-(void) stereogramViewController: (StereogramViewController *)controller
+               createdStereogram: (UIImage *)stereogram {
+    [controller dismissViewControllerAnimated:YES
+                                      completion: ^{
+                                              // Once dismissed, trigger the full image view controller to examine the image.
+                                          [controller reset];
+                                          [self showApprovalWindowForImage:stereogram];
+                                      }];
+}
+
+-(void) stereogramViewControllerWasCancelled: (StereogramViewController *)controller {
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark FullImageViewController delegate
 
 -(void) fullImageViewController: (PWFullImageViewController *)controller
@@ -214,56 +193,6 @@ static inline UIImage *imageFromPickerInfoDict(NSDictionary *infoDict);
     [controller dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark ImagePicker delegate
-
-static UIImage *makeStereogram(PWPhotoStore *photoStore, UIImage *firstPhoto, UIImage *secondPhoto) {
-    UIImage *stereogram = [ImageManager makeStereogramWithLeftPhoto:firstPhoto
-                                                         rightPhoto:secondPhoto];
-        // Halve the stereogram size as otherwise these end up way too big, since we've doubled the width of the image.
-        // TODO: Make this an option to be checked in the preferences.
-    return [stereogram resizedImage:CGSizeMake(stereogram.size.width / 2, stereogram.size.height / 2)
-               interpolationQuality:kCGInterpolationHigh];
-}
-
--(void) imagePickerController:(UIImagePickerController *)picker
-didFinishPickingMediaWithInfo:(NSDictionary *)info {
-    NSAssert(_stereogram == nil, @"Stereogram %@ is not nil", _stereogram);
-    
-        // We need to get 2 photos, so the first time we enter here, we store the image and prompt the user to take the second photo.
-        // Next time we enter here, we compose the 2 photos into the final montage and this is what we store. We also dismiss the photo chooser at that point.
-    if(! _firstPhoto) {
-        _firstPhoto = imageFromPickerInfoDict(info);
-        _cameraOverlayController.helpText = @"Take the second photo";
-    }
-    else {
-        UIImage *secondPhoto = imageFromPickerInfoDict(info);
-        if(_firstPhoto && secondPhoto) {
-            [_cameraOverlayController showWaitIcon:YES];
-            
-                // Create the stereogram as a background task, as it can take a while.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                @try {
-                    UIImage *stogram = makeStereogram(_photoStore, _firstPhoto, secondPhoto);
-                        // Update the UI code back on the main thread.
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        _stereogram = stogram;
-                        _firstPhoto = nil;
-                        [picker dismissViewControllerAnimated:NO completion:nil];
-                        [_cameraOverlayController showWaitIcon:NO];
-                    });
-                }
-                @catch (NSException *exception) {
-                    NSLog(@"Exception: %@", exception);
-                }
-            });
-        }
-    }
-}
-
--(void) imagePickerControllerDidCancel: (UIImagePickerController *)picker {
-    [picker dismissViewControllerAnimated:YES completion:nil];
-    _firstPhoto = nil;
-}
 
 #pragma mark UICollectionView delegate
 
@@ -337,10 +266,12 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
         for (NSIndexPath *indexPath in selectedItems) {
             NSAssert([indexPath indexAtPosition:0] == 0, @"Index Path %@ not for section 0", indexPath);
             NSError *error = nil;
-            UIImage *image = [_photoStore imageAtIndex:[indexPath indexAtPosition:1] error:&error];
+            UIImage *image = [_photoStore imageAtIndex:[indexPath indexAtPosition:1]
+                                                 error:&error];
             if (![ImageManager changeViewingMethod:image]) {    // Index path has format [<section>, <item>].
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [error showAlertWithTitle:@"Error changing viewing method" parentViewController:self.parentViewController];
+                    [error showAlertWithTitle:@"Error changing viewing method"
+                         parentViewController:self.parentViewController];
                     [self showActivityIndicator:NO];
                 });
                 return; // Exit to avoid showing the user multiple errors
@@ -388,11 +319,6 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
 }
 
 @end
-
-static inline UIImage *imageFromPickerInfoDict(NSDictionary *infoDict) {
-    UIImage *photo =       infoDict[UIImagePickerControllerEditedImage];
-    return photo ? photo : infoDict[UIImagePickerControllerOriginalImage];
-}
 
 static NSString *formatDeleteMessage(NSUInteger numToDelete) {
     NSString * const postscript = @"This operation cannot be undone.";

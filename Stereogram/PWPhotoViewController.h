@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "PWFullImageViewController.h"
+#import "StereogramViewController.h"
 @class PWPhotoStore;
 
-@interface PWPhotoViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegate, PWFullImageViewControllerDelegate> {
+@interface PWPhotoViewController : UIViewController <UINavigationControllerDelegate, UICollectionViewDelegate, PWFullImageViewControllerDelegate, StereogramViewControllerDelegate> {
     IBOutlet UICollectionView __weak *photoCollectionView;
 }
 

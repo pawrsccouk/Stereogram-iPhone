@@ -7,14 +7,17 @@
 //
 
 #import "PWCameraOverlayViewController.h"
+static inline CGRect activityFrame(CGRect parentBounds, CGSize activitySize);
 
-@interface PWCameraOverlayViewController ()
-{
+@interface PWCameraOverlayViewController () {
     UIActivityIndicatorView *activityView;
 }
+
 -(instancetype) initWithNibName: (NSString *)nibNameOrNil
                          bundle: (NSBundle *)nibBundleOrNil NS_DESIGNATED_INITIALIZER;
 @end
+
+#pragma mark -
 
 @implementation PWCameraOverlayViewController
 
@@ -22,7 +25,7 @@
                          bundle: (NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:@"PWCameraOverlayView" bundle:nibBundleOrNil];
     if (self) {
-        // Create the activity view, but don't attach it to anything yet.
+            // Create the activity view, but don't attach it to anything yet.
         activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     }
     return self;
@@ -34,15 +37,6 @@
 
 -(void) setHelpText: (NSString *)text {
     helpTextItem.title = text;
-}
-
-    // Return the frame used for the activity view, given the parent bounds and the child's size.
-static CGRect activityFrame(CGRect parentBounds, CGSize activitySize) {
-    return (CGRect){
-        .origin = CGPointMake((parentBounds.size.width  / 2) - (activitySize.width  / 2),
-                              (parentBounds.size.height / 2) - (activitySize.height / 2)),
-        .size = activitySize
-    };
 }
 
 -(void) showWaitIcon: (BOOL)showIcon {
@@ -74,3 +68,12 @@ static CGRect activityFrame(CGRect parentBounds, CGSize activitySize) {
     [picker.delegate imagePickerControllerDidCancel:picker];
 }
 @end
+
+    // Return the frame used for the activity view, given the parent bounds and the child's size.
+static CGRect activityFrame(CGRect parentBounds, CGSize activitySize) {
+    return (CGRect){
+        .origin = CGPointMake((parentBounds.size.width  / 2) - (activitySize.width  / 2),
+                              (parentBounds.size.height / 2) - (activitySize.height / 2)),
+        .size = activitySize
+    };
+}

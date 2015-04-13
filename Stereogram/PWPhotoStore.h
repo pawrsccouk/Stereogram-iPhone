@@ -8,7 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
+#pragma mark Error domain and codes
 
+extern NSString *const PhotoStoreErrorDomain;
+
+typedef NS_ENUM(NSInteger, ErrorCode) {
+    PhotoStoreErrorCodeUnknownError             =   1,
+    PhotoStoreErrorCodeCouldntCreateSharedStore = 100,
+    PhotoStoreErrorCodeCouldntLoadImageProperties    ,
+    PhotoStoreErrorCodeIndexOutOfBounds              ,
+    PhotoStoreErrorCodeCouldntCreateStereogram
+};
 
     // How the stereogram should be viewed.
 enum PWViewModes {
@@ -19,10 +29,7 @@ enum PWViewModes {
 };
 
 
-// Most methods return an NSError *. These return nil on success or an NSError object on failure.
-
-// Methods that return something take an NSError* error argument. These methods return the object on success or nil on failure,
-// in which case they also set the *error to indicate what went wrong, if error is not NULL.
+// Methods take an NSError* error argument. These methods return the object on success or nil on failure, in which case they also set the *error to indicate what went wrong, if error is not NULL.  Methods that don't return a value return YES or NO and set *error.
 
 @interface PWPhotoStore : NSObject
 

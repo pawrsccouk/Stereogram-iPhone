@@ -9,7 +9,9 @@
 #import "PWAppDelegate.h"
 #import "PWPhotoViewController.h"
 #import "PWPhotoStore.h"
+#import "PWAlertView.h"
 #import "NSError_AlertSupport.h"
+#import "WelcomeViewController.h"
 
 @interface PWAppDelegate () {
     PWPhotoStore *_photoStore;
@@ -19,29 +21,59 @@
 
 @implementation PWAppDelegate
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
+-(BOOL)           application: (UIApplication *)application
+didFinishLaunchingWithOptions: (NSDictionary *)launchOptions {
     
-    NSError *error = nil;
-    _photoStore = [[PWPhotoStore alloc] init:&error];
-    if (!_photoStore) {
-        NSLog(@"Error creating the photo store: %@", error);
-        [error showAlertWithTitle:@"Startup error" parentViewController:self.window.rootViewController];
-    }
-    
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    if (self.window) {
+        
+            // Initialise the photo store, and capture any errors it returns.
+        NSError *error = nil;
+        _photoStore = [[PWPhotoStore alloc] init:&error];
+        if (_photoStore) {
+            
+            PWPhotoViewController *photoViewController = [[PWPhotoViewController alloc] init];
+            photoViewController.photoStore = _photoStore;
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:photoViewController];
+            
+                // If photoStore is empty after creation, push a special view controller which doesn't have a collection view, but instead has some welcome text. When the user takes the first photo, pop that welcome view controller to reveal the standard collection view.
+            if (_photoStore.count == 0) {
+                WelcomeViewController *welcomeViewController = [[WelcomeViewController alloc] init];
+                welcomeViewController.photoStore = _photoStore;
+                [navigationController pushViewController:welcomeViewController
+                                                animated:NO];
+            }
+            
+            self.window.rootViewController = navigationController;
+            self.window.backgroundColor = [UIColor whiteColor];
 
-    PWPhotoViewController *photoVC = [[PWPhotoViewController alloc] initWithPhotoStore:_photoStore];
-    UINavigationController *rootVC = [[UINavigationController alloc] initWithRootViewController:photoVC];
-    self.window.rootViewController = rootVC;
-    
-    self.window.backgroundColor = [UIColor whiteColor];
-    [self.window makeKeyAndVisible];
-    
-    
-    return YES;
+        } else {  // PhotoStore init failed.
+            [self terminateWithError:error];
+        }
+        [self.window makeKeyAndVisible];
+    }
+    return self.window != nil;
 }
+
+
+-(void) terminateWithError: (NSError *)error {
+    if (!error) {
+        error = [NSError errorWithDomain: PhotoStoreErrorDomain
+                                    code: PhotoStoreErrorCodeCouldntCreateSharedStore
+                                userInfo: @{ NSLocalizedDescriptionKey : @"Unknown error"}];
+    }
+    PWAlertView *alertView = [[PWAlertView alloc] initWithTitle:@""
+                                                        message:error.localizedDescription
+                                                 preferredStyle:UIAlertControllerStyleAlert];
+    PWAlertAction *closeAction = [PWAlertAction actionWithTitle:@"Terminate"
+                                                        handler:^(PWAlertAction *action) {
+                                                            NSLog(@"Error %@ caused this application to terminate.", error);
+                                                            abort();
+                                                        }];
+    [alertView addAction:closeAction];
+    [alertView show];
+}
+
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {

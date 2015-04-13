@@ -13,6 +13,7 @@
 #import "ThumbnailCache.h"
 #import "ImageManager.h"
 
+NSString *const PhotoStoreErrorDomain = @"PhotoStore";
 
     // Viewing method for the image.
 typedef NS_ENUM(NSUInteger, ViewingMethod) { ViewingMethodCrosseye, ViewingMethodWalleye };

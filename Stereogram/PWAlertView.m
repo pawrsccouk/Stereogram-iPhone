@@ -73,7 +73,7 @@ confirmButtonTitle:(NSString *)confirmTitle
 {
     NSString *buttonTitle = [alertview buttonTitleAtIndex:buttonIndex];
     PWAlertView_Action action = [buttonTitlesAndBlocks objectForKey:buttonTitle];
-    NSAssert(action, @"No action for button title [%@] at index %d", buttonTitle, buttonIndex);
+    NSAssert(action, @"No action for button title [%@] at index %ld", buttonTitle, (long)buttonIndex);
     if(action)
         action();
     [self.class removeAReference:self];

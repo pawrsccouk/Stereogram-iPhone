@@ -9,28 +9,40 @@
 #import "PWPhotoStore.h"
 #import "PWFunctional.h"
 #import "UIImage+Resize.h"
+#import "ErrorData.h"
+#import "ThumbnailCache.h"
+#import "ImageManager.h"
 
-    // Keys for the image properties.
-static NSString * const kPWImagePropertyOrientation   = @"Orientation",     // Portrait or Landscape.
-                * const kPWImagePropertyThumbnail     = @"Thumbnail",       // Image thumbnail.
-                * const kPWImagePropertyDateTaken     = @"DateTaken",       // Date original photo was taken.
-                * const kPWImagePropertyViewMode      = @"ViewMode",        // Crosseyed, Walleyed, Red/Green, Random-dot
-    // Keys for loading and saving.
-                * const kPWVersion                    = @"Version";         // Save file version.
 
     // Viewing method for the image.
-enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
+typedef NS_ENUM(NSUInteger, ViewingMethod) { ViewingMethodCrosseye, ViewingMethodWalleye };
 
-@interface PWPhotoStore ()
-{
-        // Key is image file path, Value is a dictionary of standard properties for the image.
-    NSMutableDictionary *imageProperties;
+static NSError *makeUnknownError() {
+    return [NSError errorWithDomain:kPWErrorDomainPhotoStore
+                               code:kPWErrorCodesUnknownError
+                           userInfo:@{ (NSString*)kCFErrorDescriptionKey : @"Unknown error" }];
+}
+
+static NSError *makeOutOfBoundsError(NSInteger index) {
+    NSString *errorText = [NSString stringWithFormat:@"Index %ld is out of bounds", (long)index];
+    return [NSError errorWithDomain:kPWErrorDomainPhotoStore
+                               code:kPWErrorCodesIndexOutOfBounds
+                           userInfo:@{ (NSString*)kCFErrorDescriptionKey : errorText }];
+}
+
+
+@interface PWPhotoStore () {
     
         // Path to the place where the photos are stored.
     NSString *photoFolderPath;
     
         // Path to the properties file for the photos.
     NSString *propertiesFilePath;
+    
+    NSMutableDictionary *imageProperties;
+    
+    ThumbnailCache *_thumbnailCache;
+    ImageManager *_imageManager;
 }
 
     // Array of thumbnail paths, in sorted order. Guaranteed to be consistent through the lifetime of the program.
@@ -43,14 +55,10 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
 
 -(instancetype)init: (NSError **)errorPtr {
     self = [super init];
-    if(self) {
+    if (self) {
 
-            // We want the clearCache method to be called when memory becomes low.
-        NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-        [nc addObserver:self
-               selector:@selector(clearCache:)
-                   name:UIApplicationDidReceiveMemoryWarningNotification
-                 object:nil];
+        _thumbnailCache = [[ThumbnailCache alloc] init];
+        _imageManager = [[ImageManager alloc] init];
         
         if (![self setup:errorPtr]) {
             return nil;
@@ -63,6 +71,10 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
     self = [self init:nil];
     NSAssert(NO, @"Don't use [init], use [init:] instead.");
     return self;
+}
+
+-(CGSize) thumbnailSize {
+    return _thumbnailCache.thumbnailSize;
 }
 
 -(BOOL) setup: (NSError **)errorPtr {
@@ -95,26 +107,6 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
     return ok;
 }
 
--(UIImage *) imageAtIndex: (NSUInteger)index error: (NSError**)error {
-    NSString *path = filePathForIndex(index, [self thumbnailPaths]);
-    if(! path) {
-        *error = makeOutOfBoundsError(index);
-        return nil;
-    }
-    UIImage *image = [self imageFromFile:path error:error];
-    return image;
-}
-
-
--(UIImage *) thumbnailAtIndex: (NSUInteger)index
-                        error: (NSError **)error {
-    NSString *path = filePathForIndex(index, [self thumbnailPaths]);
-    UIImage  *thumb = imageProperties[path][kPWImagePropertyThumbnail];
-    if(thumb) return thumb;
-    
-    UIImage *image = [self imageFromFile:path error:error];
-    return image ? [self addThumbnailToCache:image forKey:path] : nil;
-}
 
 -(BOOL) addImage: (UIImage *)image
        dateTaken: (NSDate *)dateTaken
@@ -125,7 +117,7 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
     BOOL written = [fileData writeToFile:filePath options:NSDataWritingAtomic error:&error];
     if(written) {
         imageProperties[filePath] = [NSMutableDictionary dictionaryWithObject:dateTaken forKey:kPWImagePropertyDateTaken];
-        [self addThumbnailToCache:image forKey:filePath];
+        [_thumbnailCache addThumbnailForImage:image forKey:filePath];
         return nil;
     }
     return error ? error : makeUnknownError();
@@ -144,7 +136,7 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
         return error;
     
         // Update the thumbnail to show the new image.
-    [self addThumbnailToCache:newImage forKey:filePath];
+    [_thumbnailCache addThumbnailForImage:newImage forKey:filePath];
     return nil;
 }
 
@@ -172,44 +164,8 @@ enum ViewingMethod { viewingMethodCrosseye, viewingMethodWalleye };
     return error ? error : makeUnknownError();
 };
 
-   // Function to return half an image.
-typedef NS_ENUM(NSUInteger, WhichHalf) { RightHalf, LeftHalf };
-static UIImage *getHalfOfImage(UIImage * image, WhichHalf whichHalf) {
-    CGRect rectToKeep = (whichHalf == LeftHalf) ? CGRectMake(0, 0, image.size.width / 2.0, image.size.height)
-                                                : CGRectMake(image.size.width / 2.0, 0, image.size.width / 2.0, image.size.height );
-    
-    CGImageRef imgPartRef = CGImageCreateWithImageInRect(image.CGImage, rectToKeep);
-    UIImage *imgPart = [UIImage imageWithCGImage:imgPartRef];
-    CGImageRelease(imgPartRef);
-    return imgPart;
-};
 
--(BOOL) changeViewingMethod: (NSUInteger)index
-                      error: (NSError **)errorPtr {
-    UIImage *image = [self imageAtIndex:index error:errorPtr];
-    if(image) {
-        UIImage *swappedImage = [self makeStereogramWith:getHalfOfImage(image, RightHalf)
-                                                     and:getHalfOfImage(image, LeftHalf)];
-        NSAssert(CGSizeEqualToSize(swappedImage.size, image.size), @"Error swapping the image. Size (%f,%f) doesn't match original (%f, %f)",
-                 swappedImage.size.width, swappedImage.size.height, image.size.width, image.size.height);
 
-        [self replaceImageAtIndex:index withImage:swappedImage error:errorPtr];
-        return YES; // Success
-    }
-        // If we reach here something went wrong. Return what.
-    if (errorPtr && !*errorPtr) {
-        *errorPtr = makeUnknownError();
-    }
-    return NO;
-}
-
-    // Called by the notification centre when it receives a low-memory warning notification.
--(void) clearCache: (NSNotification*)notification {
-        // Remove all the thumbnails.
-    for(NSString *key in imageProperties) {
-        [imageProperties[key] removeObjectForKey:kPWImagePropertyThumbnail];
-    }
-}
 
 -(NSUInteger) count {
     NSAssert(imageProperties, @"imageProperties not created.");
@@ -217,27 +173,7 @@ static UIImage *getHalfOfImage(UIImage * image, WhichHalf whichHalf) {
 }
 
 
--(NSUInteger) thumbnailSize {
-    return 100;
-}
 
--(UIImage *) makeStereogramWith: (UIImage *)leftPhoto
-                            and: (UIImage *)rightPhoto {
-    NSAssert(leftPhoto.scale == rightPhoto.scale, @"Image scales %f and %f need to be the same.", leftPhoto.scale, rightPhoto.scale);
-    CGSize stereogramSize = CGSizeMake(leftPhoto.size.width + rightPhoto.size.width, MAX(leftPhoto.size.height, rightPhoto.size.height));
-    UIImage *stereogram = nil;
-    UIGraphicsBeginImageContextWithOptions(stereogramSize, NO, leftPhoto.scale);
-    @try {
-        [leftPhoto drawAtPoint:CGPointMake(0, 0)];
-        [rightPhoto drawAtPoint:CGPointMake(leftPhoto.size.width, 0)];
-        stereogram = UIGraphicsGetImageFromCurrentImageContext();
-    }
-    @finally {
-        UIGraphicsEndImageContext();
-    }
-    NSAssert(stereogram, @"Stereogram not created.");
-    return stereogram;
-}
 
 
 - (NSString *) description {
@@ -246,18 +182,32 @@ static UIImage *getHalfOfImage(UIImage * image, WhichHalf whichHalf) {
     return desc;
 }
 
+
+-(UIImage *) imageAtIndex: (NSUInteger)index
+                    error: (NSError**)errorPtr {
+    NSString *path = filePathForIndex(index, [self thumbnailPaths]);
+    if(! path) {
+        *errorPtr = makeOutOfBoundsError(index);
+        return nil;
+    }
+    UIImage *image = [ImageManager imageFromFile:path error:errorPtr];
+    return image;
+}
+
+
+-(UIImage *) thumbnailAtIndex: (NSUInteger)index
+                        error: (NSError **)errorPtr {
+    
+    NSString *path = filePathForIndex(index, [self thumbnailPaths]);
+    return [_thumbnailCache thumbnailForKey:path error:errorPtr];
+}
+
 #pragma mark - Private methods
 
 -(NSArray *) thumbnailPaths {
         // Note: Candidate for cacheing if speed becomes a problem.
     NSAssert(imageProperties, @"imageProperties hasn't been created.");
     return [imageProperties.allKeys sortedArrayUsingSelector:@selector(compare:)];
-}
-
--(UIImage*) imageFromFile: (NSString*)filePath
-                    error: (NSError**)error {
-    NSAssert(filePath && [[NSFileManager defaultManager] fileExistsAtPath:filePath], @"filePath [%@] does not point to a file.", filePath);
-    return [UIImage imageWithData:[NSData dataWithContentsOfFile:filePath options:0 error:error]];
 }
 
 
@@ -270,23 +220,10 @@ static NSString *filePathForIndex(NSUInteger index, NSArray *storedFilenames) {
 }
 
 
-static NSError *makeUnknownError() {
-    return [NSError errorWithDomain:kPWErrorDomainPhotoStore
-                               code:kPWErrorCodesUnknownError
-                           userInfo:@{ (NSString*)kCFErrorDescriptionKey : @"Unknown error" }];
-}
-
-static NSError *makeOutOfBoundsError(NSInteger index) {
-    NSString *errorText = [NSString stringWithFormat:@"Index %ld is out of bounds", (long)index];
-    return [NSError errorWithDomain:kPWErrorDomainPhotoStore
-                               code:kPWErrorCodesIndexOutOfBounds
-                           userInfo:@{ (NSString*)kCFErrorDescriptionKey : errorText }];
-}
-
 static NSMutableDictionary *loadImageProperties(NSString *propertiesFilePath) {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithContentsOfFile:propertiesFilePath];
         // If the dict exists, check if the version ID is valid.
-    if(dictionary) {
+    if (dictionary) {
         NSCAssert( [dictionary[kPWVersion] isEqual:@1.0], @"Invalid data version %@", dictionary[kPWVersion]);
             // Remove the version once the file has passed the check.
             // If we use a later version then I may have to massage data here (i.e. for backward compatibility).
@@ -340,19 +277,6 @@ static NSSet *loadImageFilenames(NSString *photoFolderPath, NSError **errorPtr) 
 }
 
 
--(UIImage *)addThumbnailToCache:(UIImage *)image
-                         forKey:(id<NSCopying>)key {
-        // The thumbnail should be of one half of the image, so the user can recognise it.
-    UIImage *leftHalf = getHalfOfImage(image, LeftHalf);
-    UIImage *thumbnail = [leftHalf thumbnailImage:[self thumbnailSize] transparentBorder:0 cornerRadius:0 interpolationQuality:kCGInterpolationLow];
-    NSMutableDictionary *properties = imageProperties[key];
-    if(! properties) {
-        properties = [NSMutableDictionary dictionary];
-        imageProperties[key] = properties;
-    }
-    properties[kPWImagePropertyThumbnail] = thumbnail;
-    return thumbnail;
-}
 
 static NSString *photoFolder(NSError **errorPtr) {
     NSArray *folders = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);

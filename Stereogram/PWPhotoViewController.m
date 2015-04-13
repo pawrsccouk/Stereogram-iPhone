@@ -16,6 +16,7 @@
 #import "PWAlertView.h"
 #import "PWActionSheet.h"
 #import "UIImage+Resize.h"
+#import "ImageManager.h"
 
 static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail";
 
@@ -26,6 +27,7 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
     UIImage *_stereogram;
     UIActivityIndicatorView *_activityIndicator;
     PWPhotoStore *_photoStore;
+    PWActionSheet *_actionSheet;
 }
 @end
 
@@ -35,6 +37,7 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
     self = [super initWithNibName:@"PWPhotoView" bundle:nil];
     if (self) {
         _photoStore = photoStore;
+        _actionSheet = nil;
         _cameraOverlayController = [[PWCameraOverlayViewController alloc] init];
         _stereogram = nil;
 
@@ -73,7 +76,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     
         // Set the thumbnail size from the store.
     UICollectionViewFlowLayout *flowLayout = cast_UICollectionViewFlowLayout(photoCollection.collectionViewLayout);
-    flowLayout.itemSize = CGSizeMake(_photoStore.thumbnailSize, _photoStore.thumbnailSize);
+    flowLayout.itemSize = _photoStore.thumbnailSize;
     [flowLayout invalidateLayout];
 }
 
@@ -120,12 +123,12 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     photoGalleryButtonText : ^{ copyPhotosToCameraRoll(_photoStore, photoCollection); },
     methodButtonText       : ^{ [self changeViewingMethod];              },
     };
-    PWActionSheet *actionSheet = [[PWActionSheet alloc] initWithTitle:@"Action"
-                                                buttonTitlesAndBlocks:titlesAndActions
-                                                    cancelButtonTitle:cancelButtonText
-                                               destructiveButtonTitle:deleteButtonText];
-    [actionSheet showFromBarButtonItem:_exportItem
-                              animated:YES];
+    _actionSheet = [[PWActionSheet alloc] initWithTitle:@"Action"
+                                  buttonTitlesAndBlocks:titlesAndActions
+                                      cancelButtonTitle:cancelButtonText
+                                 destructiveButtonTitle:deleteButtonText];
+    [_actionSheet showFromBarButtonItem:_exportItem
+                               animated:YES];
 }
 
 
@@ -187,7 +190,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 #pragma mark - ImagePicker delegate
 
 static UIImage *makeStereogram(PWPhotoStore *photoStore, UIImage *firstPhoto, UIImage *secondPhoto) {
-    UIImage *stereogram = [photoStore makeStereogramWith:firstPhoto and:secondPhoto];
+    UIImage *stereogram = [ImageManager makeStereogramWith:firstPhoto and:secondPhoto];
         // Halve the stereogram size as otherwise these end up way too big, since we've doubled the width of the image.
         // TODO: Make this an option to be checked in the preferences.
     return [stereogram resizedImage:CGSizeMake(stereogram.size.width / 2, stereogram.size.height / 2)
@@ -345,7 +348,8 @@ static void copyPhotosToCameraRoll(PWPhotoStore *photoStore, UICollectionView *p
         for (NSIndexPath *indexPath in selectedItems) {
             NSAssert([indexPath indexAtPosition:0] == 0, @"Index Path %@ not for section 0", indexPath);
             NSError *error = nil;
-            if (![_photoStore changeViewingMethod:[indexPath indexAtPosition:1] error:&error]) {    // Index path has format [<section>, <item>].
+            UIImage *image = [_photoStore imageAtIndex:[indexPath indexAtPosition:1] error:&error];
+            if (![ImageManager changeViewingMethod:image]) {    // Index path has format [<section>, <item>].
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [error showAlertWithTitle:@"Error changing viewing method"];
                     [self showActivityIndicator:NO];

@@ -80,18 +80,19 @@ destructiveButtonTitle:(NSString *)destructTitle
         destructiveButtonTitle:destructTitle];
 }
 
--(void)showFromBarButtonItem:(UIBarButtonItem *)barButtonItem animated:(BOOL)animated
+-(void)showFromBarButtonItem:(UIBarButtonItem *)barButtonItem
+                    animated:(BOOL)animated
 {
-    [self.class keepAReference:self];
+//    [self.class keepAReference:self];
     NSAssert(actionSheet.delegate == self, @"Delegate %@ is not self", actionSheet.delegate);
     [actionSheet showFromBarButtonItem:barButtonItem animated:animated];
 }
 
 #pragma mark - Action Sheet delegate
 
--(void)actionSheet:(UIActionSheet *)sheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    @try {
+-(void)  actionSheet:(UIActionSheet *)sheet
+clickedButtonAtIndex:(NSInteger)buttonIndex {
+//    @try {
             // If the user didn't specify a cancel handler, the system can trigger a cancel anyway under some conditions
             // e.g. user clicks outside the popover on an iPad. In that case the system should return the cancel index, but it
             // actually returns -1. Handle both these conditions.
@@ -101,35 +102,35 @@ destructiveButtonTitle:(NSString *)destructTitle
             // Otherwise the user clicked a button. Get the action for that button and execute it.
         NSString *buttonTitle = [sheet buttonTitleAtIndex:buttonIndex];
         PWActionSheet_Action action = [buttonTitlesAndBlocks objectForKey:buttonTitle];
-        NSAssert(action, @"No action found for button title [%@] index %d", buttonTitle, buttonIndex);
+        NSAssert(action, @"No action found for button title [%@] index %ld", buttonTitle, (long)buttonIndex);
         if(action)
             action();
-    }
-    @finally {
-        [self.class removeAReference:self];
-    }
+//    }
+//    @finally {
+//        [self.class removeAReference:self];
+//    }
 }
 
-#pragma mark - Private methods
-
-// These three are used to ensure there is always a strong reference to the sheet and it'll not go out of scope.
-// I'll add a reference when the sheet is shown, and remove it when a button is selected.
-+(NSMutableArray*)arrayOfActiveSheets
-{
-    static NSMutableArray *activeSheets = nil;
-    if(!activeSheets)
-        activeSheets = [NSMutableArray array];
-    return activeSheets;
-}
-
-+(void)keepAReference:(PWActionSheet*)sheet
-{
-    [[self arrayOfActiveSheets] addObject:sheet];
-}
-
-+(void)removeAReference:(PWActionSheet*)sheet
-{
-    [[self arrayOfActiveSheets] removeObject:sheet];
-}
+//#pragma mark - Private methods
+//
+//// These three are used to ensure there is always a strong reference to the sheet and it'll not go out of scope.
+//// I'll add a reference when the sheet is shown, and remove it when a button is selected.
+//+(NSMutableArray*)arrayOfActiveSheets
+//{
+//    static NSMutableArray *activeSheets = nil;
+//    if(!activeSheets)
+//        activeSheets = [NSMutableArray array];
+//    return activeSheets;
+//}
+//
+//+(void)keepAReference:(PWActionSheet*)sheet
+//{
+//    [[self arrayOfActiveSheets] addObject:sheet];
+//}
+//
+//+(void)removeAReference:(PWActionSheet*)sheet
+//{
+//    [[self arrayOfActiveSheets] removeObject:sheet];
+//}
 
 @end

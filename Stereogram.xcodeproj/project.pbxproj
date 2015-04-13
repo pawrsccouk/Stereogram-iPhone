@@ -32,6 +32,9 @@
 		57B650E61780C57C00743FF3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082A16AC2DCD00907CBE /* Foundation.framework */; };
 		57B650EC1780C57D00743FF3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 57B650EA1780C57D00743FF3 /* InfoPlist.strings */; };
 		57B650EF1780C57D00743FF3 /* Stereogram_Unit_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B650EE1780C57D00743FF3 /* Stereogram_Unit_Tests.m */; };
+		57DE76401AD833FB000F9CF0 /* ImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE763F1AD833FB000F9CF0 /* ImageManager.m */; };
+		57DE76431AD83579000F9CF0 /* ThumbnailCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE76421AD83579000F9CF0 /* ThumbnailCache.m */; };
+		57DE76461AD838F7000F9CF0 /* ErrorData.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE76451AD838F7000F9CF0 /* ErrorData.m */; };
 		57F1082916AC2DCD00907CBE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082816AC2DCD00907CBE /* UIKit.framework */; };
 		57F1082B16AC2DCD00907CBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082A16AC2DCD00907CBE /* Foundation.framework */; };
 		57F1082D16AC2DCD00907CBE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082C16AC2DCD00907CBE /* CoreGraphics.framework */; };
@@ -89,6 +92,12 @@
 		57B650ED1780C57D00743FF3 /* Stereogram_Unit_Tests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Stereogram_Unit_Tests.h; sourceTree = "<group>"; };
 		57B650EE1780C57D00743FF3 /* Stereogram_Unit_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Stereogram_Unit_Tests.m; sourceTree = "<group>"; };
 		57B650F01780C57D00743FF3 /* Stereogram Unit Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Stereogram Unit Tests-Prefix.pch"; sourceTree = "<group>"; };
+		57DE763E1AD833FB000F9CF0 /* ImageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageManager.h; sourceTree = "<group>"; };
+		57DE763F1AD833FB000F9CF0 /* ImageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageManager.m; sourceTree = "<group>"; };
+		57DE76411AD83579000F9CF0 /* ThumbnailCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailCache.h; sourceTree = "<group>"; };
+		57DE76421AD83579000F9CF0 /* ThumbnailCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailCache.m; sourceTree = "<group>"; };
+		57DE76441AD838F7000F9CF0 /* ErrorData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorData.h; sourceTree = "<group>"; };
+		57DE76451AD838F7000F9CF0 /* ErrorData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorData.m; sourceTree = "<group>"; };
 		57F1082416AC2DCD00907CBE /* Stereogram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stereogram.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		57F1082816AC2DCD00907CBE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		57F1082A16AC2DCD00907CBE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -167,8 +176,14 @@
 		577108F116B9E064007D32DA /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				57DE763E1AD833FB000F9CF0 /* ImageManager.h */,
+				57DE763F1AD833FB000F9CF0 /* ImageManager.m */,
 				57F1084A16AC300400907CBE /* PWPhotoStore.h */,
 				57F1084B16AC300400907CBE /* PWPhotoStore.m */,
+				57DE76411AD83579000F9CF0 /* ThumbnailCache.h */,
+				57DE76421AD83579000F9CF0 /* ThumbnailCache.m */,
+				57DE76441AD838F7000F9CF0 /* ErrorData.h */,
+				57DE76451AD838F7000F9CF0 /* ErrorData.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -338,7 +353,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = PW;
-				LastTestingUpgradeCheck = 0620;
+				LastTestingUpgradeCheck = 0630;
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Patrick Wallace";
 			};
@@ -428,6 +443,7 @@
 			files = (
 				57F1083516AC2DCD00907CBE /* main.m in Sources */,
 				57F1083916AC2DCD00907CBE /* PWAppDelegate.m in Sources */,
+				57DE76461AD838F7000F9CF0 /* ErrorData.m in Sources */,
 				57F1084816AC2EC600907CBE /* PWPhotoViewController.m in Sources */,
 				57F1084C16AC300400907CBE /* PWPhotoStore.m in Sources */,
 				57640F3216ADE6EC00A94EC8 /* NSError_AlertSupport.m in Sources */,
@@ -438,6 +454,8 @@
 				577108E016B3A76A007D32DA /* UIImage+Alpha.m in Sources */,
 				577108E116B3A76A007D32DA /* UIImage+Resize.m in Sources */,
 				577108E216B3A76A007D32DA /* UIImage+RoundedCorner.m in Sources */,
+				57DE76431AD83579000F9CF0 /* ThumbnailCache.m in Sources */,
+				57DE76401AD833FB000F9CF0 /* ImageManager.m in Sources */,
 				577108EC16B8B5CB007D32DA /* PWAlertView.m in Sources */,
 				577108EF16B8CC1E007D32DA /* PWActionSheet.m in Sources */,
 			);

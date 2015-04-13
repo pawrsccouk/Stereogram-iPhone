@@ -43,6 +43,7 @@ destructiveButtonTitle:(NSString*)destructTitle
 
 // Passed through to the underlying UIAlertView.
 
--(void) showFromBarButtonItem:(UIBarButtonItem*)barButtonItem animated:(BOOL)animated;
+-(void) showFromBarButtonItem:(UIBarButtonItem*)barButtonItem
+                     animated:(BOOL)animated;
 
 @end

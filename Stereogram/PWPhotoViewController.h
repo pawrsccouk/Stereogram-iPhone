@@ -11,7 +11,6 @@
 
 @interface PWPhotoViewController : UIViewController <UIImagePickerControllerDelegate,
                                                      UINavigationControllerDelegate,
-                                                     UICollectionViewDataSource,
                                                      UICollectionViewDelegate>
 {
     IBOutlet UICollectionView __weak *photoCollection;

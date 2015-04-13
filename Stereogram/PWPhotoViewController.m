@@ -17,6 +17,7 @@
 #import "PWActionSheet.h"
 #import "UIImage+Resize.h"
 #import "ImageManager.h"
+#import "CollectionViewThumbnailProvider.h"
 
 static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail";
 
@@ -28,6 +29,7 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
     UIActivityIndicatorView *_activityIndicator;
     PWPhotoStore *_photoStore;
     PWActionSheet *_actionSheet;
+    CollectionViewThumbnailProvider *_thumbnailProvider;
 }
 @end
 
@@ -40,7 +42,7 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
         _actionSheet = nil;
         _cameraOverlayController = [[PWCameraOverlayViewController alloc] init];
         _stereogram = nil;
-
+        _thumbnailProvider = nil;
         UIBarButtonItem *takePhotoItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
                                                                                        target:self
                                                                                        action:@selector(takePicture)];
@@ -78,6 +80,10 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     UICollectionViewFlowLayout *flowLayout = cast_UICollectionViewFlowLayout(photoCollection.collectionViewLayout);
     flowLayout.itemSize = _photoStore.thumbnailSize;
     [flowLayout invalidateLayout];
+
+        // Pass a provider to copy data from the model to the collection view.
+    _thumbnailProvider = [[CollectionViewThumbnailProvider alloc] initWithPhotoStore:_photoStore
+                                                                          collection:photoCollection];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -235,30 +241,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info {
 -(void) imagePickerControllerDidCancel: (UIImagePickerController *)picker {
     [picker dismissViewControllerAnimated:YES completion:nil];
     _firstPhoto = nil;
-}
-
-#pragma mark - UICollectionView data source
-
--(NSInteger) numberOfSectionsInCollectionView: (UICollectionView *)collectionView {
-    return 1;
-}
-
--(NSInteger) collectionView: (UICollectionView *)collectionView numberOfItemsInSection: (NSInteger)section {
-    NSAssert(section == 0, @"There should only be 1 section in our collection view, but section was %ld", (long)section);
-    return _photoStore.count;
-}
-
--(UICollectionViewCell *) collectionView: (UICollectionView *)collectionView cellForItemAtIndexPath: (NSIndexPath *)indexPath {
-    PWImageThumbnailCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:IMAGE_THUMBNAIL_CELL_ID forIndexPath:indexPath];
-    // Populate the cell
-    NSError *error = nil;
-    UIImage *image = [_photoStore thumbnailAtIndex:indexPath.item error:&error];
-    if(!image && error) {
-        NSLog(@"Error retrieving image at index %ld from photoStore %@, indexPath %@", (long)indexPath.item, _photoStore, indexPath);
-        NSLog(@"Error was %@ (%@)", error, error.userInfo);
-    }
-    cell.image = image;
-    return cell;
 }
 
 #pragma mark - UICollectionView delegate

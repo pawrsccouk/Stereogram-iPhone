@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5713AA041ADB6B84006A0718 /* CollectionViewThumbnailProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 5713AA031ADB6B84006A0718 /* CollectionViewThumbnailProvider.m */; };
 		572CB27216B19069002CB1B9 /* PWCameraOverlayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 572CB27116B19069002CB1B9 /* PWCameraOverlayView.xib */; };
 		572CB27516B1931B002CB1B9 /* Crosshair.png in Resources */ = {isa = PBXBuildFile; fileRef = 572CB27416B1931B002CB1B9 /* Crosshair.png */; };
 		572CB27816B1936D002CB1B9 /* PWCameraOverlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 572CB27716B1936D002CB1B9 /* PWCameraOverlayViewController.m */; };
@@ -55,6 +56,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5713AA021ADB6B84006A0718 /* CollectionViewThumbnailProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionViewThumbnailProvider.h; sourceTree = "<group>"; };
+		5713AA031ADB6B84006A0718 /* CollectionViewThumbnailProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionViewThumbnailProvider.m; sourceTree = "<group>"; };
 		572CB27116B19069002CB1B9 /* PWCameraOverlayView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PWCameraOverlayView.xib; sourceTree = "<group>"; };
 		572CB27416B1931B002CB1B9 /* Crosshair.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Crosshair.png; sourceTree = "<group>"; };
 		572CB27616B1936D002CB1B9 /* PWCameraOverlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWCameraOverlayViewController.h; sourceTree = "<group>"; };
@@ -275,6 +278,8 @@
 				577108EB16B8B5CA007D32DA /* PWAlertView.m */,
 				577108ED16B8CC1D007D32DA /* PWActionSheet.h */,
 				577108EE16B8CC1E007D32DA /* PWActionSheet.m */,
+				5713AA021ADB6B84006A0718 /* CollectionViewThumbnailProvider.h */,
+				5713AA031ADB6B84006A0718 /* CollectionViewThumbnailProvider.m */,
 				57640F2F16ADE68B00A94EC8 /* NSError_AlertSupport.h */,
 				57640F3116ADE6EC00A94EC8 /* NSError_AlertSupport.m */,
 				57F1082F16AC2DCD00907CBE /* Supporting Files */,
@@ -445,6 +450,7 @@
 				57F1083916AC2DCD00907CBE /* PWAppDelegate.m in Sources */,
 				57DE76461AD838F7000F9CF0 /* ErrorData.m in Sources */,
 				57F1084816AC2EC600907CBE /* PWPhotoViewController.m in Sources */,
+				5713AA041ADB6B84006A0718 /* CollectionViewThumbnailProvider.m in Sources */,
 				57F1084C16AC300400907CBE /* PWPhotoStore.m in Sources */,
 				57640F3216ADE6EC00A94EC8 /* NSError_AlertSupport.m in Sources */,
 				57640F3D16AF399400A94EC8 /* PWImageThumbnailCell.m in Sources */,

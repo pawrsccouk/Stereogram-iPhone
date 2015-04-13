@@ -15,8 +15,8 @@
                     error: (NSError**)errorPtr;
 
     /// Copies leftPhoto and rightPhoto to make a single image.
-+(UIImage *) makeStereogramWith: (UIImage *)leftPhoto
-                            and: (UIImage *)rightPhoto;
++(UIImage *) makeStereogramWithLeftPhoto: (UIImage *)leftPhoto
+                              rightPhoto: (UIImage *)rightPhoto;
 
     /// Toggles the viewing method from crosseye to walleye and back for the image at position <index>.
 +(UIImage *) changeViewingMethod: (UIImage *)sourceImage;

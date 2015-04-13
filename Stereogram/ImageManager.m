@@ -17,8 +17,8 @@
     return [UIImage imageWithData:[NSData dataWithContentsOfFile:filePath options:0 error:errorPtr]];
 }
 
-+(UIImage *) makeStereogramWith: (UIImage *)leftPhoto
-                            and: (UIImage *)rightPhoto {
++(UIImage *) makeStereogramWithLeftPhoto: (UIImage *)leftPhoto
+                              rightPhoto: (UIImage *)rightPhoto {
     NSAssert(leftPhoto.scale == rightPhoto.scale, @"Image scales %f and %f need to be the same.", leftPhoto.scale, rightPhoto.scale);
     CGSize stereogramSize = CGSizeMake(leftPhoto.size.width + rightPhoto.size.width, MAX(leftPhoto.size.height, rightPhoto.size.height));
     UIImage *stereogram = nil;
@@ -37,8 +37,8 @@
 
 +(UIImage *) changeViewingMethod: (UIImage *)sourceImage {
     if (sourceImage) {
-        UIImage *swappedImage = [self makeStereogramWith:[self getHalfOfImage:sourceImage whichHalf:RightHalf]
-                                                     and:[self getHalfOfImage:sourceImage whichHalf:LeftHalf]];
+        UIImage *swappedImage = [self makeStereogramWithLeftPhoto:[self getHalfOfImage:sourceImage whichHalf:RightHalf]
+                                                       rightPhoto:[self getHalfOfImage:sourceImage whichHalf:LeftHalf]];
         NSAssert(CGSizeEqualToSize(swappedImage.size, sourceImage.size), @"Error swapping the image. Size (%f,%f) doesn't match original (%f, %f)",
                  swappedImage.size.width, swappedImage.size.height, sourceImage.size.width, sourceImage.size.height);
         return swappedImage;

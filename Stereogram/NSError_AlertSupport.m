@@ -11,17 +11,18 @@
 
 @implementation NSError (AlertSupport)
 
-    // Shows the error text in an alert window, with a "Close" button.
--(void) showAlertWithTitle: (NSString *)title {
+-(void) showAlertWithTitle: (NSString *)title
+      parentViewController: (UIViewController *)parentViewController {
     NSString *errorText = self.helpAnchor ? self.helpAnchor
-                                          : self.localizedFailureReason ? self.localizedFailureReason
-                                                                        : self.localizedDescription;
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                        message:errorText
-                                                       delegate:nil
-                                              cancelButtonTitle:@"Close"
-                                              otherButtonTitles:nil];
-    [alertView show];
+    : self.localizedFailureReason ? self.localizedFailureReason
+    : self.localizedDescription;
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
+                                                                             message:errorText
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+
+    [parentViewController presentViewController:alertController
+                                       animated:YES
+                                     completion:nil];
 }
 
 @end

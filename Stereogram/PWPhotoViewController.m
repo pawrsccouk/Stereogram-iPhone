@@ -21,28 +21,35 @@
 
 static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail";
 
+static NSString *formatDeleteMessage(NSUInteger numToDelete);
+static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id layout);
+static inline UIImage *imageFromPickerInfoDict(NSDictionary *infoDict);
+
+#pragma mark - 
+
 @interface PWPhotoViewController () {
     PWCameraOverlayViewController *_cameraOverlayController;
     UIBarButtonItem *_exportItem, *_editItem;
-    UIImage *_firstPhoto;
-    UIImage *_stereogram;
+    UIImage *_firstPhoto, *_stereogram;
     UIActivityIndicatorView *_activityIndicator;
-    PWPhotoStore *_photoStore;
-    PWActionSheet *_actionSheet;
     CollectionViewThumbnailProvider *_thumbnailProvider;
+    PWAlertView *_alertView;
+    PWActionSheet *_actionSheet;
 }
 @end
 
 @implementation PWPhotoViewController
+@synthesize photoStore = _photoStore;
 
 -(instancetype) initWithPhotoStore: (PWPhotoStore *)photoStore {
     self = [super initWithNibName:@"PWPhotoView" bundle:nil];
     if (self) {
         _photoStore = photoStore;
-        _actionSheet = nil;
         _cameraOverlayController = [[PWCameraOverlayViewController alloc] init];
         _stereogram = nil;
         _thumbnailProvider = nil;
+        _actionSheet = nil;
+        _alertView = nil;
         UIBarButtonItem *takePhotoItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
                                                                                        target:self
                                                                                        action:@selector(takePicture)];
@@ -58,40 +65,34 @@ static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail"
 }
 
 -(instancetype) init {
-    self = [self initWithPhotoStore:nil];
-    NSAssert(NO, @"PWPhotoViewController init: Use initWithPhotoStore: instead.");
-    return nil;
+    return [self initWithPhotoStore:nil];
 }
 
-static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id layout) {
-    NSCAssert([layout isKindOfClass:[UICollectionViewFlowLayout class]], @"Photo collection layout is not a flow layout");
-    return (UICollectionViewFlowLayout *)layout;
-}
-
-- (void)viewDidLoad {
+- (void) viewDidLoad {
     [super viewDidLoad];
     NSLog(@"PWPhotoViewController viewDidLoad self = %@", self);
     
-    [photoCollection registerClass:[PWImageThumbnailCell class] forCellWithReuseIdentifier:IMAGE_THUMBNAIL_CELL_ID];
-    photoCollection.allowsSelection = YES;
-    photoCollection.allowsMultipleSelection = YES;
+    [photoCollectionView registerClass:[PWImageThumbnailCell class] forCellWithReuseIdentifier:IMAGE_THUMBNAIL_CELL_ID];
+    photoCollectionView.allowsSelection = YES;
+    photoCollectionView.allowsMultipleSelection = YES;
     
         // Set the thumbnail size from the store.
-    UICollectionViewFlowLayout *flowLayout = cast_UICollectionViewFlowLayout(photoCollection.collectionViewLayout);
+    UICollectionViewFlowLayout *flowLayout = cast_UICollectionViewFlowLayout(photoCollectionView.collectionViewLayout);
     flowLayout.itemSize = _photoStore.thumbnailSize;
     [flowLayout invalidateLayout];
 
         // Pass a provider to copy data from the model to the collection view.
     _thumbnailProvider = [[CollectionViewThumbnailProvider alloc] initWithPhotoStore:_photoStore
-                                                                          collection:photoCollection];
+                                                                          collection:photoCollectionView];
 }
 
-- (void)didReceiveMemoryWarning {
+- (void) didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
--(void)takePicture {
+    /// Kick off the picture-taking process. Present the camera view controller with our custom overlay on top.
+-(void) takePicture {
     if (! [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:@"No camera"
                                                             message:@"This device does not have a camera attached."
@@ -118,85 +119,106 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     [self presentViewController:imagePickerController animated:YES completion:nil];
 }
 
-
+    /// Create and display an action menu with the items available for a set of the collection items.
 -(void) actionMenu {
-    NSString * const photoGalleryButtonText = @"Copy to photo gallery",
-             * const deleteButtonText = @"Delete", * const methodButtonText = @"Change viewing method",
-             * const cancelButtonText = @"Cancel";
-    NSDictionary *titlesAndActions = @{
-    cancelButtonText       : ^{  },
-    deleteButtonText       : ^{ deletePhotos(_photoStore, photoCollection);           },
-    photoGalleryButtonText : ^{ copyPhotosToCameraRoll(_photoStore, photoCollection); },
-    methodButtonText       : ^{ [self changeViewingMethod];              },
+    PWAction *cancelAction = [PWAction cancelAction];
+    
+    PWActionHandler deleteBlock = ^(PWAction *action) {
+        [self deletePhotos:photoCollectionView];
     };
-    _actionSheet = [[PWActionSheet alloc] initWithTitle:@"Action"
-                                  buttonTitlesAndBlocks:titlesAndActions
-                                      cancelButtonTitle:cancelButtonText
-                                 destructiveButtonTitle:deleteButtonText];
+    PWAction *deleteAction = [PWAction actionWithTitle:@"Delete"
+                                                 style:UIAlertActionStyleDestructive
+                                               handler:deleteBlock];
+    
+    
+    PWActionHandler copyBlock = ^(PWAction *action) {
+        [self copyPhotosToCameraRoll:photoCollectionView.indexPathsForSelectedItems];
+    };
+    PWAction *copyAction = [PWAction actionWithTitle:@"Copy to gallery"
+                                             handler:copyBlock];
+    
+    
+    _actionSheet = [[PWActionSheet alloc] initWithTitle:@"Select an action"];
+    [_actionSheet addActions:@[cancelAction, deleteAction, copyAction]];
     [_actionSheet showFromBarButtonItem:_exportItem
                                animated:YES];
 }
 
-
+    /// Called when we want to edit the collection view. Overridden so we can clear the selection when editing ends.
 -(void) setEditing: (BOOL)editing {
     [super setEditing:editing];
         // On turning off the editing option, clear the selection.
     if(!editing) {
-        for (NSIndexPath *path in photoCollection.indexPathsForSelectedItems) {
-            [photoCollection deselectItemAtIndexPath:path animated:NO];
+        for (NSIndexPath *path in photoCollectionView.indexPathsForSelectedItems) {
+            [photoCollectionView deselectItemAtIndexPath:path animated:NO];
         }
     }
 }
 
-    // Present an image view showing the image at the given index path.
+    /// Present a FullImageViewController in "View" mode showing the image at the given index path.
 -(void) showImageAtIndexPath: (NSIndexPath*)indexPath {
     NSError *error;
     UIImage *image = [_photoStore imageAtIndex:indexPath.item error:&error];
     if (image) {
-        PWFullImageViewController *imageViewController = [[PWFullImageViewController alloc] initWithImage:image forApproval:NO];
+        PWFullImageViewController *imageViewController = [[PWFullImageViewController alloc] initWithImage:image
+                                                                                              atIndexPath:indexPath
+                                                                                                 delegate:self];
         [self.navigationController pushViewController:imageViewController animated:YES];
     } else {
-        [error showAlertWithTitle:[NSString stringWithFormat:@"Error accessing image at index %ld", (long)indexPath.item]];
+        NSString *title = [NSString stringWithFormat:@"Error accessing image at index %ld", (long)indexPath.item];
+        [error showAlertWithTitle:title parentViewController:self.parentViewController];
     }
 }
 
-
+    /// Event called when the view appears.
 -(void) viewDidAppear: (BOOL)animated {
     [super viewDidAppear:animated];
     NSLog(@"PhotoViewController viewDidAppear: self = %@", self);
-        // If stereogram is set, we have just reappeared from under the camera controller, and we need to pop up
-        // an approval window for the user to accept the new stereogram.
+        // If stereogram is set, we have just reappeared from under the camera controller, and we need to pop up an approval window for the user to accept the new stereogram.
     if(_stereogram) {
         [self showApprovalWindowForImage:_stereogram];
         _stereogram = nil;
     }
 }
 
+    /// Display the FullImageViewController in "Approval" mode (which adds "Keep" and "Delete" buttons).
 -(void) showApprovalWindowForImage: (UIImage*)image {
-    NSDate *dateTaken = [NSDate date];  // Declared outside the block in case the user spends a long time before approving the image.
-    PWFullImageViewController *imageViewController = [[PWFullImageViewController alloc] initWithImage:image forApproval:YES];
-    imageViewController.approvalBlock = ^{
-        NSError *error = nil;
-        if (![_photoStore addImage:image dateTaken:dateTaken error:&error]) {
-            [error showAlertWithTitle:@"Error saving photo"];
-        }
-        [photoCollection reloadData];
-    };
+    PWFullImageViewController *imageViewController = [[PWFullImageViewController alloc] initWithImage:image
+                                                                                          forApproval:YES
+                                                                                             delegate:self];
     UINavigationController *navC = [[UINavigationController alloc] initWithRootViewController:imageViewController];
     navC.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:navC animated:YES completion:nil];
 }
 
+    /// Return a potted description of the object.
 - (NSString *)description {
     NSString *superDescription = [super description];
     NSString *desc = [NSString stringWithFormat:@"%@ <_photoStore = %@>", superDescription, _photoStore];
     return desc;
 }
 
-#pragma mark - ImagePicker delegate
+#pragma mark FullImageViewController delegate
+
+-(void) fullImageViewController: (PWFullImageViewController *)controller
+                  approvedImage: (UIImage *)image {
+    NSError *error = nil;
+    NSDate *dateTaken = [NSDate date];
+    if (![_photoStore addImage:image dateTaken:dateTaken error:&error]) {
+        [error showAlertWithTitle:@"Error saving photo" parentViewController:controller];
+    }
+    [photoCollectionView reloadData];
+}
+
+-(void) dismissedFullImageViewController: (PWFullImageViewController *)controller {
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark ImagePicker delegate
 
 static UIImage *makeStereogram(PWPhotoStore *photoStore, UIImage *firstPhoto, UIImage *secondPhoto) {
-    UIImage *stereogram = [ImageManager makeStereogramWith:firstPhoto and:secondPhoto];
+    UIImage *stereogram = [ImageManager makeStereogramWithLeftPhoto:firstPhoto
+                                                         rightPhoto:secondPhoto];
         // Halve the stereogram size as otherwise these end up way too big, since we've doubled the width of the image.
         // TODO: Make this an option to be checked in the preferences.
     return [stereogram resizedImage:CGSizeMake(stereogram.size.width / 2, stereogram.size.height / 2)
@@ -243,7 +265,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info {
     _firstPhoto = nil;
 }
 
-#pragma mark - UICollectionView delegate
+#pragma mark UICollectionView delegate
 
 -(void)   collectionView: (UICollectionView *)collectionView
 didSelectItemAtIndexPath: (NSIndexPath *)indexPath {
@@ -264,37 +286,22 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
     }
 }
 
-#pragma mark - Private methods
-
-static NSString *formatDeleteMessage(NSUInteger numToDelete) {
-    NSString * const postscript = @"This operation cannot be undone.";
-    return numToDelete == 1 ? [NSString stringWithFormat:@"Do you really want to delete this photo?\n%@", postscript]
-                            : [NSString stringWithFormat:@"Do you really want to delete these %lu photos?\n%@", (unsigned long)numToDelete, postscript];
-}
+#pragma mark Private methods
 
 
-    // A shared method that does something to one of the photos. Takes a block holding the action to perform.
-    // The block takes an integer, which is an index into the collection of image thumbnails in the order they appear
-    // in the collection view.  The action must not invalidate the collection view indexes as it may be called more than once.
-typedef BOOL (^ActionBlock)(NSUInteger, NSError * __autoreleasing *);
-static void performNondestructiveAction(UICollectionView *photoCollection, ActionBlock action, NSString *errorTitle) {
-    for (NSIndexPath *indexPath in photoCollection.indexPathsForSelectedItems) {
-        NSError *errorPtr = nil;
-        if (!action([indexPath indexAtPosition:1], &errorPtr)) {
-            [errorPtr showAlertWithTitle:errorTitle];
-            return; // Exit to avoid showing the user multiple errors
+-(void) copyPhotosToCameraRoll: (NSArray *)selectedIndexes {
+    NSError *error = nil;
+    for(NSIndexPath *indexPath in selectedIndexes) {
+        if (![_photoStore copyImageToCameraRoll:[indexPath indexAtPosition:1]
+                                          error:&error]) {
+            [error showAlertWithTitle:@"Error exporting to camera roll" parentViewController:self];
+            return; // Only show one error, don't force the user to keep OKing the error warning.
         }
-        [photoCollection deselectItemAtIndexPath:indexPath animated:NO];
     }
+    [self setEditing:NO animated:YES];
 }
 
-static void copyPhotosToCameraRoll(PWPhotoStore *photoStore, UICollectionView *photoCollection) {
-    performNondestructiveAction(photoCollection, ^(NSUInteger index, NSError * __autoreleasing *errorPtr) {
-                                    return [photoStore copyImageToCameraRoll:index error:errorPtr]; }, @"Error exporting to camera roll");
-}
-
--(void)showActivityIndicator:(BOOL) showIndicator
-{
+-(void) showActivityIndicator: (BOOL)showIndicator {
     if(! _activityIndicator) {
         _activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
         CGSize activitySize = _activityIndicator.bounds.size;
@@ -322,7 +329,7 @@ static void copyPhotosToCameraRoll(PWPhotoStore *photoStore, UICollectionView *p
     [self showActivityIndicator:YES];
     
         // Take a deep copy of the selected items, in case another thread manipulates them while I'm working.
-    NSArray *selectedItems = [photoCollection.indexPathsForSelectedItems copy];
+    NSArray *selectedItems = [photoCollectionView.indexPathsForSelectedItems copy];
     
         // Convert the image in a background thread (it can take a while), showing a progress wheel to the user.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -333,7 +340,7 @@ static void copyPhotosToCameraRoll(PWPhotoStore *photoStore, UICollectionView *p
             UIImage *image = [_photoStore imageAtIndex:[indexPath indexAtPosition:1] error:&error];
             if (![ImageManager changeViewingMethod:image]) {    // Index path has format [<section>, <item>].
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [error showAlertWithTitle:@"Error changing viewing method"];
+                    [error showAlertWithTitle:@"Error changing viewing method" parentViewController:self.parentViewController];
                     [self showActivityIndicator:NO];
                 });
                 return; // Exit to avoid showing the user multiple errors
@@ -342,42 +349,59 @@ static void copyPhotosToCameraRoll(PWPhotoStore *photoStore, UICollectionView *p
             // Back on the main thread, deselect all the selected thumbnails, and stop the activity timer.
         dispatch_async(dispatch_get_main_queue(), ^{
             for(NSIndexPath *indexPath in selectedItems) {
-                [photoCollection deselectItemAtIndexPath:indexPath animated:YES];
+                [photoCollectionView deselectItemAtIndexPath:indexPath animated:YES];
             }
             [self showActivityIndicator:NO];
-            [photoCollection reloadItemsAtIndexPaths:selectedItems];
+            [photoCollectionView reloadItemsAtIndexPaths:selectedItems];
         });
     });
 }
 
-static void deletePhotos(PWPhotoStore *photoStore, UICollectionView *photoCollection)
-{
-    NSArray *indexPaths = photoCollection.indexPathsForSelectedItems;
+-(void) deletePhotos:(UICollectionView *)photoCollection {
+    NSArray *indexPaths = [photoCollection indexPathsForSelectedItems];
     if(indexPaths.count > 0) {
         
-        void (^doDelete)() =  ^(){
+        NSString *message = formatDeleteMessage(indexPaths.count);
+        _alertView = [PWAlertView alertViewWithTitle:@"Confirm deletion"
+                                             message:message
+                                      preferredStyle:UIAlertControllerStyleAlert];
+        
+        PWAlertHandler deleteActionBlock = ^(PWAlertAction *action) {
+            NSLog(@"Deleting images at index paths: %@", indexPaths);
             NSError *error = nil;
-            if (![photoStore deleteImagesAtIndexPaths:indexPaths error:&error]) {
-                [error showAlertWithTitle:@"Error deleting photos"];
+            if (![self.photoStore deleteImagesAtIndexPaths:indexPaths error:&error]) {
+                [error showAlertWithTitle:@"Error deleting photos"
+                     parentViewController:self];
             }
-            [photoCollection reloadData];  // Reload to prevent thumbnails being out of sync with photos.
-       };
-        PWAlertView *alertView = [[PWAlertView alloc] initWithTitle:@"Confirm deletion"
-                                                            message:formatDeleteMessage(indexPaths.count)
-                                                 confirmButtonTitle:@"Delete"
-                                                       confirmBlock:doDelete
-                                                  cancelButtonTitle:@"Cancel"
-                                                        cancelBlock: ^{}];
-        [alertView show];
+            [self setEditing:NO animated:YES];
+            [photoCollection reloadData];
+        };
+        
+        PWAlertAction *deleteAction = [PWAlertAction actionWithTitle:@"Delete"
+                                                               style:UIAlertActionStyleDestructive
+                                                             handler:deleteActionBlock];
+        [_alertView addAction:deleteAction];
+        [_alertView addAction:[PWAlertAction cancelAction]];
+        
+        [_alertView show];
     }
 }
 
-static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict)
-{
+@end
+
+static inline UIImage *imageFromPickerInfoDict(NSDictionary *infoDict) {
     UIImage *photo =       infoDict[UIImagePickerControllerEditedImage];
     return photo ? photo : infoDict[UIImagePickerControllerOriginalImage];
 }
 
+static NSString *formatDeleteMessage(NSUInteger numToDelete) {
+    NSString * const postscript = @"This operation cannot be undone.";
+    return numToDelete == 1 ? [NSString stringWithFormat:@"Do you really want to delete this photo?\n%@", postscript]
+    : [NSString stringWithFormat:@"Do you really want to delete these %lu photos?\n%@", (unsigned long)numToDelete, postscript];
+}
 
+static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id layout) {
+    NSCAssert([layout isKindOfClass:[UICollectionViewFlowLayout class]], @"Photo collection layout is not a flow layout");
+    return (UICollectionViewFlowLayout *)layout;
+}
 
-@end

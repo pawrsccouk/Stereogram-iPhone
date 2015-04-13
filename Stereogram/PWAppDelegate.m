@@ -28,7 +28,7 @@
     _photoStore = [[PWPhotoStore alloc] init:&error];
     if (!_photoStore) {
         NSLog(@"Error creating the photo store: %@", error);
-        [error showAlertWithTitle:@"Startup error"];
+        [error showAlertWithTitle:@"Startup error" parentViewController:self.window.rootViewController];
     }
     
 

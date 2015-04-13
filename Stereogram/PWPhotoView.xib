@@ -107,11 +107,11 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">photoCollection</string>
+						<string key="label">photoCollectionView</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="476383300"/>
 					</object>
-					<int key="connectionID">10</int>
+					<int key="connectionID">14</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -280,7 +280,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">13</int>
+			<int key="maxID">14</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -288,13 +288,13 @@
 					<string key="className">PWPhotoViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">photoCollection</string>
+						<string key="NS.key.0">photoCollectionView</string>
 						<string key="NS.object.0">UICollectionView</string>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">photoCollection</string>
+						<string key="NS.key.0">photoCollectionView</string>
 						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">photoCollection</string>
+							<string key="name">photoCollectionView</string>
 							<string key="candidateClassName">UICollectionView</string>
 						</object>
 					</object>

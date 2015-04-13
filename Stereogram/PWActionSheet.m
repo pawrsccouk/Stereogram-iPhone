@@ -8,129 +8,155 @@
 
 #import "PWActionSheet.h"
 
-@interface PWActionSheet ()
-{
-    NSDictionary *buttonTitlesAndBlocks;
-    NSString *cancelButtonTitle;
-    NSString *destructiveButtonTitle;
-    UIActionSheet *actionSheet;
+@interface PWActionSheet () {
+    UIActionSheet *_actionSheet;
+    NSMutableArray *_actions; // Of type PWAction
 }
 @end
 
 @implementation PWActionSheet
 
--(id)    initWithTitle:(NSString *)title
- buttonTitlesAndBlocks:(NSDictionary *)titlesAndBlocks
-     cancelButtonTitle:(NSString *)cancelTitle
-destructiveButtonTitle:(NSString *)destructiveTitle
-{
+-(instancetype) initWithTitle: (NSString *)title {
     self = [super init];
-    if(self) {
-        buttonTitlesAndBlocks = [titlesAndBlocks copy];
-        destructiveButtonTitle = [destructiveTitle copy];
-        cancelButtonTitle      = [cancelTitle copy];
-        
-        NSMutableDictionary *otherButtons = [NSMutableDictionary dictionaryWithDictionary:buttonTitlesAndBlocks];
-        if(cancelButtonTitle     ) { [otherButtons removeObjectForKey:cancelButtonTitle     ]; }
-        if(destructiveButtonTitle) { [otherButtons removeObjectForKey:destructiveButtonTitle]; }
-
-        actionSheet = [[UIActionSheet alloc] initWithTitle:title
-                                                  delegate:self
-                                         cancelButtonTitle:nil
-                                    destructiveButtonTitle:nil
-                                         otherButtonTitles:nil];
-        
-        // Add the destructive button first (if any) and the cancel button last.
-        // Note that the iPad action sheet will always hide the cancel button as you are supposed to click outside
-        // the sheet to cancel it. This will generate a call to the delegate with the index of the cancel button automatically.
-        if(destructiveButtonTitle)
-            actionSheet.destructiveButtonIndex = [actionSheet addButtonWithTitle:destructiveButtonTitle];
-        
-        for(NSString *title in otherButtons.allKeys)
-            [actionSheet addButtonWithTitle:title];
-        
-        if(cancelButtonTitle)
-            actionSheet.cancelButtonIndex = [actionSheet addButtonWithTitle:cancelButtonTitle];
-    }
+    if (!self) { return nil; }
+    _actions = [NSMutableArray array];
+    _actionSheet = [[UIActionSheet alloc] initWithTitle:title
+                                               delegate:self
+                                      cancelButtonTitle:nil
+                                 destructiveButtonTitle:nil
+                                      otherButtonTitles:nil];
     return self;
 }
 
--(id)initWithTitle:(NSString *)title
-confirmButtonTitle:(NSString *)confirmTitle
-      confirmBlock:(PWActionSheet_Action  )confirmBlock
- cancelButtonTitle:(NSString *)cancelTitle
-       cancelBlock:(PWActionSheet_Action  )cancelBlock
-{
-    return [self initWithTitle:title
-         buttonTitlesAndBlocks:@{confirmTitle : confirmBlock, cancelTitle : cancelBlock}
-             cancelButtonTitle:cancelTitle
-        destructiveButtonTitle:nil];
-}
 
 
--(id)    initWithTitle:(NSString *)title
-destructiveButtonTitle:(NSString *)destructTitle
-      destructiveBlock:(PWActionSheet_Action  )destructBlock
-     cancelButtonTitle:(NSString *)cancelTitle
-           cancelBlock:(PWActionSheet_Action  )cancelBlock
-{
-    return [self initWithTitle:title
-         buttonTitlesAndBlocks:@{destructTitle : destructBlock, cancelTitle : cancelBlock}
-             cancelButtonTitle:cancelTitle
-        destructiveButtonTitle:destructTitle];
-}
-
--(void)showFromBarButtonItem:(UIBarButtonItem *)barButtonItem
-                    animated:(BOOL)animated
-{
+-(void) showFromBarButtonItem: (UIBarButtonItem *)barButtonItem
+                     animated: (BOOL)animated {
 //    [self.class keepAReference:self];
-    NSAssert(actionSheet.delegate == self, @"Delegate %@ is not self", actionSheet.delegate);
-    [actionSheet showFromBarButtonItem:barButtonItem animated:animated];
+    NSAssert(_actionSheet.delegate == self, @"Delegate %@ is not self", _actionSheet.delegate);
+//    _actionSheet.delegate = self;
+    
+    for (PWAction *action in self.actions) {
+        NSUInteger index = [_actionSheet addButtonWithTitle:action.title];
+        switch (action.style) {
+            case UIAlertActionStyleCancel:      _actionSheet.cancelButtonIndex      = index; break;
+            case UIAlertActionStyleDestructive: _actionSheet.destructiveButtonIndex = index; break;
+            default: break;  // UIAlertActionStyleDefault is the other option. No changes needed for that.
+        }
+    }
+    
+    [_actionSheet showFromBarButtonItem:barButtonItem
+                               animated:animated];
 }
 
-#pragma mark - Action Sheet delegate
+- (NSArray *)actions {
+    return _actions;
+}
+
+-(void) addAction: (PWAction *)newAction {
+    if (![_actions containsObject:newAction]) {
+        [_actions addObject:newAction];
+    }
+}
+
+-(void) addActions: (NSArray *)newActions {
+    for (PWAction *newAction in newActions) {
+        NSAssert([newAction isMemberOfClass:[PWAction class]], @"Object [%@] in actions array is not of type PWAction", newAction);
+        [self addAction:newAction];
+    }
+}
+
+#pragma mark Action Sheet delegate
 
 -(void)  actionSheet:(UIActionSheet *)sheet
 clickedButtonAtIndex:(NSInteger)buttonIndex {
-//    @try {
-            // If the user didn't specify a cancel handler, the system can trigger a cancel anyway under some conditions
-            // e.g. user clicks outside the popover on an iPad. In that case the system should return the cancel index, but it
-            // actually returns -1. Handle both these conditions.
-        if( (buttonIndex == -1) || ( (! cancelButtonTitle) && (buttonIndex == actionSheet.cancelButtonIndex)) )
-            return;
-        
-            // Otherwise the user clicked a button. Get the action for that button and execute it.
+    NSLog(@"actionSheet:clickedButtonAtIndex: sheet = %@, index = %ld", sheet, (long)buttonIndex);
+        // If the user didn't specify a cancel handler, the system can trigger a cancel anyway under some conditions
+        // e.g. user clicks outside the popover on an iPad. In that case the system should return the cancel index, but it
+        // actually returns -1. Handle this.
+    if( buttonIndex != -1) {
+            // The user clicked a button. Get the action for that button and execute it.
         NSString *buttonTitle = [sheet buttonTitleAtIndex:buttonIndex];
-        PWActionSheet_Action action = [buttonTitlesAndBlocks objectForKey:buttonTitle];
+        PWAction *action = self.actions[buttonIndex];
         NSAssert(action, @"No action found for button title [%@] index %ld", buttonTitle, (long)buttonIndex);
-        if(action)
-            action();
-//    }
-//    @finally {
-//        [self.class removeAReference:self];
-//    }
+        if(action) {
+            [action act];
+        }
+    }
 }
 
-//#pragma mark - Private methods
-//
-//// These three are used to ensure there is always a strong reference to the sheet and it'll not go out of scope.
-//// I'll add a reference when the sheet is shown, and remove it when a button is selected.
-//+(NSMutableArray*)arrayOfActiveSheets
-//{
-//    static NSMutableArray *activeSheets = nil;
-//    if(!activeSheets)
-//        activeSheets = [NSMutableArray array];
-//    return activeSheets;
-//}
-//
-//+(void)keepAReference:(PWActionSheet*)sheet
-//{
-//    [[self arrayOfActiveSheets] addObject:sheet];
-//}
-//
-//+(void)removeAReference:(PWActionSheet*)sheet
-//{
-//    [[self arrayOfActiveSheets] removeObject:sheet];
-//}
+@end
+
+
+#pragma mark -
+
+
+@interface PWAction () {
+    PWActionHandler _handler;
+}
 
 @end
+
+    /// This mimics UIAlertHandler (which is available in iOS8 only) for older architectures. Pass to a PWAlertView and the handler will be called when the button with it's title is clicked.
+@implementation PWAction
+@synthesize title = _title, style = _style;
+
+#pragma mark Constructors.
+
+    /// Create a new action with a title, the style of Default, Cancel or Destructive and a callback handler.
++(instancetype) actionWithTitle: (NSString *)title
+                          style: (UIAlertActionStyle)style
+                        handler: (PWActionHandler)alertHandler {
+    return [[PWAction alloc] initWithTitle:title
+                                     style:style
+                                   handler:alertHandler];
+    
+}
+
+    /// A new action with title and handler, default style of Default
++(instancetype) actionWithTitle:(NSString *)title
+                        handler:(PWActionHandler)alertHandler {
+    return [[PWAction alloc] initWithTitle:title
+                                   handler:alertHandler];
+}
+
+    /// A cancel action has title of "Cancel", no handler and style of Cancel.
++(instancetype) cancelAction {
+    return [PWAction actionWithTitle:@"Cancel"
+                                style:UIAlertActionStyleCancel
+                              handler:nil];
+}
+
+    /// Designated initializer. Each action takes a title, the style of Default, Cancel or Destructive and a callback handler.
+-(instancetype) initWithTitle: (NSString *)title
+                        style: (UIAlertActionStyle)style
+                      handler: (PWActionHandler)alertHandler {
+    self = [super init];
+    if (!self) { return nil; }
+    
+    _style = style;
+    _title = [title copy];
+    _handler = alertHandler;
+    
+    return self;
+}
+
+    /// Initialize the alert with a title and handler, and the default style of Default
+-(instancetype) initWithTitle:(NSString *)title
+                      handler:(PWActionHandler)alertHandler {
+    return [self initWithTitle:title
+                         style:UIAlertActionStyleDefault
+                       handler:alertHandler];
+}
+
+#pragma mark Methods
+
+    /// Perform the action held in alertHandler.
+- (void) act {
+    if (_handler) {
+        _handler(self);
+    }
+}
+
+@end
+

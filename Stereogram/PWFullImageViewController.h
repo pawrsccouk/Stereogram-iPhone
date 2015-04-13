@@ -30,8 +30,7 @@
 
 #pragma mark -
 
-@interface PWFullImageViewController : UIViewController <UIScrollViewDelegate>
-{
+@interface PWFullImageViewController : UIViewController <UIScrollViewDelegate> {
     IBOutlet UIImageView  *imageView;
     IBOutlet UIScrollView  *scrollView;
 }

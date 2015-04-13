@@ -7,9 +7,13 @@
 //
 
 #import "PWFullImageViewController.h"
+#import "ImageManager.h"
+#import "NSError_AlertSupport.h"
 
 @interface PWFullImageViewController () {
     UIImage *_image;
+    UIActivityIndicatorView *_activityIndicator;
+    NSIndexPath *_indexPath;
 }
 
     /// Designated Initializer.
@@ -46,10 +50,16 @@
        forApproval: (BOOL)approval
           delegate: (id<PWFullImageViewControllerDelegate>)delegate {
     self = [super initWithNibName:@"PWFullImageView" bundle:nil];
-    if (self) {        
+    if (self) {
         _image = image;
         _delegate = delegate;
-        if(approval) {
+        _indexPath = indexPath;
+        UIBarButtonItem *toggleViewMethodButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Toggle View Method"
+                                                                                       style:UIBarButtonItemStyleBordered
+                                                                                      target:self
+                                                                                      action:@selector(changeViewingMethod:)];
+            // If we are using this to approve an image, then display "Keep" and "Discard" buttons as well as the change viewing method button.
+        if (approval) {
             UIBarButtonItem *keepButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Keep"
                                                                                style:UIBarButtonItemStyleBordered
                                                                               target:self
@@ -58,8 +68,10 @@
                                                                                   style:UIBarButtonItemStyleBordered
                                                                                  target:self
                                                                                  action:@selector(discardPhoto)];
-            self.navigationItem.leftBarButtonItem = keepButtonItem;
-            self.navigationItem.rightBarButtonItem = discardButtonItem;
+            self.navigationItem.rightBarButtonItems = @[keepButtonItem, discardButtonItem];
+            self.navigationItem.leftBarButtonItem = toggleViewMethodButtonItem;
+        } else {
+            self.navigationItem.rightBarButtonItem = toggleViewMethodButtonItem;
         }
     }
     return self;
@@ -70,11 +82,6 @@
         // Calculate the size of the underlying image, and then use that to set the scrollview's bounds.
     imageView.image = _image;
     [imageView sizeToFit];
-}
-
-- (void) didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 -(void) viewDidLayoutSubviews {
@@ -96,6 +103,62 @@
 -(void) discardPhoto {
     [self.presentingViewController dismissViewControllerAnimated:YES
                                                       completion:nil];
+}
+
+
+-(BOOL) showActivityIndicator {
+    return !_activityIndicator.hidden;
+}
+
+-(void) setShowActivityIndicator: (BOOL)hidden {
+    _activityIndicator.hidden = !hidden;
+    if (hidden) {
+        [_activityIndicator startAnimating];
+    } else {
+        [_activityIndicator stopAnimating];
+    }
+}
+
+-(void) setupActivityIndicator {
+        // Add the activity indicator to the view if it is not there already. It starts off hidden.
+    if (![_activityIndicator isDescendantOfView:self.view]) {
+        [self.view addSubview:_activityIndicator];
+    }
+    
+        // Ensure the activity indicator fits in the frame.
+    CGSize activitySize = _activityIndicator.bounds.size;
+    CGSize parentSize = self.view.bounds.size;
+    CGRect frame = CGRectMake((parentSize.width / 2) - (activitySize.width / 2), (parentSize.height / 2) - (activitySize.height / 2), activitySize.width, activitySize.height);
+    _activityIndicator.frame = frame;
+}
+
+-(IBAction) changeViewingMethod: (id)sender {
+    UIImage *oldImage = _image;
+    self.showActivityIndicator = YES;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        UIImage *newImage = [ImageManager changeViewingMethod:oldImage];
+        if (newImage) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                    // Clear the activity indicator and update the image in this view.
+                self.showActivityIndicator = NO;
+                _image = newImage;
+                imageView.image = newImage;
+                [imageView sizeToFit];
+                    // Notify the system that the image has been changed in the view.
+                if ([self.delegate respondsToSelector:@selector(fullImageViewController:amendedImage:atIndexPath:)]) {
+                    [self.delegate fullImageViewController:self
+                                              amendedImage:newImage
+                                               atIndexPath:_indexPath];
+                }
+            });
+        } else { // newImage is nil.
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.showActivityIndicator = false;
+                NSError *error = [NSError errorWithDomain:@"Error creating new image." code:0 userInfo:nil];
+                [error showAlertWithTitle:@"Error changing viewing method" parentViewController:self];
+            });
+        }
+    });
 }
 
 -(void) logData {

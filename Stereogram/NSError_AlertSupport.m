@@ -16,13 +16,22 @@
     NSString *errorText = self.helpAnchor ? self.helpAnchor
     : self.localizedFailureReason ? self.localizedFailureReason
     : self.localizedDescription;
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
-                                                                             message:errorText
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    
+        // UIAlertController only valid after iOS 8.
+//    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
+//                                                                             message:errorText
+//                                                                      preferredStyle:UIAlertControllerStyleAlert];
+//
+//    [parentViewController presentViewController:alertController
+//                                       animated:YES
+//                                     completion:nil];
 
-    [parentViewController presentViewController:alertController
-                                       animated:YES
-                                     completion:nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+                                                        message:errorText
+                                                       delegate:nil
+                                              cancelButtonTitle:@"Close"
+                                              otherButtonTitles:nil];
+    [alertView show];
 }
 
 @end

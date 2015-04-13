@@ -90,6 +90,10 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 
     /// Create and display an action menu with the items available for a set of the collection items.
 -(void) actionMenu {
+    if (photoCollectionView.indexPathsForSelectedItems.count == 0) {
+        return; // Do nothing if there are no items to act on.
+    }
+    
     PWAction *cancelAction = [PWAction cancelAction];
     
     PWActionHandler deleteBlock = ^(PWAction *action) {

@@ -7,7 +7,7 @@
 //
 
 #import "WelcomeViewController.h"
-#import "PWPhotoStore.h"
+#import "PhotoStore.h"
 #import "NSError_AlertSupport.h"
 
 static UIWebView *cast_UIWebView(UIView *view) {
@@ -74,7 +74,7 @@ static UIWebView *cast_UIWebView(UIView *view) {
 
 #pragma mark FullImageController delegate
 
--(void) fullImageViewController: (PWFullImageViewController *)controller
+-(void) fullImageViewController: (FullImageViewController *)controller
                   approvedImage: (UIImage *)image {
     NSDate *dateTaken = [NSDate date];
     NSError *error = nil;
@@ -85,7 +85,7 @@ static UIWebView *cast_UIWebView(UIView *view) {
     }
 }
 
--(void)dismissedFullImageViewController:(PWFullImageViewController *)controller {
+-(void)dismissedFullImageViewController:(FullImageViewController *)controller {
     [controller dismissViewControllerAnimated:NO completion:^{
             // Once the FullImageViewController is dismissed, check if we have now got some photos to display. If so, dismiss the welcome controller to reveal the photo controller, which should be the at the root of the controller hierarchy.
         if (_photoStore.count > 0) {
@@ -117,9 +117,9 @@ static UIWebView *cast_UIWebView(UIView *view) {
     // Called to present the image to the user, with options to accept or reject it.
     // If the user accepts, the photo is added to the photo store.
 -(void) showApprovalWindowForImage: (UIImage *)image {
-    PWFullImageViewController *fullImageViewController = [[PWFullImageViewController alloc] initWithImage:image
-                                                                                              forApproval:YES
-                                                                                                 delegate:self];
+    FullImageViewController *fullImageViewController = [[FullImageViewController alloc] initWithImage:image
+                                                                                          forApproval:YES
+                                                                                             delegate:self];
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:fullImageViewController];
     navigationController.modalPresentationStyle = UIModalPresentationFullScreen;

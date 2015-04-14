@@ -6,16 +6,16 @@
 //  Copyright (c) 2013 Patrick Wallace. All rights reserved.
 //
 
-#import "PWImageThumbnailCell.h"
+#import "ImageThumbnailCell.h"
 
-@interface PWImageThumbnailCell () {
+@interface ImageThumbnailCell () {
     UIImageView __weak *_imageView;
     UIImageView __weak *_selectionOverlayView;
 }
 @end
 
 
-@implementation PWImageThumbnailCell
+@implementation ImageThumbnailCell
 @synthesize image = _image;
 
 

@@ -6,10 +6,10 @@
 //  Copyright (c) 2013 Patrick Wallace. All rights reserved.
 //
 
-#import "PWCameraOverlayViewController.h"
+#import "CameraOverlayViewController.h"
 static inline CGRect activityFrame(CGRect parentBounds, CGSize activitySize);
 
-@interface PWCameraOverlayViewController () {
+@interface CameraOverlayViewController () {
     UIActivityIndicatorView *activityView;
 }
 
@@ -19,11 +19,12 @@ static inline CGRect activityFrame(CGRect parentBounds, CGSize activitySize);
 
 #pragma mark -
 
-@implementation PWCameraOverlayViewController
+@implementation CameraOverlayViewController
 
 -(instancetype) initWithNibName: (NSString *)nibNameOrNil
                          bundle: (NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:@"PWCameraOverlayView" bundle:nibBundleOrNil];
+    self = [super initWithNibName:@"CameraOverlayView"
+                           bundle:nibBundleOrNil];
     if (self) {
             // Create the activity view, but don't attach it to anything yet.
         activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];

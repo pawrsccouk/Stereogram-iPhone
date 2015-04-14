@@ -1,5 +1,5 @@
 //
-//  ThumbnailManager.h
+//  ThumbnailCache.h
 //  Stereogram
 //
 //  Created by Patrick Wallace on 10/04/2015.

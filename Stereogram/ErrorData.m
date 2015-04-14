@@ -10,9 +10,9 @@
 
 
     // Keys for the image properties.
-NSString * const kPWImagePropertyOrientation   = @"Orientation",     // Portrait or Landscape.
-* const kPWImagePropertyThumbnail     = @"Thumbnail",       // Image thumbnail.
-* const kPWImagePropertyDateTaken     = @"DateTaken",       // Date original photo was taken.
-* const kPWImagePropertyViewMode      = @"ViewMode",        // Crosseyed, Walleyed, Red/Green, Random-dot
+NSString * const kImagePropertyOrientation   = @"Orientation";     // Portrait or Landscape.
+NSString * const kImagePropertyThumbnail     = @"Thumbnail";       // Image thumbnail.
+NSString * const kImagePropertyDateTaken     = @"DateTaken";       // Date original photo was taken.
+NSString * const kImagePropertyViewMode      = @"ViewMode";        // Crosseyed, Walleyed, Red/Green, Random-dot
     // Keys for loading and saving.
-* const kPWVersion                    = @"Version";         // Save file version.
+NSString * const kVersion                    = @"Version";         // Save file version.

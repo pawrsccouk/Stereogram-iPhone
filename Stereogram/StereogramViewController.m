@@ -6,9 +6,9 @@
 //  Copyright (c) 2015 Patrick Wallace. All rights reserved.
 //
 
-#import "StereogramViewController.h"
-#import "PWCameraOverlayViewController.h"
 #import <MobileCoreServices/MobileCoreServices.h>
+#import "StereogramViewController.h"
+#import "CameraOverlayViewController.h"
 #import "ImageManager.h"
 #import "UIImage+Resize.h"
 #import "NSError_AlertSupport.h"
@@ -32,7 +32,7 @@ inline static NSString *stringFromState(State state);
 @interface StereogramViewController () {
     State _state;
     UIImage *_firstPhoto, *_stereogram;
-    PWCameraOverlayViewController *_cameraOverlayController;
+    CameraOverlayViewController *_cameraOverlayController;
     UIImagePickerController *_pickerController;
 }
 @end
@@ -45,7 +45,7 @@ inline static NSString *stringFromState(State state);
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do view setup here.
-    NSAssert(_state == Ready, @"viewDidLoad invalid state of %d", _state);
+    NSAssert(_state == Ready, @"viewDidLoad invalid state of %ld", (long)_state);
 }
 
 - (instancetype) initWithDelegate: (id<StereogramViewControllerDelegate>)delegate {
@@ -84,7 +84,7 @@ inline static NSString *stringFromState(State state);
 }
 
 -(void) takePicture: (UIViewController *)parentController {
-    NSAssert(_state == Ready, @"takePicture: invalid state is %d, should be Ready (%d)", _state, Ready);
+    NSAssert(_state == Ready, @"takePicture: invalid state is %ld, should be Ready (%ld)", (long)_state, (long)Ready);
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No camera"
                                                             message:@"This device does not have a camera attached"
@@ -110,7 +110,7 @@ inline static NSString *stringFromState(State state);
 
                 // Set up a custom overlay view for the camera. Ensure our custom view frame fits within the camera view's frame.
             if (!_cameraOverlayController) {
-                _cameraOverlayController= [[PWCameraOverlayViewController alloc] init];
+                _cameraOverlayController= [[CameraOverlayViewController alloc] init];
             }
             _cameraOverlayController.view.frame = picker.view.frame;
             picker.cameraOverlayView = _cameraOverlayController.view;
@@ -205,7 +205,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info {
             break;
         }
         default:
-            NSAssert(NO, @"Inconsistent state of %d, should be TakingFirstPhoto or TakingSecondPhoto", _state);
+            NSAssert(NO, @"Inconsistent state of %ld, should be TakingFirstPhoto or TakingSecondPhoto", (long)_state);
             break;
     }
 }
@@ -239,6 +239,6 @@ inline static NSString *stringFromState(State state) {
         case TakingFirstPhoto:  return @"TakingFirstPhoto";
         case TakingSecondPhoto: return @"TakingSecondPhoto";
         case Complete:          return @"Complete";
-        default:                return [NSString stringWithFormat:@"Unknown state: %d", state];
+        default:                return [NSString stringWithFormat:@"Unknown state: %ld", (long)state];
     }
 }

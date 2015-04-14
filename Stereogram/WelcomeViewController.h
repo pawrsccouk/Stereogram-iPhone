@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PWFullImageViewController.h"
+#import "FullImageViewController.h"
 #import "StereogramViewController.h"
-@class PWPhotoStore;
+@class PhotoStore;
 
-@interface WelcomeViewController : UIViewController  <PWFullImageViewControllerDelegate, StereogramViewControllerDelegate>
+@interface WelcomeViewController : UIViewController  <FullImageViewControllerDelegate, StereogramViewControllerDelegate>
 
-@property (nonatomic, strong) PWPhotoStore *photoStore;
+@property (nonatomic, strong) PhotoStore *photoStore;
 
 @end

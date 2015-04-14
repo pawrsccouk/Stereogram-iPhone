@@ -6,11 +6,11 @@
 //  Copyright (c) 2013 Patrick Wallace. All rights reserved.
 //
 
-#import "PWFullImageViewController.h"
+#import "FullImageViewController.h"
 #import "ImageManager.h"
 #import "NSError_AlertSupport.h"
 
-@interface PWFullImageViewController () {
+@interface FullImageViewController () {
     UIImage *_image;
     UIActivityIndicatorView *_activityIndicator;
     NSIndexPath *_indexPath;
@@ -20,16 +20,16 @@
 -(instancetype) initWithImage: (UIImage *)image
                   atIndexPath: (NSIndexPath *)indexPath
                   forApproval: (BOOL)forApproval
-                     delegate: (id<PWFullImageViewControllerDelegate>)delegate NS_DESIGNATED_INITIALIZER;
+                     delegate: (id<FullImageViewControllerDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
 @end
 
-@implementation PWFullImageViewController
+@implementation FullImageViewController
 @synthesize delegate = _delegate, imageView = _imageView, scrollView = _scrollView;
 
 -(instancetype) initWithImage: (UIImage *)image
                   atIndexPath: (NSIndexPath *)indexPath
-                     delegate: (id<PWFullImageViewControllerDelegate>)delegate {
+                     delegate: (id<FullImageViewControllerDelegate>)delegate {
     return [self initWithImage:image
                    atIndexPath:indexPath
                    forApproval:NO
@@ -38,7 +38,7 @@
 
 - (instancetype)initWithImage:(UIImage *)image
                   forApproval:(BOOL)forApproval
-                     delegate:(id<PWFullImageViewControllerDelegate>)delegate {
+                     delegate:(id<FullImageViewControllerDelegate>)delegate {
     return [self initWithImage:image
                    atIndexPath:nil
                    forApproval:forApproval
@@ -48,8 +48,8 @@
 -(id)initWithImage: (UIImage *)image
        atIndexPath: (NSIndexPath *)indexPath
        forApproval: (BOOL)approval
-          delegate: (id<PWFullImageViewControllerDelegate>)delegate {
-    self = [super initWithNibName:@"PWFullImageView" bundle:nil];
+          delegate: (id<FullImageViewControllerDelegate>)delegate {
+    self = [super initWithNibName:@"FullImageView" bundle:nil];
     if (self) {
         _image = image;
         _delegate = delegate;
@@ -91,7 +91,7 @@
 }
 
 -(void) keepPhoto {
-    id<PWFullImageViewControllerDelegate> delegate = self.delegate;
+    id<FullImageViewControllerDelegate> delegate = self.delegate;
     NSAssert(delegate, @"No delegate assigned to view controller %@", self);
     if ([delegate respondsToSelector:@selector(fullImageViewController:approvedImage:)]) {
         [delegate fullImageViewController:self

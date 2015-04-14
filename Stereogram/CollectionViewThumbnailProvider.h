@@ -7,14 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-@class PWPhotoStore;
+@class PhotoStore;
 
     // Connector that takes a thumbnail provider and implements a collection view delegate, serving data from the provider.
     // TODO: Make this generic
 
 @interface CollectionViewThumbnailProvider : NSObject <UICollectionViewDataSource>
 
--(instancetype) initWithPhotoStore: (PWPhotoStore *)photoStore
+-(instancetype) initWithPhotoStore: (PhotoStore *)photoStore
                         collection: (UICollectionView*)photoCollection;
 
 @end

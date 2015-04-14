@@ -1,5 +1,5 @@
 //
-//  PWPhotoStore.h
+//  PhotoStore.h
 //  Stereogram
 //
 //  Created by Patrick Wallace on 20/01/2013.
@@ -21,17 +21,17 @@ typedef NS_ENUM(NSInteger, ErrorCode) {
 };
 
     // How the stereogram should be viewed.
-enum PWViewModes {
-    PWViewModeCrosseyed,    // Adjacent pictures, view crosseyed.
-    PWViewModeWalleyed,     // Adjacent pictures, view wall-eyed
-    PWViewModeRedGreen,     // Superimposed pictures, use red green glasses.
-    PWViewModeRandomDot     // "Magic Eye" format.
+enum ViewModes {
+    ViewModeCrosseyed,    // Adjacent pictures, view crosseyed.
+    ViewModeWalleyed,     // Adjacent pictures, view wall-eyed
+    ViewModeRedGreen,     // Superimposed pictures, use red green glasses.
+    ViewModeRandomDot     // "Magic Eye" format.
 };
 
 
 // Methods take an NSError* error argument. These methods return the object on success or nil on failure, in which case they also set the *error to indicate what went wrong, if error is not NULL.  Methods that don't return a value return YES or NO and set *error.
 
-@interface PWPhotoStore : NSObject
+@interface PhotoStore : NSObject
 
     /// Number of images stored in here.
 @property (nonatomic, readonly) NSUInteger count;

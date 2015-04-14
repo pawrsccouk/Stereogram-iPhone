@@ -7,14 +7,14 @@
 //
 
 #import "CollectionViewThumbnailProvider.h"
-#import "PWImageThumbnailCell.h"
-#import "PWPhotoStore.h"
+#import "ImageThumbnailCell.h"
+#import "PhotoStore.h"
 
 static NSString * const THUMBNAIL_CELL_ID = @"ImageThumbnailCell";
 
 
 @interface CollectionViewThumbnailProvider () {
-    PWPhotoStore *_photoStore;
+    PhotoStore *_photoStore;
     UICollectionView *_photoCollection;
 }
 
@@ -24,7 +24,7 @@ static NSString * const THUMBNAIL_CELL_ID = @"ImageThumbnailCell";
     // TODO: Make this generic
 @implementation CollectionViewThumbnailProvider
 
--(instancetype) initWithPhotoStore: (PWPhotoStore *)photoStore
+-(instancetype) initWithPhotoStore: (PhotoStore *)photoStore
                         collection: (UICollectionView *)photoCollection {
     self = [super init];
     if (!self) { return nil; }
@@ -32,7 +32,7 @@ static NSString * const THUMBNAIL_CELL_ID = @"ImageThumbnailCell";
     _photoStore = photoStore;
     _photoCollection = photoCollection;
     _photoCollection.dataSource = self;
-    [_photoCollection registerClass:PWImageThumbnailCell.class
+    [_photoCollection registerClass:ImageThumbnailCell.class
          forCellWithReuseIdentifier:THUMBNAIL_CELL_ID];
 
     return self;
@@ -55,7 +55,7 @@ static NSString * const THUMBNAIL_CELL_ID = @"ImageThumbnailCell";
 
 -(UICollectionViewCell *) collectionView: (UICollectionView *)collectionView
                   cellForItemAtIndexPath: (NSIndexPath *)indexPath {
-    PWImageThumbnailCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:THUMBNAIL_CELL_ID
+    ImageThumbnailCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:THUMBNAIL_CELL_ID
                                                                            forIndexPath: indexPath];
     NSError *error = nil;
     UIImage *image = [_photoStore thumbnailAtIndex:indexPath.item

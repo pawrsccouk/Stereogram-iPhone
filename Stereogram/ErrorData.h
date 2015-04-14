@@ -10,21 +10,21 @@
 
     // Error domain and codes for the Photo Store.
 
-static NSString * const kPWErrorDomainPhotoStore;
+static NSString * const kErrorDomainPhotoStore;
 
 
-enum PWErrorCodes {
-    kPWErrorCodesUnknownError             =   1,
-    kPWErrorCodesCouldntCreateSharedStore = 100,
-    kPWErrorCodesCouldntLoadImageProperties    ,
-    kPWErrorCodesIndexOutOfBounds
+enum ErrorCodes {
+    ErrorCodesUnknownError             =   1,
+    ErrorCodesCouldntCreateSharedStore = 100,
+    ErrorCodesCouldntLoadImageProperties    ,
+    ErrorCodesIndexOutOfBounds
 };
 
     // Keys of image properties.
 
-extern NSString *const kPWImagePropertyOrientation     // Portrait or Landscape.
-, *const kPWImagePropertyThumbnail       // Image thumbnail.
-, *const kPWImagePropertyDateTaken       // Date original photo was taken.
-, *const kPWImagePropertyViewMode        // Crosseyed, Walleyed, Red/Green, Random-dot
+extern NSString *const kImagePropertyOrientation;     // Portrait or Landscape.
+extern NSString *const kImagePropertyThumbnail;       // Image thumbnail.
+extern NSString *const kImagePropertyDateTaken;       // Date original photo was taken.
+extern NSString *const kImagePropertyViewMode;        // Crosseyed, Walleyed, Red/Green, Random-dot
     // Keys for loading and saving.
-, *const kPWVersion;         // Save file version.
+extern NSString *const kVersion;         // Save file version.

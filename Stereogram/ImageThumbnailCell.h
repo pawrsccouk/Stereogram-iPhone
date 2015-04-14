@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface PWImageThumbnailCell : UICollectionViewCell
+@interface ImageThumbnailCell : UICollectionViewCell
 
     // Image which will be displayed in the image view.
 @property (nonatomic, strong) UIImage *image;

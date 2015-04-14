@@ -9,17 +9,17 @@
 /* Begin PBXBuildFile section */
 		5713AA041ADB6B84006A0718 /* CollectionViewThumbnailProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 5713AA031ADB6B84006A0718 /* CollectionViewThumbnailProvider.m */; };
 		5713AA071ADB7957006A0718 /* StereogramViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5713AA061ADB7957006A0718 /* StereogramViewController.m */; };
-		572CB27216B19069002CB1B9 /* PWCameraOverlayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 572CB27116B19069002CB1B9 /* PWCameraOverlayView.xib */; };
-		572CB27816B1936D002CB1B9 /* PWCameraOverlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 572CB27716B1936D002CB1B9 /* PWCameraOverlayViewController.m */; };
+		572CB27216B19069002CB1B9 /* CameraOverlayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 572CB27116B19069002CB1B9 /* CameraOverlayView.xib */; };
+		572CB27816B1936D002CB1B9 /* CameraOverlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 572CB27716B1936D002CB1B9 /* CameraOverlayViewController.m */; };
 		57587D011ADC5EF800A16D64 /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57587CFF1ADC5EF800A16D64 /* WelcomeViewController.m */; };
 		57587D041ADC655100A16D64 /* WelcomeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57587D031ADC655100A16D64 /* WelcomeView.xib */; };
 		57587D061ADC6E5500A16D64 /* Welcome Text.html in Resources */ = {isa = PBXBuildFile; fileRef = 57587D051ADC6E5500A16D64 /* Welcome Text.html */; };
 		57587D081ADD088300A16D64 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57587D071ADD088300A16D64 /* Assets.xcassets */; };
 		57640F3216ADE6EC00A94EC8 /* NSError_AlertSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 57640F3116ADE6EC00A94EC8 /* NSError_AlertSupport.m */; };
-		57640F3D16AF399400A94EC8 /* PWImageThumbnailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57640F3C16AF399400A94EC8 /* PWImageThumbnailCell.m */; };
+		57640F3D16AF399400A94EC8 /* ImageThumbnailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57640F3C16AF399400A94EC8 /* ImageThumbnailCell.m */; };
 		57640F4016AF574300A94EC8 /* PWFunctional.m in Sources */ = {isa = PBXBuildFile; fileRef = 57640F3F16AF574300A94EC8 /* PWFunctional.m */; };
-		57640F4516AF615600A94EC8 /* PWFullImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57640F4416AF615600A94EC8 /* PWFullImageViewController.m */; };
-		57640F4716AF6A0D00A94EC8 /* PWFullImageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57640F4616AF6A0D00A94EC8 /* PWFullImageView.xib */; };
+		57640F4516AF615600A94EC8 /* FullImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57640F4416AF615600A94EC8 /* FullImageViewController.m */; };
+		57640F4716AF6A0D00A94EC8 /* FullImageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57640F4616AF6A0D00A94EC8 /* FullImageView.xib */; };
 		577108E016B3A76A007D32DA /* UIImage+Alpha.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108DB16B3A76A007D32DA /* UIImage+Alpha.m */; };
 		577108E116B3A76A007D32DA /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108DD16B3A76A007D32DA /* UIImage+Resize.m */; };
 		577108E216B3A76A007D32DA /* UIImage+RoundedCorner.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108DF16B3A76A007D32DA /* UIImage+RoundedCorner.m */; };
@@ -34,10 +34,10 @@
 		57F1082D16AC2DCD00907CBE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082C16AC2DCD00907CBE /* CoreGraphics.framework */; };
 		57F1083316AC2DCD00907CBE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 57F1083116AC2DCD00907CBE /* InfoPlist.strings */; };
 		57F1083516AC2DCD00907CBE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F1083416AC2DCD00907CBE /* main.m */; };
-		57F1083916AC2DCD00907CBE /* PWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F1083816AC2DCD00907CBE /* PWAppDelegate.m */; };
-		57F1084816AC2EC600907CBE /* PWPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F1084616AC2EC600907CBE /* PWPhotoViewController.m */; };
-		57F1084916AC2EC600907CBE /* PWPhotoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57F1084716AC2EC600907CBE /* PWPhotoView.xib */; };
-		57F1084C16AC300400907CBE /* PWPhotoStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F1084B16AC300400907CBE /* PWPhotoStore.m */; };
+		57F1083916AC2DCD00907CBE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F1083816AC2DCD00907CBE /* AppDelegate.m */; };
+		57F1084816AC2EC600907CBE /* PhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F1084616AC2EC600907CBE /* PhotoViewController.m */; };
+		57F1084916AC2EC600907CBE /* PhotoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57F1084716AC2EC600907CBE /* PhotoView.xib */; };
+		57F1084C16AC300400907CBE /* PhotoStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F1084B16AC300400907CBE /* PhotoStore.m */; };
 		57F1084E16AC35BF00907CBE /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1084D16AC35BF00907CBE /* MobileCoreServices.framework */; };
 /* End PBXBuildFile section */
 
@@ -46,9 +46,9 @@
 		5713AA031ADB6B84006A0718 /* CollectionViewThumbnailProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionViewThumbnailProvider.m; sourceTree = "<group>"; };
 		5713AA051ADB7957006A0718 /* StereogramViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StereogramViewController.h; sourceTree = "<group>"; };
 		5713AA061ADB7957006A0718 /* StereogramViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StereogramViewController.m; sourceTree = "<group>"; };
-		572CB27116B19069002CB1B9 /* PWCameraOverlayView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PWCameraOverlayView.xib; sourceTree = "<group>"; };
-		572CB27616B1936D002CB1B9 /* PWCameraOverlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWCameraOverlayViewController.h; sourceTree = "<group>"; };
-		572CB27716B1936D002CB1B9 /* PWCameraOverlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWCameraOverlayViewController.m; sourceTree = "<group>"; };
+		572CB27116B19069002CB1B9 /* CameraOverlayView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CameraOverlayView.xib; sourceTree = "<group>"; };
+		572CB27616B1936D002CB1B9 /* CameraOverlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraOverlayViewController.h; sourceTree = "<group>"; };
+		572CB27716B1936D002CB1B9 /* CameraOverlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraOverlayViewController.m; sourceTree = "<group>"; };
 		57587CFE1ADC5EF800A16D64 /* WelcomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeViewController.h; sourceTree = "<group>"; };
 		57587CFF1ADC5EF800A16D64 /* WelcomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeViewController.m; sourceTree = "<group>"; };
 		57587D031ADC655100A16D64 /* WelcomeView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WelcomeView.xib; sourceTree = "<group>"; };
@@ -61,13 +61,13 @@
 		57587D0F1ADD1EBD00A16D64 /* version */ = {isa = PBXFileReference; lastKnownFileType = text; path = version; sourceTree = "<group>"; };
 		57640F2F16ADE68B00A94EC8 /* NSError_AlertSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSError_AlertSupport.h; sourceTree = "<group>"; };
 		57640F3116ADE6EC00A94EC8 /* NSError_AlertSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSError_AlertSupport.m; sourceTree = "<group>"; };
-		57640F3B16AF399400A94EC8 /* PWImageThumbnailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWImageThumbnailCell.h; sourceTree = "<group>"; };
-		57640F3C16AF399400A94EC8 /* PWImageThumbnailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWImageThumbnailCell.m; sourceTree = "<group>"; };
+		57640F3B16AF399400A94EC8 /* ImageThumbnailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageThumbnailCell.h; sourceTree = "<group>"; };
+		57640F3C16AF399400A94EC8 /* ImageThumbnailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageThumbnailCell.m; sourceTree = "<group>"; };
 		57640F3E16AF574300A94EC8 /* PWFunctional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWFunctional.h; sourceTree = "<group>"; };
 		57640F3F16AF574300A94EC8 /* PWFunctional.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWFunctional.m; sourceTree = "<group>"; };
-		57640F4316AF615600A94EC8 /* PWFullImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWFullImageViewController.h; sourceTree = "<group>"; };
-		57640F4416AF615600A94EC8 /* PWFullImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWFullImageViewController.m; sourceTree = "<group>"; };
-		57640F4616AF6A0D00A94EC8 /* PWFullImageView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PWFullImageView.xib; sourceTree = "<group>"; };
+		57640F4316AF615600A94EC8 /* FullImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FullImageViewController.h; sourceTree = "<group>"; };
+		57640F4416AF615600A94EC8 /* FullImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FullImageViewController.m; sourceTree = "<group>"; };
+		57640F4616AF6A0D00A94EC8 /* FullImageView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FullImageView.xib; sourceTree = "<group>"; };
 		577108DA16B3A76A007D32DA /* UIImage+Alpha.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Alpha.h"; sourceTree = "<group>"; };
 		577108DB16B3A76A007D32DA /* UIImage+Alpha.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Alpha.m"; sourceTree = "<group>"; };
 		577108DC16B3A76A007D32DA /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
@@ -93,13 +93,13 @@
 		57F1083216AC2DCD00907CBE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		57F1083416AC2DCD00907CBE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		57F1083616AC2DCD00907CBE /* Stereogram-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Stereogram-Prefix.pch"; sourceTree = "<group>"; };
-		57F1083716AC2DCD00907CBE /* PWAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PWAppDelegate.h; sourceTree = "<group>"; };
-		57F1083816AC2DCD00907CBE /* PWAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PWAppDelegate.m; sourceTree = "<group>"; };
-		57F1084516AC2EC600907CBE /* PWPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPhotoViewController.h; sourceTree = "<group>"; };
-		57F1084616AC2EC600907CBE /* PWPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPhotoViewController.m; sourceTree = "<group>"; };
-		57F1084716AC2EC600907CBE /* PWPhotoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PWPhotoView.xib; sourceTree = "<group>"; };
-		57F1084A16AC300400907CBE /* PWPhotoStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPhotoStore.h; sourceTree = "<group>"; };
-		57F1084B16AC300400907CBE /* PWPhotoStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPhotoStore.m; sourceTree = "<group>"; };
+		57F1083716AC2DCD00907CBE /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		57F1083816AC2DCD00907CBE /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		57F1084516AC2EC600907CBE /* PhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoViewController.h; sourceTree = "<group>"; };
+		57F1084616AC2EC600907CBE /* PhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoViewController.m; sourceTree = "<group>"; };
+		57F1084716AC2EC600907CBE /* PhotoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoView.xib; sourceTree = "<group>"; };
+		57F1084A16AC300400907CBE /* PhotoStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoStore.h; sourceTree = "<group>"; };
+		57F1084B16AC300400907CBE /* PhotoStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoStore.m; sourceTree = "<group>"; };
 		57F1084D16AC35BF00907CBE /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -154,11 +154,11 @@
 		577108F016B9E04B007D32DA /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				57640F4616AF6A0D00A94EC8 /* PWFullImageView.xib */,
-				57F1084716AC2EC600907CBE /* PWPhotoView.xib */,
-				572CB27116B19069002CB1B9 /* PWCameraOverlayView.xib */,
-				57640F3B16AF399400A94EC8 /* PWImageThumbnailCell.h */,
-				57640F3C16AF399400A94EC8 /* PWImageThumbnailCell.m */,
+				57640F4616AF6A0D00A94EC8 /* FullImageView.xib */,
+				57F1084716AC2EC600907CBE /* PhotoView.xib */,
+				572CB27116B19069002CB1B9 /* CameraOverlayView.xib */,
+				57640F3B16AF399400A94EC8 /* ImageThumbnailCell.h */,
+				57640F3C16AF399400A94EC8 /* ImageThumbnailCell.m */,
 				57587D031ADC655100A16D64 /* WelcomeView.xib */,
 			);
 			name = Views;
@@ -169,8 +169,8 @@
 			children = (
 				57DE763E1AD833FB000F9CF0 /* ImageManager.h */,
 				57DE763F1AD833FB000F9CF0 /* ImageManager.m */,
-				57F1084A16AC300400907CBE /* PWPhotoStore.h */,
-				57F1084B16AC300400907CBE /* PWPhotoStore.m */,
+				57F1084A16AC300400907CBE /* PhotoStore.h */,
+				57F1084B16AC300400907CBE /* PhotoStore.m */,
 				57DE76411AD83579000F9CF0 /* ThumbnailCache.h */,
 				57DE76421AD83579000F9CF0 /* ThumbnailCache.m */,
 				57DE76441AD838F7000F9CF0 /* ErrorData.h */,
@@ -182,12 +182,12 @@
 		577108F216B9E07C007D32DA /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				57640F4316AF615600A94EC8 /* PWFullImageViewController.h */,
-				57640F4416AF615600A94EC8 /* PWFullImageViewController.m */,
-				57F1084516AC2EC600907CBE /* PWPhotoViewController.h */,
-				57F1084616AC2EC600907CBE /* PWPhotoViewController.m */,
-				572CB27616B1936D002CB1B9 /* PWCameraOverlayViewController.h */,
-				572CB27716B1936D002CB1B9 /* PWCameraOverlayViewController.m */,
+				57640F4316AF615600A94EC8 /* FullImageViewController.h */,
+				57640F4416AF615600A94EC8 /* FullImageViewController.m */,
+				57F1084516AC2EC600907CBE /* PhotoViewController.h */,
+				57F1084616AC2EC600907CBE /* PhotoViewController.m */,
+				572CB27616B1936D002CB1B9 /* CameraOverlayViewController.h */,
+				572CB27716B1936D002CB1B9 /* CameraOverlayViewController.m */,
 				5713AA051ADB7957006A0718 /* StereogramViewController.h */,
 				5713AA061ADB7957006A0718 /* StereogramViewController.m */,
 				57587CFE1ADC5EF800A16D64 /* WelcomeViewController.h */,
@@ -235,8 +235,8 @@
 				577108F216B9E07C007D32DA /* Controllers */,
 				57640F3E16AF574300A94EC8 /* PWFunctional.h */,
 				57640F3F16AF574300A94EC8 /* PWFunctional.m */,
-				57F1083716AC2DCD00907CBE /* PWAppDelegate.h */,
-				57F1083816AC2DCD00907CBE /* PWAppDelegate.m */,
+				57F1083716AC2DCD00907CBE /* AppDelegate.h */,
+				57F1083816AC2DCD00907CBE /* AppDelegate.m */,
 				577108EA16B8B5C9007D32DA /* PWAlertView.h */,
 				577108EB16B8B5CA007D32DA /* PWAlertView.m */,
 				577108ED16B8CC1D007D32DA /* PWActionSheet.h */,
@@ -318,10 +318,10 @@
 			files = (
 				57F1083316AC2DCD00907CBE /* InfoPlist.strings in Resources */,
 				57587D081ADD088300A16D64 /* Assets.xcassets in Resources */,
-				57F1084916AC2EC600907CBE /* PWPhotoView.xib in Resources */,
-				57640F4716AF6A0D00A94EC8 /* PWFullImageView.xib in Resources */,
+				57F1084916AC2EC600907CBE /* PhotoView.xib in Resources */,
+				57640F4716AF6A0D00A94EC8 /* FullImageView.xib in Resources */,
 				57587D041ADC655100A16D64 /* WelcomeView.xib in Resources */,
-				572CB27216B19069002CB1B9 /* PWCameraOverlayView.xib in Resources */,
+				572CB27216B19069002CB1B9 /* CameraOverlayView.xib in Resources */,
 				57587D061ADC6E5500A16D64 /* Welcome Text.html in Resources */,
 				577108F816BF5BFA007D32DA /* Notes.txt in Resources */,
 			);
@@ -335,18 +335,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				57F1083516AC2DCD00907CBE /* main.m in Sources */,
-				57F1083916AC2DCD00907CBE /* PWAppDelegate.m in Sources */,
+				57F1083916AC2DCD00907CBE /* AppDelegate.m in Sources */,
 				57DE76461AD838F7000F9CF0 /* ErrorData.m in Sources */,
-				57F1084816AC2EC600907CBE /* PWPhotoViewController.m in Sources */,
+				57F1084816AC2EC600907CBE /* PhotoViewController.m in Sources */,
 				5713AA041ADB6B84006A0718 /* CollectionViewThumbnailProvider.m in Sources */,
 				57587D011ADC5EF800A16D64 /* WelcomeViewController.m in Sources */,
 				5713AA071ADB7957006A0718 /* StereogramViewController.m in Sources */,
-				57F1084C16AC300400907CBE /* PWPhotoStore.m in Sources */,
+				57F1084C16AC300400907CBE /* PhotoStore.m in Sources */,
 				57640F3216ADE6EC00A94EC8 /* NSError_AlertSupport.m in Sources */,
-				57640F3D16AF399400A94EC8 /* PWImageThumbnailCell.m in Sources */,
+				57640F3D16AF399400A94EC8 /* ImageThumbnailCell.m in Sources */,
 				57640F4016AF574300A94EC8 /* PWFunctional.m in Sources */,
-				57640F4516AF615600A94EC8 /* PWFullImageViewController.m in Sources */,
-				572CB27816B1936D002CB1B9 /* PWCameraOverlayViewController.m in Sources */,
+				57640F4516AF615600A94EC8 /* FullImageViewController.m in Sources */,
+				572CB27816B1936D002CB1B9 /* CameraOverlayViewController.m in Sources */,
 				577108E016B3A76A007D32DA /* UIImage+Alpha.m in Sources */,
 				577108E116B3A76A007D32DA /* UIImage+Resize.m in Sources */,
 				577108E216B3A76A007D32DA /* UIImage+RoundedCorner.m in Sources */,

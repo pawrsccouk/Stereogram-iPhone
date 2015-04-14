@@ -1,12 +1,12 @@
 //
-//  PWPhotoStore.m
+//  PhotoStore.m
 //  Stereogram
 //
 //  Created by Patrick Wallace on 20/01/2013.
 //  Copyright (c) 2013 Patrick Wallace. All rights reserved.
 //
 
-#import "PWPhotoStore.h"
+#import "PhotoStore.h"
 #import "PWFunctional.h"
 #import "UIImage+Resize.h"
 #import "ErrorData.h"
@@ -19,20 +19,20 @@ NSString *const PhotoStoreErrorDomain = @"PhotoStore";
 typedef NS_ENUM(NSUInteger, ViewingMethod) { ViewingMethodCrosseye, ViewingMethodWalleye };
 
 static NSError *makeUnknownError() {
-    return [NSError errorWithDomain:kPWErrorDomainPhotoStore
-                               code:kPWErrorCodesUnknownError
+    return [NSError errorWithDomain:kErrorDomainPhotoStore
+                               code:ErrorCodesUnknownError
                            userInfo:@{ (NSString*)kCFErrorDescriptionKey : @"Unknown error" }];
 }
 
 static NSError *makeOutOfBoundsError(NSInteger index) {
     NSString *errorText = [NSString stringWithFormat:@"Index %ld is out of bounds", (long)index];
-    return [NSError errorWithDomain:kPWErrorDomainPhotoStore
-                               code:kPWErrorCodesIndexOutOfBounds
+    return [NSError errorWithDomain:kErrorDomainPhotoStore
+                               code:ErrorCodesIndexOutOfBounds
                            userInfo:@{ (NSString*)kCFErrorDescriptionKey : errorText }];
 }
 
 
-@interface PWPhotoStore () {
+@interface PhotoStore () {
     
         // Path to the place where the photos are stored.
     NSString *photoFolderPath;
@@ -51,7 +51,7 @@ static NSError *makeOutOfBoundsError(NSInteger index) {
 
 @end
 
-@implementation PWPhotoStore
+@implementation PhotoStore
 
 
 -(instancetype)init: (NSError **)errorPtr {
@@ -92,18 +92,18 @@ static NSError *makeOutOfBoundsError(NSInteger index) {
     NSMutableDictionary *propsToSave = [NSMutableDictionary dictionaryWithCapacity:imageProperties.count];
     for(NSString *filePath in imageProperties) {
         NSMutableDictionary *newProps = [imageProperties[filePath] mutableCopy];
-        [newProps removeObjectForKey:kPWImagePropertyThumbnail];
+        [newProps removeObjectForKey:kImagePropertyThumbnail];
         propsToSave[filePath] = newProps;
     }
         // Add a version number in case we change the format.
-    propsToSave[kPWVersion] = @1.0;
+    propsToSave[kVersion] = @1.0;
     
         // and write it to the properties file.
     BOOL ok = [propsToSave writeToFile:propertiesFilePath atomically:YES];
     if (!ok && errorPtr) {
-        *errorPtr = [NSError errorWithDomain:kPWErrorDomainPhotoStore
-                                        code:kPWErrorCodesUnknownError
-                                    userInfo:@{ (NSString*)kCFErrorDescriptionKey : @"Error saving the image properties." }];
+        *errorPtr = [NSError errorWithDomain:kErrorDomainPhotoStore
+                                        code:ErrorCodesUnknownError
+                                    userInfo:@{ NSLocalizedDescriptionKey : @"Error saving the image properties." }];
     }
     return ok;
 }
@@ -117,7 +117,7 @@ static NSError *makeOutOfBoundsError(NSInteger index) {
     NSError *error;
     BOOL written = [fileData writeToFile:filePath options:NSDataWritingAtomic error:&error];
     if(written) {
-        imageProperties[filePath] = [NSMutableDictionary dictionaryWithObject:dateTaken forKey:kPWImagePropertyDateTaken];
+        imageProperties[filePath] = [NSMutableDictionary dictionaryWithObject:dateTaken forKey:kImagePropertyDateTaken];
         [_thumbnailCache addThumbnailForImage:image forKey:filePath];
         return nil;
     }
@@ -225,10 +225,10 @@ static NSMutableDictionary *loadImageProperties(NSString *propertiesFilePath) {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithContentsOfFile:propertiesFilePath];
         // If the dict exists, check if the version ID is valid.
     if (dictionary) {
-        NSCAssert( [dictionary[kPWVersion] isEqual:@1.0], @"Invalid data version %@", dictionary[kPWVersion]);
+        NSCAssert( [dictionary[kVersion] isEqual:@1.0], @"Invalid data version %@", dictionary[kVersion]);
             // Remove the version once the file has passed the check.
             // If we use a later version then I may have to massage data here (i.e. for backward compatibility).
-        [dictionary removeObjectForKey:kPWVersion];
+        [dictionary removeObjectForKey:kVersion];
         return dictionary;
     }
     return [NSMutableDictionary dictionary];    // First initialisation. Return an empty dictionary.

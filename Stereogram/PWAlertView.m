@@ -70,7 +70,7 @@
     
     for (UIAlertAction *action in self.actions) {
             // Note: Destructive events are not shown specially here. Alerts only show for destructive events anyway so all actions are assumed to be destructive or cancel.
-        int index = [_alertView addButtonWithTitle:action.title];
+        NSInteger index = [_alertView addButtonWithTitle:action.title];
         if (action.style == UIAlertActionStyleCancel) {
             _alertView.cancelButtonIndex = index;
         }

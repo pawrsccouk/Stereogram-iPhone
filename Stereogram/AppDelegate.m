@@ -6,21 +6,21 @@
 //  Copyright (c) 2013 Patrick Wallace. All rights reserved.
 //
 
-#import "PWAppDelegate.h"
-#import "PWPhotoViewController.h"
-#import "PWPhotoStore.h"
+#import "AppDelegate.h"
+#import "PhotoViewController.h"
+#import "PhotoStore.h"
 #import "PWAlertView.h"
 #import "PWActionSheet.h"
 #import "NSError_AlertSupport.h"
 #import "WelcomeViewController.h"
 
-@interface PWAppDelegate () {
-    PWPhotoStore *_photoStore;
+@interface AppDelegate () {
+    PhotoStore *_photoStore;
 }
 
 @end
 
-@implementation PWAppDelegate
+@implementation AppDelegate
 
 -(BOOL)           application: (UIApplication *)application
 didFinishLaunchingWithOptions: (NSDictionary *)launchOptions {
@@ -30,10 +30,10 @@ didFinishLaunchingWithOptions: (NSDictionary *)launchOptions {
         
             // Initialise the photo store, and capture any errors it returns.
         NSError *error = nil;
-        _photoStore = [[PWPhotoStore alloc] init:&error];
+        _photoStore = [[PhotoStore alloc] init:&error];
         if (_photoStore) {
             
-            PWPhotoViewController *photoViewController = [[PWPhotoViewController alloc] init];
+            PhotoViewController *photoViewController = [[PhotoViewController alloc] init];
             photoViewController.photoStore = _photoStore;
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:photoViewController];
             

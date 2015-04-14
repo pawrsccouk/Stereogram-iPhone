@@ -1,17 +1,17 @@
 //
-//  PWPhotoViewController.m
+//  PhotoViewController.m
 //  Stereogram
 //
 //  Created by Patrick Wallace on 20/01/2013.
 //  Copyright (c) 2013 Patrick Wallace. All rights reserved.
 //
 
-#import "PWPhotoViewController.h"
-#import "PWPhotoStore.h"
+#import "PhotoViewController.h"
+#import "PhotoStore.h"
 #import "NSError_AlertSupport.h"
 #import "UIImage+Resize.h"
-#import "PWImageThumbnailCell.h"
-#import "PWFullImageViewController.h"
+#import "ImageThumbnailCell.h"
+#import "FullImageViewController.h"
 #import "PWAlertView.h"
 #import "PWActionSheet.h"
 #import "ImageManager.h"
@@ -24,7 +24,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 
 #pragma mark - 
 
-@interface PWPhotoViewController () {
+@interface PhotoViewController () {
     UIBarButtonItem *_exportItem, *_editItem;
     UIActivityIndicatorView *_activityIndicator;
     CollectionViewThumbnailProvider *_thumbnailProvider;
@@ -34,11 +34,11 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 }
 @end
 
-@implementation PWPhotoViewController
+@implementation PhotoViewController
 @synthesize photoStore = _photoStore, photoCollectionView = _photoCollectionView;
 
--(instancetype) initWithPhotoStore: (PWPhotoStore *)photoStore {
-    self = [super initWithNibName:@"PWPhotoView" bundle:nil];
+-(instancetype) initWithPhotoStore: (PhotoStore *)photoStore {
+    self = [super initWithNibName:@"PhotoView" bundle:nil];
     if (self) {
         _photoStore = photoStore;
         _thumbnailProvider = nil;
@@ -66,7 +66,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     [super viewDidLoad];
     NSLog(@"PWPhotoViewController viewDidLoad self = %@", self);
     
-    [self.self.photoCollectionView registerClass:[PWImageThumbnailCell class] forCellWithReuseIdentifier:IMAGE_THUMBNAIL_CELL_ID];
+    [self.self.photoCollectionView registerClass:[ImageThumbnailCell class] forCellWithReuseIdentifier:IMAGE_THUMBNAIL_CELL_ID];
     self.photoCollectionView.allowsSelection = YES;
     self.photoCollectionView.allowsMultipleSelection = YES;
     
@@ -133,7 +133,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     NSError *error;
     UIImage *image = [_photoStore imageAtIndex:indexPath.item error:&error];
     if (image) {
-        PWFullImageViewController *imageViewController = [[PWFullImageViewController alloc] initWithImage:image
+        FullImageViewController *imageViewController = [[FullImageViewController alloc] initWithImage:image
                                                                                               atIndexPath:indexPath
                                                                                                  delegate:self];
         [self.navigationController pushViewController:imageViewController animated:YES];
@@ -150,7 +150,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 
     /// Display the FullImageViewController in "Approval" mode (which adds "Keep" and "Delete" buttons).
 -(void) showApprovalWindowForImage: (UIImage*)image {
-    PWFullImageViewController *imageViewController = [[PWFullImageViewController alloc] initWithImage:image
+    FullImageViewController *imageViewController = [[FullImageViewController alloc] initWithImage:image
                                                                                           forApproval:YES
                                                                                              delegate:self];
     UINavigationController *navC = [[UINavigationController alloc] initWithRootViewController:imageViewController];
@@ -183,7 +183,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 
 #pragma mark FullImageViewController delegate
 
--(void) fullImageViewController: (PWFullImageViewController *)controller
+-(void) fullImageViewController: (FullImageViewController *)controller
                   approvedImage: (UIImage *)image {
     NSError *error = nil;
     NSDate *dateTaken = [NSDate date];
@@ -193,7 +193,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     [self.photoCollectionView reloadData];
 }
 
--(void) dismissedFullImageViewController: (PWFullImageViewController *)controller {
+-(void) dismissedFullImageViewController: (FullImageViewController *)controller {
     [controller dismissViewControllerAnimated:YES completion:nil];
 }
 

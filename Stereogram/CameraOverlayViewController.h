@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface PWCameraOverlayViewController : UIViewController
+@interface CameraOverlayViewController : UIViewController
 
 #pragma mark Interface Builder
 

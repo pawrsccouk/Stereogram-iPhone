@@ -167,14 +167,14 @@
 		577108F116B9E064007D32DA /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				57DE76441AD838F7000F9CF0 /* ErrorData.h */,
+				57DE76451AD838F7000F9CF0 /* ErrorData.m */,
 				57DE763E1AD833FB000F9CF0 /* ImageManager.h */,
 				57DE763F1AD833FB000F9CF0 /* ImageManager.m */,
 				57F1084A16AC300400907CBE /* PhotoStore.h */,
 				57F1084B16AC300400907CBE /* PhotoStore.m */,
 				57DE76411AD83579000F9CF0 /* ThumbnailCache.h */,
 				57DE76421AD83579000F9CF0 /* ThumbnailCache.m */,
-				57DE76441AD838F7000F9CF0 /* ErrorData.h */,
-				57DE76451AD838F7000F9CF0 /* ErrorData.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";

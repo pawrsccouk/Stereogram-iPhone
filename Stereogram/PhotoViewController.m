@@ -19,8 +19,17 @@
 
 static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail";
 
-static NSString *formatDeleteMessage(NSUInteger numToDelete);
-static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id layout);
+static NSString *formatDeleteMessage(NSUInteger numToDelete) {
+    NSString * const postscript = @"This operation cannot be undone.";
+    return numToDelete == 1 ? [NSString stringWithFormat:@"Do you really want to delete this photo?\n%@", postscript]
+    : [NSString stringWithFormat:@"Do you really want to delete these %lu photos?\n%@", (unsigned long)numToDelete, postscript];
+}
+
+static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id layout) {
+    NSCAssert([layout isKindOfClass:[UICollectionViewFlowLayout class]], @"Photo collection layout is not a flow layout");
+    return (UICollectionViewFlowLayout *)layout;
+}
+
 
 #pragma mark - 
 
@@ -36,6 +45,8 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 
 @implementation PhotoViewController
 @synthesize photoStore = _photoStore, photoCollectionView = _photoCollectionView;
+
+#pragma mark Housekeeping
 
 -(instancetype) initWithPhotoStore: (PhotoStore *)photoStore {
     self = [super initWithNibName:@"PhotoView" bundle:nil];
@@ -62,9 +73,10 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     return [self initWithPhotoStore:nil];
 }
 
+#pragma mark Overrides
+
 - (void) viewDidLoad {
     [super viewDidLoad];
-    NSLog(@"PWPhotoViewController viewDidLoad self = %@", self);
     
     [self.self.photoCollectionView registerClass:[ImageThumbnailCell class] forCellWithReuseIdentifier:IMAGE_THUMBNAIL_CELL_ID];
     self.photoCollectionView.allowsSelection = YES;
@@ -79,6 +91,97 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     _thumbnailProvider = [[CollectionViewThumbnailProvider alloc] initWithPhotoStore:_photoStore
                                                                           collection:self.photoCollectionView];
 }
+
+    /// Return a potted description of the object.
+- (NSString *)description {
+    NSString *superDescription = [super description];
+    NSString *desc = [NSString stringWithFormat:@"%@ <_photoStore = %@>", superDescription, _photoStore];
+    return desc;
+}
+
+    /// Called when we want to edit the collection view. Overridden so we can clear the selection when editing ends.
+-(void) setEditing: (BOOL)editing {
+    [super setEditing:editing];
+        // On turning off the editing option, clear the selection.
+    if (!editing) {
+        for (NSIndexPath *path in self.photoCollectionView.indexPathsForSelectedItems) {
+            [self.photoCollectionView deselectItemAtIndexPath:path animated:NO];
+        }
+    }
+}
+
+#pragma mark StereogramViewController delegate
+
+-(void) stereogramViewController: (StereogramViewController *)controller
+               createdStereogram: (UIImage *)stereogram {
+    [controller dismissViewControllerAnimated:YES
+                                      completion: ^{
+                                              // Once dismissed, trigger the full image view controller to examine the image.
+                                          [controller reset];
+                                          [self showApprovalWindowForImage:stereogram];
+                                      }];
+}
+
+-(void) stereogramViewControllerWasCancelled: (StereogramViewController *)controller {
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark FullImageViewController delegate
+
+-(void) fullImageViewController: (FullImageViewController *)controller
+                  approvedImage: (UIImage *)image {
+    NSError *error = nil;
+    NSDate *dateTaken = [NSDate date];
+    if (![_photoStore addImage:image dateTaken:dateTaken error:&error]) {
+        [error showAlertWithTitle:@"Error saving photo" parentViewController:controller];
+    }
+    [self.photoCollectionView reloadData];
+}
+
+-(void) dismissedFullImageViewController: (FullImageViewController *)controller {
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+
+-(void) fullImageViewController: (FullImageViewController *)controller
+                   amendedImage: (UIImage *)newImage
+                    atIndexPath: (NSIndexPath *)indexPath {
+        // If indexPath is nil, we are calling it in approval mode and the image doesn't exist in the library yet. In which case, don't do anything, as we will handle it in the approvedImage delegate method.
+        // If indexPath is valid, we are updating an existing entry. So replace the image at the path with the new image provided.
+    if (indexPath) {
+        NSError *error = nil;
+        if (![self.photoStore replaceImageAtIndex:indexPath.item
+                                   withImage:newImage
+                                            error:&error]) {
+            [error showAlertWithTitle:@"Image update error"
+                 parentViewController:controller];
+        }
+        [_photoCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+    }
+}
+
+#pragma mark UICollectionView delegate
+
+-(void)   collectionView: (UICollectionView *)collectionView
+didSelectItemAtIndexPath: (NSIndexPath *)indexPath {
+        // In editing mode, this doesn't need to do anything as the status flag on the cell has already been updated.
+        // In viewing mode, we need to revert this status-flag update, and then pop the full-image view onto the navigation stack.
+    if(! self.editing) {
+        [collectionView deselectItemAtIndexPath:indexPath animated:NO];
+        [self showImageAtIndexPath:indexPath];
+    }
+}
+
+-(void)     collectionView: (UICollectionView *)collectionView
+didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
+        // If we are in viewing mode, then we any click on a thumbnail -to select or deselect- we translate into
+        // a request to show the full-image view.
+    if(! self.editing) {
+        [self showImageAtIndexPath:indexPath];
+    }
+}
+
+#pragma mark Private methods
 
     /// Kick off the picture-taking process. Present the camera view controller with our custom overlay on top.
 -(void) takePicture {
@@ -117,25 +220,14 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
                                animated:YES];
 }
 
-    /// Called when we want to edit the collection view. Overridden so we can clear the selection when editing ends.
--(void) setEditing: (BOOL)editing {
-    [super setEditing:editing];
-        // On turning off the editing option, clear the selection.
-    if (!editing) {
-        for (NSIndexPath *path in self.photoCollectionView.indexPathsForSelectedItems) {
-            [self.photoCollectionView deselectItemAtIndexPath:path animated:NO];
-        }
-    }
-}
-
     /// Present a FullImageViewController in "View" mode showing the image at the given index path.
 -(void) showImageAtIndexPath: (NSIndexPath*)indexPath {
     NSError *error;
     UIImage *image = [_photoStore imageAtIndex:indexPath.item error:&error];
     if (image) {
         FullImageViewController *imageViewController = [[FullImageViewController alloc] initWithImage:image
-                                                                                              atIndexPath:indexPath
-                                                                                                 delegate:self];
+                                                                                          atIndexPath:indexPath
+                                                                                             delegate:self];
         [self.navigationController pushViewController:imageViewController animated:YES];
     } else {
         NSString *title = [NSString stringWithFormat:@"Error accessing image at index %ld", (long)indexPath.item];
@@ -143,83 +235,17 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     }
 }
 
-    /// Event called when the view appears.
--(void) viewDidAppear: (BOOL)animated {
-    [super viewDidAppear:animated];
-}
 
     /// Display the FullImageViewController in "Approval" mode (which adds "Keep" and "Delete" buttons).
 -(void) showApprovalWindowForImage: (UIImage*)image {
     FullImageViewController *imageViewController = [[FullImageViewController alloc] initWithImage:image
-                                                                                          forApproval:YES
-                                                                                             delegate:self];
+                                                                                      forApproval:YES
+                                                                                         delegate:self];
     UINavigationController *navC = [[UINavigationController alloc] initWithRootViewController:imageViewController];
     navC.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:navC animated:YES completion:nil];
 }
 
-    /// Return a potted description of the object.
-- (NSString *)description {
-    NSString *superDescription = [super description];
-    NSString *desc = [NSString stringWithFormat:@"%@ <_photoStore = %@>", superDescription, _photoStore];
-    return desc;
-}
-
-#pragma mark StereogramViewController delegate
-
--(void) stereogramViewController: (StereogramViewController *)controller
-               createdStereogram: (UIImage *)stereogram {
-    [controller dismissViewControllerAnimated:YES
-                                      completion: ^{
-                                              // Once dismissed, trigger the full image view controller to examine the image.
-                                          [controller reset];
-                                          [self showApprovalWindowForImage:stereogram];
-                                      }];
-}
-
--(void) stereogramViewControllerWasCancelled: (StereogramViewController *)controller {
-    [controller dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark FullImageViewController delegate
-
--(void) fullImageViewController: (FullImageViewController *)controller
-                  approvedImage: (UIImage *)image {
-    NSError *error = nil;
-    NSDate *dateTaken = [NSDate date];
-    if (![_photoStore addImage:image dateTaken:dateTaken error:&error]) {
-        [error showAlertWithTitle:@"Error saving photo" parentViewController:controller];
-    }
-    [self.photoCollectionView reloadData];
-}
-
--(void) dismissedFullImageViewController: (FullImageViewController *)controller {
-    [controller dismissViewControllerAnimated:YES completion:nil];
-}
-
-
-#pragma mark UICollectionView delegate
-
--(void)   collectionView: (UICollectionView *)collectionView
-didSelectItemAtIndexPath: (NSIndexPath *)indexPath {
-        // In editing mode, this doesn't need to do anything as the status flag on the cell has already been updated.
-        // In viewing mode, we need to revert this status-flag update, and then pop the full-image view onto the navigation stack.
-    if(! self.editing) {
-        [collectionView deselectItemAtIndexPath:indexPath animated:NO];
-        [self showImageAtIndexPath:indexPath];
-    }
-}
-
--(void)     collectionView: (UICollectionView *)collectionView
-didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
-        // If we are in viewing mode, then we any click on a thumbnail -to select or deselect- we translate into
-        // a request to show the full-image view.
-    if(! self.editing) {
-        [self showImageAtIndexPath:indexPath];
-    }
-}
-
-#pragma mark Private methods
 
 
 -(void) copyPhotosToCameraRoll: (NSArray *)selectedIndexes {
@@ -321,15 +347,4 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
 }
 
 @end
-
-static NSString *formatDeleteMessage(NSUInteger numToDelete) {
-    NSString * const postscript = @"This operation cannot be undone.";
-    return numToDelete == 1 ? [NSString stringWithFormat:@"Do you really want to delete this photo?\n%@", postscript]
-    : [NSString stringWithFormat:@"Do you really want to delete these %lu photos?\n%@", (unsigned long)numToDelete, postscript];
-}
-
-static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id layout) {
-    NSCAssert([layout isKindOfClass:[UICollectionViewFlowLayout class]], @"Photo collection layout is not a flow layout");
-    return (UICollectionViewFlowLayout *)layout;
-}
 

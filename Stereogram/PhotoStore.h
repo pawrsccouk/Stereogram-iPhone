@@ -63,14 +63,17 @@ enum ViewModes {
 
     /// Deletes the images at the specified index paths.
 -(BOOL) deleteImagesAtIndexPaths: (NSArray*)indexPaths
-                           error:(NSError **)errorPtr;
+                           error: (NSError **)errorPtr;
 
     /// Overwrites the image at the given position with a new image.
     /// Returns an error if there is no image at index already.
--(BOOL) replaceImageAtIndex:(NSUInteger)index withImage:(UIImage*)newImage error:(NSError **)errorPtr;
+-(BOOL) replaceImageAtIndex: (NSUInteger)index
+                  withImage: (UIImage*)newImage
+                      error: (NSError **)errorPtr;
 
     /// Copies the image at position <index> into the camera roll.
--(BOOL) copyImageToCameraRoll:(NSUInteger)index error:(NSError **)errorPtr;
+-(BOOL) copyImageToCameraRoll: (NSUInteger)index
+                        error: (NSError **)errorPtr;
 
 
 @end

@@ -24,8 +24,8 @@ static NSString * const THUMBNAIL_CELL_ID = @"ImageThumbnailCell";
     // TODO: Make this generic
 @implementation CollectionViewThumbnailProvider
 
--(instancetype) initWithPhotoStore:(PWPhotoStore *)photoStore
-                        collection:(UICollectionView *)photoCollection {
+-(instancetype) initWithPhotoStore: (PWPhotoStore *)photoStore
+                        collection: (UICollectionView *)photoCollection {
     self = [super init];
     if (!self) { return nil; }
     
@@ -44,17 +44,17 @@ static NSString * const THUMBNAIL_CELL_ID = @"ImageThumbnailCell";
     
 #pragma mark - Collection View Data Source
 
-- (NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+-(NSInteger) numberOfSectionsInCollectionView: (UICollectionView *)collectionView {
     return 1;
 }
 
--(NSInteger) collectionView:(UICollectionView *)collectionView
+-(NSInteger) collectionView: (UICollectionView *)collectionView
      numberOfItemsInSection:(NSInteger)section {
     return _photoStore.count;
 }
 
--(UICollectionViewCell *) collectionView:(UICollectionView *)collectionView
-                  cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+-(UICollectionViewCell *) collectionView: (UICollectionView *)collectionView
+                  cellForItemAtIndexPath: (NSIndexPath *)indexPath {
     PWImageThumbnailCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:THUMBNAIL_CELL_ID
                                                                            forIndexPath: indexPath];
     NSError *error = nil;

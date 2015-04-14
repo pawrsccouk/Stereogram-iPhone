@@ -14,7 +14,7 @@
 
 @interface CollectionViewThumbnailProvider : NSObject <UICollectionViewDataSource>
 
--(instancetype)initWithPhotoStore: (PWPhotoStore *)photoStore
-                       collection: (UICollectionView*)photoCollection;
+-(instancetype) initWithPhotoStore: (PWPhotoStore *)photoStore
+                        collection: (UICollectionView*)photoCollection;
 
 @end

@@ -17,7 +17,7 @@
 @property (nonatomic, readonly) CGSize selectedImageSize;
 
     // Images which are overlaid on the thumbnail to indicate if it is selected or not.
-+(UIImage*)unselectedImage;
-+(UIImage*)selectedImage;
++(UIImage*) unselectedImage;
++(UIImage*) selectedImage;
 
 @end

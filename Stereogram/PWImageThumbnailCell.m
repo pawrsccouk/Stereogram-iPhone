@@ -8,60 +8,57 @@
 
 #import "PWImageThumbnailCell.h"
 
-@interface PWImageThumbnailCell ()
-{
-    UIImageView __weak *imageView;
-    UIImageView __weak *selectionOverlayView;
+@interface PWImageThumbnailCell () {
+    UIImageView __weak *_imageView;
+    UIImageView __weak *_selectionOverlayView;
 }
 @end
+
 
 @implementation PWImageThumbnailCell
 @synthesize image = _image;
 
 
-- (id)initWithFrame:(CGRect)frame {
+-(id) initWithFrame: (CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
             // Initialization code - Create and add the image thumbnail view
-        UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
-        [self.contentView addSubview:imgView];
-        imageView = imgView;
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
+        [self.contentView addSubview:imageView];
+        _imageView = imageView;
+        
             // Now add the overlay view which will show when the object is selected.
         CGSize selImageSize = self.selectedImageSize;
         CGPoint selImageOrigin = CGPointMake(frame.size.width - selImageSize.width, frame.size.height - selImageSize.height);
         CGRect selectOverlayFrame = { .origin = selImageOrigin, .size = selImageSize };
-        imgView = [[UIImageView alloc] initWithFrame:selectOverlayFrame];
-        imgView.image = [self.class unselectedImage];
-        [self.contentView addSubview:imgView];
-        selectionOverlayView = imgView;
+        imageView = [[UIImageView alloc] initWithFrame:selectOverlayFrame];
+        imageView.image = [self.class unselectedImage];
+        [self.contentView addSubview:imageView];
+        _selectionOverlayView = imageView;
     }
     return self;
 }
 
--(void)setImage:(UIImage *)image
-{
+-(void) setImage: (UIImage *)image {
     if(_image != image) {
-        NSAssert(imageView, @"imageView should not be nil");
-        imageView.image = image;
+        NSAssert(_imageView, @"_imageView should not be nil");
+        _imageView.image = image;
         _image = image;
     }
 }
 
--(CGSize)selectedImageSize { return CGSizeMake(46, 46); }
+-(CGSize) selectedImageSize { return CGSizeMake(46, 46); }
 
--(NSString *)description
-{
-    return [NSString stringWithFormat:@"%@ imageView=%@", [super description], imageView];
+-(NSString *) description {
+    return [NSString stringWithFormat:@"%@ _imageView=%@", [super description], _imageView];
 }
 
--(void)setSelected:(BOOL)selected
-{
+-(void) setSelected: (BOOL)selected {
     [super setSelected:selected];
-    selectionOverlayView.image = selected ? [self.class selectedImage] : [self.class unselectedImage];
+    _selectionOverlayView.image = selected ? [self.class selectedImage] : [self.class unselectedImage];
 }
 
-+(UIImage *)selectedImage
-{
++(UIImage *) selectedImage {
     static UIImage *selectedImage;
     if(! selectedImage) {
         selectedImage = [UIImage imageNamed:@"Tick Overlay"];
@@ -70,8 +67,7 @@
     return selectedImage;
 }
 
-+(UIImage *)unselectedImage
-{
++(UIImage *) unselectedImage {
     static UIImage *notSelectedImage;
     if(! notSelectedImage) {
         notSelectedImage = [UIImage imageNamed:@"Unticked Overlay"];

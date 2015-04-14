@@ -12,8 +12,8 @@
 @class PWPhotoStore;
 
 @interface PWPhotoViewController : UIViewController <UINavigationControllerDelegate, UICollectionViewDelegate, PWFullImageViewControllerDelegate, StereogramViewControllerDelegate> {
-    IBOutlet UICollectionView __weak *photoCollectionView;
 }
+@property (nonatomic, weak) IBOutlet UICollectionView *photoCollectionView;
 
     /// Designated Initializer. Initialize the object and set the default value for photoStore.
 -(instancetype)initWithPhotoStore: (PWPhotoStore*)photoStore NS_DESIGNATED_INITIALIZER;

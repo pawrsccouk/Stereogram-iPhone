@@ -11,8 +11,13 @@
 
 @interface PWActionSheet : NSObject <UIActionSheetDelegate>
 
+#pragma mark Constructors
+
     /// Designated initializer. Create a sheet with a title but no objects.
 -(instancetype)initWithTitle: (NSString *)title NS_DESIGNATED_INITIALIZER;
+
+
+#pragma mark Methods
 
     /// Add one action to the list that will be displayed.
 -(void) addAction: (PWAction *)action;
@@ -25,14 +30,22 @@
 -(void) showFromBarButtonItem:(UIBarButtonItem*)barButtonItem
                      animated:(BOOL)animated;
 
+#pragma mark Properties
+
     /// List of actions provided for this object.
 @property (nonatomic, readonly) NSArray *actions;
 
 @end
 
+
+
+#pragma mark -
+
+
+
 typedef void (^PWActionHandler)(PWAction *action);
 
-    /// This mimics UIAlertHandler (which is available in iOS8 only) for older architectures. Pass to a PWAlertView and the handler will be called when the button with it's title is clicked.
+    /// This mimics UIAlertHandler (which is available in iOS8 only) for older architectures. Pass to a PWAlertView or PWActionSheet, and the handler will be called when the button with it's title is clicked.
 @interface PWAction : NSObject
 
 #pragma mark Constructors.

@@ -32,27 +32,28 @@ static inline CGRect activityFrame(CGRect parentBounds, CGSize activitySize);
 }
 
 -(NSString *) helpText {
-    return helpTextItem.title;
+    return self.helpTextItem.title;
 }
 
 -(void) setHelpText: (NSString *)text {
-    helpTextItem.title = text;
+    self.helpTextItem.title = text;
 }
 
 -(void) showWaitIcon: (BOOL)showIcon {
     if(showIcon) {
-        crosshair.hidden = YES;
+        self.crosshair.hidden = YES;
         activityView.frame = activityFrame(self.view.bounds, activityView.bounds.size);
         [self.view addSubview:activityView];
         [activityView startAnimating];
     }
     else {
-        crosshair.hidden = NO;
+        self.crosshair.hidden = NO;
         [activityView stopAnimating];
         [activityView removeFromSuperview];
     }
 }
 
+#pragma mark Interface Builder
 
 -(IBAction) takePhoto: (id)sender {
     NSAssert(self.imagePickerController, @"camera controller is nil.");
@@ -68,6 +69,8 @@ static inline CGRect activityFrame(CGRect parentBounds, CGSize activitySize);
     [picker.delegate imagePickerControllerDidCancel:picker];
 }
 @end
+
+#pragma mark -
 
     // Return the frame used for the activity view, given the parent bounds and the child's size.
 static CGRect activityFrame(CGRect parentBounds, CGSize activitySize) {

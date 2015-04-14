@@ -10,6 +10,7 @@
 #import "PWPhotoViewController.h"
 #import "PWPhotoStore.h"
 #import "PWAlertView.h"
+#import "PWActionSheet.h"
 #import "NSError_AlertSupport.h"
 #import "WelcomeViewController.h"
 
@@ -65,11 +66,11 @@ didFinishLaunchingWithOptions: (NSDictionary *)launchOptions {
     PWAlertView *alertView = [[PWAlertView alloc] initWithTitle:@""
                                                         message:error.localizedDescription
                                                  preferredStyle:UIAlertControllerStyleAlert];
-    PWAlertAction *closeAction = [PWAlertAction actionWithTitle:@"Terminate"
-                                                        handler:^(PWAlertAction *action) {
-                                                            NSLog(@"Error %@ caused this application to terminate.", error);
-                                                            abort();
-                                                        }];
+    PWAction *closeAction = [PWAction actionWithTitle:@"Terminate"
+                                              handler:^(PWAction *action) {
+                                                  NSLog(@"Error %@ caused this application to terminate.", error);
+                                                  abort();
+                                              }];
     [alertView addAction:closeAction];
     [alertView show];
 }

@@ -25,7 +25,7 @@
 @end
 
 @implementation PWFullImageViewController
-@synthesize delegate = _delegate;
+@synthesize delegate = _delegate, imageView = _imageView, scrollView = _scrollView;
 
 -(instancetype) initWithImage: (UIImage *)image
                   atIndexPath: (NSIndexPath *)indexPath
@@ -80,8 +80,8 @@
 - (void) viewDidLoad {
     [super viewDidLoad];
         // Calculate the size of the underlying image, and then use that to set the scrollview's bounds.
-    imageView.image = _image;
-    [imageView sizeToFit];
+    self.imageView.image = _image;
+    [self.imageView sizeToFit];
 }
 
 -(void) viewDidLayoutSubviews {
@@ -142,8 +142,8 @@
                     // Clear the activity indicator and update the image in this view.
                 self.showActivityIndicator = NO;
                 _image = newImage;
-                imageView.image = newImage;
-                [imageView sizeToFit];
+                self.imageView.image = newImage;
+                [self.imageView sizeToFit];
                     // Notify the system that the image has been changed in the view.
                 if ([self.delegate respondsToSelector:@selector(fullImageViewController:amendedImage:atIndexPath:)]) {
                     [self.delegate fullImageViewController:self
@@ -164,30 +164,31 @@
 -(void) logData {
     CGRect frame = self.view.frame;
     NSLog(@"Scroll view frame = (%f,%f),(%f,%f)", frame.origin.x, frame.origin.y, frame.size.width, frame.size.height );
-    frame = imageView.frame;
+    frame = self.imageView.frame;
     NSLog(@"Image view frame = (%f,%f),(%f,%f)", frame.origin.x, frame.origin.y, frame.size.width, frame.size.height );
-    NSLog(@"ImageView = %@, Image = %@ Image size = (%f,%f)", imageView, imageView.image, imageView.image.size.width, imageView.image.size.height);
-    NSLog(@"ScrollView = %@, contentSize = (%f, %f)\n\n", scrollView, scrollView.contentSize.width, scrollView.contentSize.height);
+    NSLog(@"ImageView = %@, Image = %@ Image size = (%f,%f)", self.imageView, self.self.imageView.image, self.imageView.image.size.width, self.imageView.image.size.height);
+    NSLog(@"ScrollView = %@, contentSize = (%f, %f)\n\n", self.scrollView, self.scrollView.contentSize.width, self.scrollView.contentSize.height);
 }
 
 
 #pragma mark - Scrollview delegate
 
 -(UIView *) viewForZoomingInScrollView: (UIScrollView *)scrollView {
-    return imageView;
+    return self.imageView;
 }
 
 
 #pragma mark - Private methods
 
 -(void) setupScrollviewAnimated: (BOOL)animated {
-    scrollView.contentSize = imageView.bounds.size;
+    self.scrollView.contentSize = self.imageView.bounds.size;
         // Set the zoom info so the image fits in the window by default, but can be zoomed in. Respect the aspect ratio.
-    CGSize imageSize = imageView.image.size, viewSize = scrollView.bounds.size;
-    scrollView.maximumZoomScale = 1.0;  // Cannot zoom in past the 1:1 ratio.
-    scrollView.minimumZoomScale = MIN(viewSize.width / imageSize.width, viewSize.height / imageSize.height);
+    CGSize imageSize = self.imageView.image.size, viewSize = self.scrollView.bounds.size;
+    self.scrollView.maximumZoomScale = 1.0;  // Cannot zoom in past the 1:1 ratio.
+    self.scrollView.minimumZoomScale = MIN(viewSize.width / imageSize.width, viewSize.height / imageSize.height);
         // Default to showing the whole image.
-    [scrollView setZoomScale:scrollView.minimumZoomScale animated:animated];
+    [self.scrollView setZoomScale:self.scrollView.minimumZoomScale
+                         animated:animated];
 }
 
 

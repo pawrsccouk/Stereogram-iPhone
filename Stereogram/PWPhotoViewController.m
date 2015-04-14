@@ -35,7 +35,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 @end
 
 @implementation PWPhotoViewController
-@synthesize photoStore = _photoStore;
+@synthesize photoStore = _photoStore, photoCollectionView = _photoCollectionView;
 
 -(instancetype) initWithPhotoStore: (PWPhotoStore *)photoStore {
     self = [super initWithNibName:@"PWPhotoView" bundle:nil];
@@ -66,18 +66,18 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     [super viewDidLoad];
     NSLog(@"PWPhotoViewController viewDidLoad self = %@", self);
     
-    [photoCollectionView registerClass:[PWImageThumbnailCell class] forCellWithReuseIdentifier:IMAGE_THUMBNAIL_CELL_ID];
-    photoCollectionView.allowsSelection = YES;
-    photoCollectionView.allowsMultipleSelection = YES;
+    [self.self.photoCollectionView registerClass:[PWImageThumbnailCell class] forCellWithReuseIdentifier:IMAGE_THUMBNAIL_CELL_ID];
+    self.photoCollectionView.allowsSelection = YES;
+    self.photoCollectionView.allowsMultipleSelection = YES;
     
         // Set the thumbnail size from the store.
-    UICollectionViewFlowLayout *flowLayout = cast_UICollectionViewFlowLayout(photoCollectionView.collectionViewLayout);
+    UICollectionViewFlowLayout *flowLayout = cast_UICollectionViewFlowLayout(self.photoCollectionView.collectionViewLayout);
     flowLayout.itemSize = _photoStore.thumbnailSize;
     [flowLayout invalidateLayout];
 
         // Pass a provider to copy data from the model to the collection view.
     _thumbnailProvider = [[CollectionViewThumbnailProvider alloc] initWithPhotoStore:_photoStore
-                                                                          collection:photoCollectionView];
+                                                                          collection:self.photoCollectionView];
 }
 
     /// Kick off the picture-taking process. Present the camera view controller with our custom overlay on top.
@@ -90,14 +90,14 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 
     /// Create and display an action menu with the items available for a set of the collection items.
 -(void) actionMenu {
-    if (photoCollectionView.indexPathsForSelectedItems.count == 0) {
+    if (self.photoCollectionView.indexPathsForSelectedItems.count == 0) {
         return; // Do nothing if there are no items to act on.
     }
     
     PWAction *cancelAction = [PWAction cancelAction];
     
     PWActionHandler deleteBlock = ^(PWAction *action) {
-        [self deletePhotos:photoCollectionView];
+        [self deletePhotos:self.photoCollectionView];
     };
     PWAction *deleteAction = [PWAction actionWithTitle:@"Delete"
                                                  style:UIAlertActionStyleDestructive
@@ -105,7 +105,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     
     
     PWActionHandler copyBlock = ^(PWAction *action) {
-        [self copyPhotosToCameraRoll:photoCollectionView.indexPathsForSelectedItems];
+        [self copyPhotosToCameraRoll:self.photoCollectionView.indexPathsForSelectedItems];
     };
     PWAction *copyAction = [PWAction actionWithTitle:@"Copy to gallery"
                                              handler:copyBlock];
@@ -122,8 +122,8 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     [super setEditing:editing];
         // On turning off the editing option, clear the selection.
     if (!editing) {
-        for (NSIndexPath *path in photoCollectionView.indexPathsForSelectedItems) {
-            [photoCollectionView deselectItemAtIndexPath:path animated:NO];
+        for (NSIndexPath *path in self.photoCollectionView.indexPathsForSelectedItems) {
+            [self.photoCollectionView deselectItemAtIndexPath:path animated:NO];
         }
     }
 }
@@ -190,7 +190,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     if (![_photoStore addImage:image dateTaken:dateTaken error:&error]) {
         [error showAlertWithTitle:@"Error saving photo" parentViewController:controller];
     }
-    [photoCollectionView reloadData];
+    [self.photoCollectionView reloadData];
 }
 
 -(void) dismissedFullImageViewController: (PWFullImageViewController *)controller {
@@ -262,7 +262,7 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
     [self showActivityIndicator:YES];
     
         // Take a deep copy of the selected items, in case another thread manipulates them while I'm working.
-    NSArray *selectedItems = [photoCollectionView.indexPathsForSelectedItems copy];
+    NSArray *selectedItems = [self.photoCollectionView.indexPathsForSelectedItems copy];
     
         // Convert the image in a background thread (it can take a while), showing a progress wheel to the user.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -284,10 +284,10 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
             // Back on the main thread, deselect all the selected thumbnails, and stop the activity timer.
         dispatch_async(dispatch_get_main_queue(), ^{
             for(NSIndexPath *indexPath in selectedItems) {
-                [photoCollectionView deselectItemAtIndexPath:indexPath animated:YES];
+                [self.photoCollectionView deselectItemAtIndexPath:indexPath animated:YES];
             }
             [self showActivityIndicator:NO];
-            [photoCollectionView reloadItemsAtIndexPaths:selectedItems];
+            [self.photoCollectionView reloadItemsAtIndexPaths:selectedItems];
         });
     });
 }
@@ -301,7 +301,7 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
                                              message:message
                                       preferredStyle:UIAlertControllerStyleAlert];
         
-        PWAlertHandler deleteActionBlock = ^(PWAlertAction *action) {
+        PWActionHandler deleteActionBlock = ^(PWAction *action) {
             NSLog(@"Deleting images at index paths: %@", indexPaths);
             NSError *error = nil;
             if (![self.photoStore deleteImagesAtIndexPaths:indexPaths error:&error]) {
@@ -312,12 +312,10 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
             [photoCollection reloadData];
         };
         
-        PWAlertAction *deleteAction = [PWAlertAction actionWithTitle:@"Delete"
+        PWAction *deleteAction = [PWAction actionWithTitle:@"Delete"
                                                                style:UIAlertActionStyleDestructive
                                                              handler:deleteActionBlock];
-        [_alertView addAction:deleteAction];
-        [_alertView addAction:[PWAlertAction cancelAction]];
-        
+        [_alertView addActions:@[deleteAction, [PWAction cancelAction]]];
         [_alertView show];
     }
 }

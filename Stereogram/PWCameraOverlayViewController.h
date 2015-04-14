@@ -9,19 +9,26 @@
 #import <UIKit/UIKit.h>
 
 @interface PWCameraOverlayViewController : UIViewController
-{
-    __weak IBOutlet UIBarButtonItem *helpTextItem;
-    __weak IBOutlet UIImageView * crosshair;
-}
-@property UIImagePickerController *imagePickerController;
 
-    // Set the help text to display to the user.
-@property (nonatomic, copy) NSString *helpText;
+#pragma mark Interface Builder
 
-    // if showIcon, Trigger a wait icon as the device is processing in the background. Otherwise hide the icon.
--(void)showWaitIcon:(BOOL) showIcon;
+@property (nonatomic, weak) IBOutlet UIBarButtonItem *helpTextItem;
+@property (nonatomic, weak) IBOutlet UIImageView *crosshair;
 
     // I am replacing the standard buttons with my own, so I need to forward the messages to the image picker.
 -(IBAction) takePhoto: (id)sender;
 -(IBAction) cancel: (id)sender;
+
+#pragma mark Properties
+
+@property (nonatomic, strong) UIImagePickerController *imagePickerController;
+
+    // Set the help text to display to the user.
+@property (nonatomic, copy) NSString *helpText;
+
+#pragma mark Methods
+
+    // if showIcon, Trigger a wait icon as the device is processing in the background. Otherwise hide the icon.
+-(void)showWaitIcon:(BOOL) showIcon;
+
 @end

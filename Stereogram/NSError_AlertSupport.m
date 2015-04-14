@@ -17,7 +17,7 @@
     : self.localizedFailureReason ? self.localizedFailureReason
     : self.localizedDescription;
     
-        // UIAlertController only valid after iOS 8.
+// UIAlertController only valid in iOS 8.
 //    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
 //                                                                             message:errorText
 //                                                                      preferredStyle:UIAlertControllerStyleAlert];

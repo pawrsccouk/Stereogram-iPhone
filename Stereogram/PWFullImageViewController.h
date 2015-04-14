@@ -30,10 +30,9 @@
 
 #pragma mark -
 
-@interface PWFullImageViewController : UIViewController <UIScrollViewDelegate> {
-    IBOutlet UIImageView  *imageView;
-    IBOutlet UIScrollView  *scrollView;
-}
+@interface PWFullImageViewController : UIViewController <UIScrollViewDelegate>
+@property (nonatomic, weak) IBOutlet UIImageView *imageView;
+@property (nonatomic, weak) IBOutlet UIScrollView *scrollView;
 
     /// Block which will be called if the user approved the image.
 @property (nonatomic, copy) id<PWFullImageViewControllerDelegate> delegate;

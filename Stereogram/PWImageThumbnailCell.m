@@ -63,16 +63,20 @@
 +(UIImage *)selectedImage
 {
     static UIImage *selectedImage;
-    if(! selectedImage)
-        selectedImage = [UIImage imageNamed:@"Tick"];
+    if(! selectedImage) {
+        selectedImage = [UIImage imageNamed:@"Tick Overlay"];
+        NSAssert(selectedImage, @"Image called Tick Overlay was not in the bundle.");
+    }
     return selectedImage;
 }
 
 +(UIImage *)unselectedImage
 {
     static UIImage *notSelectedImage;
-    if(! notSelectedImage)
-        notSelectedImage = [UIImage imageNamed:@"Unselected Overlay"];
+    if(! notSelectedImage) {
+        notSelectedImage = [UIImage imageNamed:@"Unticked Overlay"];
+        NSAssert(notSelectedImage, @"Image called Unticked Overlay was not found in the bundle.");
+    }
     return notSelectedImage;
 }
 

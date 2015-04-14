@@ -54,6 +54,11 @@
 		57587D031ADC655100A16D64 /* WelcomeView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WelcomeView.xib; sourceTree = "<group>"; };
 		57587D051ADC6E5500A16D64 /* Welcome Text.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Welcome Text.html"; sourceTree = "<group>"; };
 		57587D071ADD088300A16D64 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		57587D0A1ADD1EBD00A16D64 /* Data */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Data; sourceTree = "<group>"; };
+		57587D0B1ADD1EBD00A16D64 /* metadata */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = metadata; sourceTree = "<group>"; };
+		57587D0D1ADD1EBD00A16D64 /* Preview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Preview.png; sourceTree = "<group>"; };
+		57587D0E1ADD1EBD00A16D64 /* Thumbnail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Thumbnail.png; sourceTree = "<group>"; };
+		57587D0F1ADD1EBD00A16D64 /* version */ = {isa = PBXFileReference; lastKnownFileType = text; path = version; sourceTree = "<group>"; };
 		57640F2F16ADE68B00A94EC8 /* NSError_AlertSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSError_AlertSupport.h; sourceTree = "<group>"; };
 		57640F3116ADE6EC00A94EC8 /* NSError_AlertSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSError_AlertSupport.m; sourceTree = "<group>"; };
 		57640F3B16AF399400A94EC8 /* PWImageThumbnailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWImageThumbnailCell.h; sourceTree = "<group>"; };
@@ -113,6 +118,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		57587D091ADD1EBD00A16D64 /* AppIcon.sketch */ = {
+			isa = PBXGroup;
+			children = (
+				57587D0A1ADD1EBD00A16D64 /* Data */,
+				57587D0B1ADD1EBD00A16D64 /* metadata */,
+				57587D0C1ADD1EBD00A16D64 /* QuickLook */,
+				57587D0F1ADD1EBD00A16D64 /* version */,
+			);
+			path = AppIcon.sketch;
+			sourceTree = "<group>";
+		};
+		57587D0C1ADD1EBD00A16D64 /* QuickLook */ = {
+			isa = PBXGroup;
+			children = (
+				57587D0D1ADD1EBD00A16D64 /* Preview.png */,
+				57587D0E1ADD1EBD00A16D64 /* Thumbnail.png */,
+			);
+			path = QuickLook;
+			sourceTree = "<group>";
+		};
 		577108D916B3A76A007D32DA /* UIImage-categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -174,6 +199,7 @@
 		57F1081916AC2DCD00907CBE = {
 			isa = PBXGroup;
 			children = (
+				57587D091ADD1EBD00A16D64 /* AppIcon.sketch */,
 				577108F716BF5BFA007D32DA /* Notes.txt */,
 				577108D916B3A76A007D32DA /* UIImage-categories */,
 				57F1082E16AC2DCD00907CBE /* Stereogram */,

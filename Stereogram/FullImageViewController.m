@@ -9,49 +9,50 @@
 #import "FullImageViewController.h"
 #import "ImageManager.h"
 #import "NSError_AlertSupport.h"
+#import "Stereogram.h"
 
 @interface FullImageViewController () {
-    UIImage *_image;
+    Stereogram *_stereogram;
     UIActivityIndicatorView *_activityIndicator;
     NSIndexPath *_indexPath;
 }
 
     /// Designated Initializer.
--(instancetype) initWithImage: (UIImage *)image
-                  atIndexPath: (NSIndexPath *)indexPath
-                  forApproval: (BOOL)forApproval
-                     delegate: (id<FullImageViewControllerDelegate>)delegate NS_DESIGNATED_INITIALIZER;
+-(instancetype) initWithStereogram: (Stereogram *)stereogram
+                       atIndexPath: (NSIndexPath *)indexPath
+                       forApproval: (BOOL)forApproval
+                          delegate: (id<FullImageViewControllerDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
 @end
 
 @implementation FullImageViewController
 @synthesize delegate = _delegate, imageView = _imageView, scrollView = _scrollView;
 
--(instancetype) initWithImage: (UIImage *)image
-                  atIndexPath: (NSIndexPath *)indexPath
-                     delegate: (id<FullImageViewControllerDelegate>)delegate {
-    return [self initWithImage:image
-                   atIndexPath:indexPath
-                   forApproval:NO
-                      delegate:delegate];
+-(instancetype) initWithStereogram: (Stereogram *)stereogram
+                       atIndexPath: (NSIndexPath *)indexPath
+                          delegate: (id<FullImageViewControllerDelegate>)delegate {
+    return [self initWithStereogram:stereogram
+                        atIndexPath:indexPath
+                        forApproval:NO
+                           delegate:delegate];
 }
 
-- (instancetype)initWithImage:(UIImage *)image
-                  forApproval:(BOOL)forApproval
-                     delegate:(id<FullImageViewControllerDelegate>)delegate {
-    return [self initWithImage:image
-                   atIndexPath:nil
-                   forApproval:forApproval
-                      delegate:delegate];
+-(instancetype) initWithStereogram: (Stereogram *)stereogram
+                       forApproval: (BOOL)forApproval
+                          delegate: (id<FullImageViewControllerDelegate>)delegate {
+    return [self initWithStereogram:stereogram
+                        atIndexPath:nil
+                        forApproval:forApproval
+                           delegate:delegate];
 }
 
--(id)initWithImage: (UIImage *)image
-       atIndexPath: (NSIndexPath *)indexPath
-       forApproval: (BOOL)approval
-          delegate: (id<FullImageViewControllerDelegate>)delegate {
+-(instancetype) initWithStereogram: (Stereogram *)image
+                       atIndexPath: (NSIndexPath *)indexPath
+                       forApproval: (BOOL)approval
+                          delegate: (id<FullImageViewControllerDelegate>)delegate {
     self = [super initWithNibName:@"FullImageView" bundle:nil];
     if (self) {
-        _image = image;
+        _stereogram = image;
         _delegate = delegate;
         _indexPath = indexPath;
         UIBarButtonItem *toggleViewMethodButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Toggle View Method"
@@ -80,7 +81,12 @@
 - (void) viewDidLoad {
     [super viewDidLoad];
         // Calculate the size of the underlying image, and then use that to set the scrollview's bounds.
-    self.imageView.image = _image;
+    NSError *error = nil;
+    UIImage *fullImage = [_stereogram stereogramImage:&error];
+    if (!fullImage) {
+        NSLog(@"viewDidLoad: Failed to load image from stereogram %@", _stereogram);
+    }
+    self.imageView.image = fullImage;
     [self.imageView sizeToFit];
 }
 
@@ -93,16 +99,23 @@
 -(void) keepPhoto {
     id<FullImageViewControllerDelegate> delegate = self.delegate;
     NSAssert(delegate, @"No delegate assigned to view controller %@", self);
-    if ([delegate respondsToSelector:@selector(fullImageViewController:approvedImage:)]) {
+    if ([delegate respondsToSelector:@selector(fullImageViewController:approvingStereogram:result:)]) {
         [delegate fullImageViewController:self
-                            approvedImage:_image];
+                      approvingStereogram:_stereogram
+                                   result:ApprovalResult_Approved];
     }
     [delegate dismissedFullImageViewController:self];
 }
 
 -(void) discardPhoto {
-    [self.presentingViewController dismissViewControllerAnimated:YES
-                                                      completion:nil];
+    id<FullImageViewControllerDelegate> delegate = self.delegate;
+    NSAssert(delegate, @"No delegate assigned to view controller %@", self);
+    if ([delegate respondsToSelector:@selector(fullImageViewController:approvingStereogram:result:)]) {
+        [delegate fullImageViewController:self
+                      approvingStereogram:_stereogram
+                                   result:ApprovalResult_Discarded];
+    }
+    [delegate dismissedFullImageViewController:self];
 }
 
 
@@ -133,29 +146,44 @@
 }
 
 -(IBAction) changeViewingMethod: (id)sender {
-    UIImage *oldImage = _image;
+    
     self.showActivityIndicator = YES;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        UIImage *newImage = [ImageManager changeViewingMethod:oldImage];
-        if (newImage) {
+        
+        switch(_stereogram.viewingMethod) {
+            case ViewingMethod_CrossEye: _stereogram.viewingMethod = ViewingMethod_WallEye ; break;
+            case ViewingMethod_WallEye:  _stereogram.viewingMethod = ViewingMethod_CrossEye; break;
+            default:
+                [NSException raise:@"Not implemented"
+                            format:@"Stereogram %@ viewing method is not implemented.", _stereogram];
+                break;
+        }
+            // Reload the image while we are in the background thread.
+        NSError *error = nil;
+        if ([_stereogram refresh:&error]) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                
                     // Clear the activity indicator and update the image in this view.
                 self.showActivityIndicator = NO;
-                _image = newImage;
-                self.imageView.image = newImage;
+                UIImage *fullImage = [_stereogram stereogramImage:nil];
+                NSAssert(fullImage, @"Stereogram %@ image was not properly cached.", _stereogram);
+                self.imageView.image = fullImage;
                 [self.imageView sizeToFit];
                     // Notify the system that the image has been changed in the view.
-                if ([self.delegate respondsToSelector:@selector(fullImageViewController:amendedImage:atIndexPath:)]) {
+                if ([self.delegate respondsToSelector:@selector(fullImageViewController:amendedStereogram:atIndexPath:)]) {
                     [self.delegate fullImageViewController:self
-                                              amendedImage:newImage
+                                         amendedStereogram:_stereogram
                                                atIndexPath:_indexPath];
                 }
+                
             });
-        } else { // newImage is nil.
+        } else { // stereogram reset failed.
             dispatch_async(dispatch_get_main_queue(), ^{
+                
                 self.showActivityIndicator = false;
-                NSError *error = [NSError errorWithDomain:@"Error creating new image." code:0 userInfo:nil];
-                [error showAlertWithTitle:@"Error changing viewing method" parentViewController:self];
+                [error showAlertWithTitle:@"Error changing viewing method"
+                     parentViewController:self];
+                
             });
         }
     });

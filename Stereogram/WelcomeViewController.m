@@ -29,11 +29,8 @@ static UIWebView *cast_UIWebView(UIView *view) {
 
 -(instancetype) initWithNibName: (NSString *)nibNameOrNil
                          bundle: (NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:@"WelcomeView"
-                          bundle: nibBundleOrNil];
-    if (!self) { return nil; }
-    _stereogramViewController = [[StereogramViewController alloc] initWithDelegate:self];
-    return self;
+    return [super initWithNibName:@"WelcomeView"
+                           bundle: nibBundleOrNil];
 }
 
 -(id) initWithCoder: (NSCoder *)aDecoder {
@@ -69,23 +66,26 @@ static UIWebView *cast_UIWebView(UIView *view) {
 #pragma mark Callbacks
 
 -(void) takePicture {
+    _stereogramViewController = [[StereogramViewController alloc] initWithPhotoStore:self.photoStore
+                                                                            delegate:self];
     [_stereogramViewController takePicture:self];
 }
 
 #pragma mark FullImageController delegate
 
 -(void) fullImageViewController: (FullImageViewController *)controller
-                  approvedImage: (UIImage *)image {
-    NSDate *dateTaken = [NSDate date];
-    NSError *error = nil;
-    if (![_photoStore addImage:image
-                     dateTaken:dateTaken
-                         error:&error]) {
-        [error showAlertWithTitle:@"Error saving photo" parentViewController:self];
+            approvingStereogram: (Stereogram *)stereogram
+                         result: (ApprovalResults)result {
+        // Do nothing if the stereogram was approved (we've already added it). Delete it if it was not approved.
+    if (result == ApprovalResult_Discarded) {
+        NSError *error = nil;
+        [_photoStore deleteStereogram:stereogram
+                                error:&error];
+        [error showAlertWithTitle:@"Error removing photo" parentViewController:self];
     }
 }
 
--(void)dismissedFullImageViewController:(FullImageViewController *)controller {
+-(void) dismissedFullImageViewController: (FullImageViewController *)controller {
     [controller dismissViewControllerAnimated:NO completion:^{
             // Once the FullImageViewController is dismissed, check if we have now got some photos to display. If so, dismiss the welcome controller to reveal the photo controller, which should be the at the root of the controller hierarchy.
         if (_photoStore.count > 0) {
@@ -97,16 +97,16 @@ static UIWebView *cast_UIWebView(UIView *view) {
 
 #pragma mark StereogramViewController delegate
 
--(void)stereogramViewController:(StereogramViewController *)controller
-              createdStereogram:(UIImage *)stereogram {
+-(void) stereogramViewController: (StereogramViewController *)controller
+               createdStereogram: (Stereogram *)stereogram {
     [controller reset];
     [controller dismissViewControllerAnimated:NO
                                    completion:^{
-                                       [self showApprovalWindowForImage:stereogram];
+                                       [self showApprovalWindowForStereogram:stereogram];
                                    }];
 }
 
--(void)stereogramViewControllerWasCancelled:(StereogramViewController *)controller {
+-(void) stereogramViewControllerWasCancelled: (StereogramViewController *)controller {
     [controller dismissViewControllerAnimated:YES
                                    completion:nil];
 }
@@ -116,10 +116,10 @@ static UIWebView *cast_UIWebView(UIView *view) {
 
     // Called to present the image to the user, with options to accept or reject it.
     // If the user accepts, the photo is added to the photo store.
--(void) showApprovalWindowForImage: (UIImage *)image {
-    FullImageViewController *fullImageViewController = [[FullImageViewController alloc] initWithImage:image
-                                                                                          forApproval:YES
-                                                                                             delegate:self];
+-(void) showApprovalWindowForStereogram: (Stereogram *)stereogram {
+    FullImageViewController *fullImageViewController = [[FullImageViewController alloc] initWithStereogram:stereogram
+                                                                                               forApproval:YES
+                                                                                                  delegate:self];
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:fullImageViewController];
     navigationController.modalPresentationStyle = UIModalPresentationFullScreen;

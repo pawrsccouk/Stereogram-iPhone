@@ -7,7 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-@class FullImageViewController;
+@class FullImageViewController, Stereogram;
+
+    /// Result of the user's review of the image. Do they want to keep it or delete it.
+typedef NS_ENUM(NSInteger, ApprovalResults) {
+        /// User wants to keep this image.
+    ApprovalResult_Approved,
+        /// User wants to discard this image.
+    ApprovalResult_Discarded
+};
 
 @protocol FullImageViewControllerDelegate <NSObject>
     
@@ -16,14 +24,15 @@
 
 @optional
 
-       // Called if the controller is in Approval mode and the user has approved an image.
+    /// Called if the controller is in Approval mode when the user has approved or rejected a stereogram.
 -(void) fullImageViewController: (FullImageViewController *)controller
-                  approvedImage: (UIImage *)image;
+            approvingStereogram: (Stereogram *)stereogram
+                         result: (ApprovalResults)result;
     
-        // Called if the controller is viewing an image, and the image changed.
-        // This will be called in both approval mode and regular viewing mode
+    /// Called if the controller is viewing a sterogram, and the stereogram changed.
+    // This will be called in both approval mode and regular viewing mode
 -(void) fullImageViewController: (FullImageViewController *)controller
-                   amendedImage: (UIImage *)newImage
+              amendedStereogram: (Stereogram *)newStereogram
                     atIndexPath: (NSIndexPath *)indexPath;
 
 @end
@@ -34,19 +43,19 @@
 @property (nonatomic, weak) IBOutlet UIImageView *imageView;
 @property (nonatomic, weak) IBOutlet UIScrollView *scrollView;
 
-    /// Block which will be called if the user approved the image.
+    /// Delegate with callbacks if the user approved, rejected or modified the image.
 @property (nonatomic, copy) id<FullImageViewControllerDelegate> delegate;
 
     /// Initialise the image view to display the given image.
     /// If forApproval is YES, the view gets a 'Keep' button, and if pressed, calls approvalBlock, which should copy the image to permanent storage.
--(instancetype) initWithImage: (UIImage*)image
-                  forApproval: (BOOL)forApproval
-                     delegate: (id<FullImageViewControllerDelegate>)delegate;
+-(instancetype) initWithStereogram: (Stereogram *)stereogram
+                       forApproval: (BOOL)forApproval
+                          delegate: (id<FullImageViewControllerDelegate>)delegate;
 
     /// Convenience initialiser. Open in normal mode, viewing the index at the selected index path.
--(instancetype) initWithImage: (UIImage*)image
-                  atIndexPath: (NSIndexPath *)indexPath
-                     delegate: (id<FullImageViewControllerDelegate>)delegate;
+-(instancetype) initWithStereogram: (Stereogram *)stereogram
+                       atIndexPath: (NSIndexPath *)indexPath
+                          delegate: (id<FullImageViewControllerDelegate>)delegate;
 
 
 @end

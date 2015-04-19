@@ -60,7 +60,7 @@ didFinishLaunchingWithOptions: (NSDictionary *)launchOptions {
 -(void) terminateWithError: (NSError *)error {
     if (!error) {
         error = [NSError errorWithDomain: PhotoStoreErrorDomain
-                                    code: PhotoStoreErrorCodeCouldntCreateSharedStore
+                                    code: PhotoStoreErrorCode_CouldntCreateSharedStore
                                 userInfo: @{ NSLocalizedDescriptionKey : @"Unknown error"}];
     }
     PWAlertView *alertView = [[PWAlertView alloc] initWithTitle:@""
@@ -97,12 +97,13 @@ didFinishLaunchingWithOptions: (NSDictionary *)launchOptions {
         // This starts the task on a background thread. Here we save the data.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        NSError *error = nil;
-        if (![_photoStore saveProperties:&error]) {
-            // Can't inform the user here, as the app has been replaced. Do we present it for them when the app restores?
-            NSLog(@"Error saving the image properties. Error %@ user info %@", error, error.userInfo);
-        }
-        NSLog(@"Background task save complete.");
+            // TODO: Implement save-on-background.
+//        NSError *error = nil;
+//        if (![_photoStore saveProperties:&error]) {
+//            // Can't inform the user here, as the app has been replaced. Do we present it for them when the app restores?
+//            NSLog(@"Error saving the image properties. Error %@ user info %@", error, error.userInfo);
+//        }
+//        NSLog(@"Background task save complete.");
         [application endBackgroundTask:bgTask];
         bgTask = UIBackgroundTaskInvalid;
     });

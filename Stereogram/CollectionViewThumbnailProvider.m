@@ -8,6 +8,7 @@
 
 #import "CollectionViewThumbnailProvider.h"
 #import "ImageThumbnailCell.h"
+#import "Stereogram.h"
 #import "PhotoStore.h"
 
 static NSString * const THUMBNAIL_CELL_ID = @"ImageThumbnailCell";
@@ -58,14 +59,10 @@ static NSString * const THUMBNAIL_CELL_ID = @"ImageThumbnailCell";
     ImageThumbnailCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:THUMBNAIL_CELL_ID
                                                                            forIndexPath: indexPath];
     NSError *error = nil;
-    UIImage *image = [_photoStore thumbnailAtIndex:indexPath.item
-                                             error:&error];
-    if (image) {
-        cell.image = image;
-    } else {
-        NSLog(@"Error receiving image at %@ from photoStore %@", indexPath, _photoStore);
-        NSLog(@"The error was %@", error);
-    }
+    Stereogram *stereogram = [_photoStore stereogramAtIndex:indexPath.item];
+    NSAssert(stereogram, @"Error receiving stereogram at indexPath %@ from photoStore %@", indexPath, _photoStore);
+    cell.image = [stereogram thumbnailImage:&error];
+    NSAssert(cell.image, @"Error receiving image from stereogram %@. Error was %@", stereogram, error);
     return cell;
 }
 

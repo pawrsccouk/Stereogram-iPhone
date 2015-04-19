@@ -12,12 +12,13 @@
 
 static NSString * const kErrorDomainPhotoStore;
 
-
-enum ErrorCodes {
-    ErrorCodesUnknownError             =   1,
-    ErrorCodesCouldntCreateSharedStore = 100,
-    ErrorCodesCouldntLoadImageProperties    ,
-    ErrorCodesIndexOutOfBounds
+typedef NS_ENUM(NSInteger, ErrorCodes) {
+    ErrorCode_UnknownError             =   1,
+    ErrorCode_CouldntCreateSharedStore = 100,
+    ErrorCode_CouldntLoadImageProperties    ,
+    ErrorCode_InvalidFileFormat             ,
+    ErrorCode_IndexOutOfBounds              ,
+    ErrorCode_NotImplemented                ,
 };
 
     // Keys of image properties.

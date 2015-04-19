@@ -16,6 +16,7 @@
 #import "PWActionSheet.h"
 #import "ImageManager.h"
 #import "CollectionViewThumbnailProvider.h"
+#import "Stereogram.h"
 
 static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail";
 
@@ -84,7 +85,7 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     
         // Set the thumbnail size from the store.
     UICollectionViewFlowLayout *flowLayout = cast_UICollectionViewFlowLayout(self.photoCollectionView.collectionViewLayout);
-    flowLayout.itemSize = _photoStore.thumbnailSize;
+    flowLayout.itemSize = [Stereogram thumbnailSize];
     [flowLayout invalidateLayout];
 
         // Pass a provider to copy data from the model to the collection view.
@@ -113,12 +114,12 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 #pragma mark StereogramViewController delegate
 
 -(void) stereogramViewController: (StereogramViewController *)controller
-               createdStereogram: (UIImage *)stereogram {
+               createdStereogram: (Stereogram *)stereogram {
     [controller dismissViewControllerAnimated:YES
                                       completion: ^{
                                               // Once dismissed, trigger the full image view controller to examine the image.
                                           [controller reset];
-                                          [self showApprovalWindowForImage:stereogram];
+                                          [self showApprovalWindowForStereogram:stereogram];
                                       }];
 }
 
@@ -129,11 +130,16 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 #pragma mark FullImageViewController delegate
 
 -(void) fullImageViewController: (FullImageViewController *)controller
-                  approvedImage: (UIImage *)image {
-    NSError *error = nil;
-    NSDate *dateTaken = [NSDate date];
-    if (![_photoStore addImage:image dateTaken:dateTaken error:&error]) {
-        [error showAlertWithTitle:@"Error saving photo" parentViewController:controller];
+            approvingStereogram: (Stereogram *)stereogram
+                         result: (ApprovalResults)result {
+        // If the user discards the stereogram, then delete it from the disk and from the collection.
+    if (result == ApprovalResult_Discarded) {
+        NSError *error = nil;
+        if (![_photoStore deleteStereogram:stereogram
+                                     error:&error]) {
+            [error showAlertWithTitle:@"Error discarding stereogram"
+                 parentViewController:self];
+        }
     }
     [self.photoCollectionView reloadData];
 }
@@ -144,16 +150,16 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
 
 
 -(void) fullImageViewController: (FullImageViewController *)controller
-                   amendedImage: (UIImage *)newImage
+              amendedStereogram: (Stereogram *)newStereogram
                     atIndexPath: (NSIndexPath *)indexPath {
         // If indexPath is nil, we are calling it in approval mode and the image doesn't exist in the library yet. In which case, don't do anything, as we will handle it in the approvedImage delegate method.
         // If indexPath is valid, we are updating an existing entry. So replace the image at the path with the new image provided.
     if (indexPath) {
         NSError *error = nil;
-        if (![self.photoStore replaceImageAtIndex:indexPath.item
-                                   withImage:newImage
-                                            error:&error]) {
-            [error showAlertWithTitle:@"Image update error"
+        if (![self.photoStore replaceStereogramAtIndex:indexPath.item
+                                        withStereogram:newStereogram
+                                                 error:&error]) {
+            [error showAlertWithTitle:@"Stereogram update error"
                  parentViewController:controller];
         }
         [_photoCollectionView reloadItemsAtIndexPaths:@[indexPath]];
@@ -185,9 +191,8 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
 
     /// Kick off the picture-taking process. Present the camera view controller with our custom overlay on top.
 -(void) takePicture {
-    if (!_stereogramViewController) {
-        _stereogramViewController = [[StereogramViewController alloc] initWithDelegate:self];
-    }
+    _stereogramViewController = [[StereogramViewController alloc] initWithPhotoStore:self.photoStore
+                                                                            delegate:self];
     [_stereogramViewController takePicture:self];
 }
 
@@ -222,25 +227,24 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
 
     /// Present a FullImageViewController in "View" mode showing the image at the given index path.
 -(void) showImageAtIndexPath: (NSIndexPath*)indexPath {
-    NSError *error;
-    UIImage *image = [_photoStore imageAtIndex:indexPath.item error:&error];
-    if (image) {
-        FullImageViewController *imageViewController = [[FullImageViewController alloc] initWithImage:image
-                                                                                          atIndexPath:indexPath
-                                                                                             delegate:self];
+    Stereogram *stereogram = [_photoStore stereogramAtIndex:indexPath.item];
+    NSAssert(stereogram, @"No stereogram at index path %@", indexPath);
+    if (stereogram) {
+        FullImageViewController *imageViewController = [[FullImageViewController alloc] initWithStereogram:stereogram
+                                                                                               atIndexPath:indexPath
+                                                                                                  delegate:self];
         [self.navigationController pushViewController:imageViewController animated:YES];
     } else {
-        NSString *title = [NSString stringWithFormat:@"Error accessing image at index %ld", (long)indexPath.item];
-        [error showAlertWithTitle:title parentViewController:self.parentViewController];
+        NSLog(@"Error accessing image at index %ld", (long)indexPath.item);
     }
 }
 
 
     /// Display the FullImageViewController in "Approval" mode (which adds "Keep" and "Delete" buttons).
--(void) showApprovalWindowForImage: (UIImage*)image {
-    FullImageViewController *imageViewController = [[FullImageViewController alloc] initWithImage:image
-                                                                                      forApproval:YES
-                                                                                         delegate:self];
+-(void) showApprovalWindowForStereogram: (Stereogram *)stereogram {
+    FullImageViewController *imageViewController = [[FullImageViewController alloc] initWithStereogram:stereogram
+                                                                                           forApproval:YES
+                                                                                              delegate:self];
     UINavigationController *navC = [[UINavigationController alloc] initWithRootViewController:imageViewController];
     navC.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:navC animated:YES completion:nil];
@@ -251,8 +255,8 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
 -(void) copyPhotosToCameraRoll: (NSArray *)selectedIndexes {
     NSError *error = nil;
     for(NSIndexPath *indexPath in selectedIndexes) {
-        if (![_photoStore copyImageToCameraRoll:[indexPath indexAtPosition:1]
-                                          error:&error]) {
+        if (![_photoStore copyStereogramToCameraRoll:[indexPath indexAtPosition:1]
+                                               error:&error]) {
             [error showAlertWithTitle:@"Error exporting to camera roll" parentViewController:self];
             return; // Only show one error, don't force the user to keep OKing the error warning.
         }
@@ -295,10 +299,22 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
         
         for (NSIndexPath *indexPath in selectedItems) {
             NSAssert([indexPath indexAtPosition:0] == 0, @"Index Path %@ not for section 0", indexPath);
+            Stereogram *stereogram = [_photoStore stereogramAtIndex:[indexPath indexAtPosition:1]];
+            switch (stereogram.viewingMethod) {
+                case ViewMode_Crosseyed:
+                    stereogram.viewingMethod = ViewMode_Walleyed;
+                    break;
+                case ViewMode_Walleyed:
+                    stereogram.viewingMethod = ViewMode_Crosseyed;
+                    break;
+                default:
+                    [NSException raise:@"Not implemented"
+                                format:@"Viewing method: %ld in stereogram %@ is not implemented.", (long)stereogram.viewingMethod, stereogram];
+                    break;
+            }
+                // Refresh the stereogram now, in the background thread as updating the image can take a while. Once complete, further requests will use the cached image.
             NSError *error = nil;
-            UIImage *image = [_photoStore imageAtIndex:[indexPath indexAtPosition:1]
-                                                 error:&error];
-            if (![ImageManager changeViewingMethod:image]) {    // Index path has format [<section>, <item>].
+            if (![stereogram refresh:&error]) {    // Index path has format [<section>, <item>].
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [error showAlertWithTitle:@"Error changing viewing method"
                          parentViewController:self.parentViewController];
@@ -330,7 +346,8 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
         PWActionHandler deleteActionBlock = ^(PWAction *action) {
             NSLog(@"Deleting images at index paths: %@", indexPaths);
             NSError *error = nil;
-            if (![self.photoStore deleteImagesAtIndexPaths:indexPaths error:&error]) {
+            if (![self.photoStore deleteStereogramsAtIndexPaths:indexPaths
+                                                          error:&error]) {
                 [error showAlertWithTitle:@"Error deleting photos"
                      parentViewController:self];
             }
@@ -339,8 +356,8 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
         };
         
         PWAction *deleteAction = [PWAction actionWithTitle:@"Delete"
-                                                               style:UIAlertActionStyleDestructive
-                                                             handler:deleteActionBlock];
+                                                     style:UIAlertActionStyleDestructive
+                                                   handler:deleteActionBlock];
         [_alertView addActions:@[deleteAction, [PWAction cancelAction]]];
         [_alertView show];
     }

@@ -12,6 +12,8 @@
 #import "ImageManager.h"
 #import "UIImage+Resize.h"
 #import "NSError_AlertSupport.h"
+#import "Stereogram.h"
+#import "PhotoStore.h"
 
     /// This controller can be in multiple states. Capture these here.
 typedef NS_ENUM(NSInteger, State) {
@@ -31,9 +33,11 @@ inline static NSString *stringFromState(State state);
 
 @interface StereogramViewController () {
     State _state;
-    UIImage *_firstPhoto, *_stereogram;
+    UIImage *_firstPhoto;
+    Stereogram *_stereogram;
     CameraOverlayViewController *_cameraOverlayController;
     UIImagePickerController *_pickerController;
+    PhotoStore *_photoStore;
 }
 @end
 
@@ -48,18 +52,20 @@ inline static NSString *stringFromState(State state);
     NSAssert(_state == Ready, @"viewDidLoad invalid state of %ld", (long)_state);
 }
 
-- (instancetype) initWithDelegate: (id<StereogramViewControllerDelegate>)delegate {
+- (instancetype) initWithPhotoStore: (PhotoStore *)photoStore
+                           delegate: (id<StereogramViewControllerDelegate>)delegate {
     self = [super init];
     if (!self) { return nil; }
     _state = Ready;
     _firstPhoto = nil;
     _stereogram = nil;
     _delegate = delegate;
+    _photoStore = photoStore;
     return self;
 }
 
     // The stereogram the user has taken, if any.
-- (UIImage *)stereogram {
+- (Stereogram *)stereogram {
     [self assertState];
     return _state == Complete ? _stereogram : nil;
 }
@@ -80,7 +86,8 @@ inline static NSString *stringFromState(State state);
 -(void) reset {
     _state = Ready;
     _cameraOverlayController.helpText = @"Take the first photo";
-    _firstPhoto = _stereogram = nil;
+    _firstPhoto = nil;
+    _stereogram = nil;
 }
 
 -(void) takePicture: (UIViewController *)parentController {
@@ -179,27 +186,27 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info {
             [_cameraOverlayController showWaitIcon:YES];
                 // Dispatch the stereogram creation on to a background queue and tell it to dispatch onto the main queue when it completes.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                
                 NSError *error = nil;
-                UIImage *image = [self makeStereogramWithFirstPhoto:_firstPhoto
-                                                        secondPhoto:secondPhoto
-                                                              error:&error];
-                if (image) {
+                _stereogram = [_photoStore createStereogramFromLeftImage:_firstPhoto
+                                                rightImage:secondPhoto
+                                                     error:&error];
+                if (_stereogram) {
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        
                         _state = Complete;
-                        _stereogram = image;
                             //picker.dismissViewControllerAnimated(false, completion: nil)
                         [_cameraOverlayController showWaitIcon:NO];
                         [_delegate stereogramViewController:self
-                                          createdStereogram:image];
+                                          createdStereogram:_stereogram];
                     });
                 } else {
-                    if (self.parentViewController) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
                         [error showAlertWithTitle:@"Error creating the stereogram image"
                              parentViewController:self.parentViewController];
-                    } else {
-                        NSLog(@"Error returned from makeStereogram(), no parent controller to display it on : %@", error);
-                    }
-                    _state = Ready;
+                        _state = Ready;
+                    });
                 }
             });
             break;

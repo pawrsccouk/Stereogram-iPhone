@@ -7,14 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-@class StereogramViewController;
+@class StereogramViewController, Stereogram, PhotoStore;
 
 
 @protocol StereogramViewControllerDelegate <NSObject>
 
     /// Called when the stereogram has been taken. Here you need to save the image and dismiss the view controller.
 -(void) stereogramViewController: (StereogramViewController *)controller
-               createdStereogram: (UIImage *)stereogram;
+               createdStereogram: (Stereogram *)stereogram;
 
     /// Called if the user cancels the view controller and doesn't want to create a stereogram.  The delegate must dismiss the view controller here.
 -(void) stereogramViewControllerWasCancelled: (StereogramViewController *)controller;
@@ -30,10 +30,11 @@
 
 @interface StereogramViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
     // The stereogram the user has taken, if any.
-@property (nonatomic, readonly) UIImage *stereogram;
+@property (nonatomic, readonly) Stereogram *stereogram;
 @property (nonatomic, unsafe_unretained) id<StereogramViewControllerDelegate> delegate;
 
--(instancetype) initWithDelegate: (id<StereogramViewControllerDelegate>)delegate;
+-(instancetype) initWithPhotoStore: (PhotoStore *)photoStore
+                          delegate: (id<StereogramViewControllerDelegate>)delegate;
 
     // Reset the controller back to the default state. If we stored a stereogram from a previous run, it will be destroyed here, so take a copy first.
 -(void) reset;

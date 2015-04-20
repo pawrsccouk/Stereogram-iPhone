@@ -301,11 +301,11 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
             NSAssert([indexPath indexAtPosition:0] == 0, @"Index Path %@ not for section 0", indexPath);
             Stereogram *stereogram = [_photoStore stereogramAtIndex:[indexPath indexAtPosition:1]];
             switch (stereogram.viewingMethod) {
-                case ViewMode_Crosseyed:
-                    stereogram.viewingMethod = ViewMode_Walleyed;
+                case ViewingMethod_CrossEye:
+                    stereogram.viewingMethod = ViewingMethod_WallEye;
                     break;
-                case ViewMode_Walleyed:
-                    stereogram.viewingMethod = ViewMode_Crosseyed;
+                case ViewingMethod_WallEye:
+                    stereogram.viewingMethod = ViewingMethod_CrossEye;
                     break;
                 default:
                     [NSException raise:@"Not implemented"

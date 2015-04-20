@@ -16,7 +16,7 @@
 #import "PhotoStore.h"
 
     /// This controller can be in multiple states. Capture these here.
-typedef NS_ENUM(NSInteger, State) {
+typedef enum State {
         /// The photo process has not started yet.
     Ready,
         /// We are currently taking the first photo
@@ -25,7 +25,7 @@ typedef NS_ENUM(NSInteger, State) {
     TakingSecondPhoto,
         /// We have taken both photos and composited them into a stereogram.
     Complete
-};
+} State;
 
 inline static NSString *cast_NSString(CFStringRef stringRef) { return (__bridge NSString *)stringRef; }
 inline static UIImage *imageFromPickerInfoDict(NSDictionary *infoDict);

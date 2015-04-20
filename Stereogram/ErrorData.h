@@ -1,31 +1,67 @@
-//
-//  ErrorData.h
-//  Stereogram
-//
-//  Created by Patrick Wallace on 10/04/2015.
-//  Copyright (c) 2015 Patrick Wallace. All rights reserved.
-//
+/*!
+@header ErrorData
+@abstract Some constants used for reporting errors and property keys.
+@author Created by Patrick Wallace on 10/04/2015.
+@copyright Copyright (c) 2015 Patrick Wallace. All rights reserved.
+*/
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
-    // Error domain and codes for the Photo Store.
-
+    /*! Error domain for the Photo Store. */
 static NSString * const kErrorDomainPhotoStore;
 
-typedef NS_ENUM(NSInteger, ErrorCodes) {
+/*! 
+ * Error codes for common issues accessing the photo store.
+ *
+ * @constant ErrorCode_UnknownError               API failed without notifying why.
+ * @constant ErrorCode_CouldntCreateSharedStore   Error creating the shared store directory
+ * @constant ErrorCode_CouldntLoadImageProperties Error loading properties of a stereogram
+ * @constant ErrorCode_InvalidFileFormat          Stereogram file format is not valid.
+ * @constant ErrorCode_IndexOutOfBounds           Invalid index of stereogram in PhotoStore
+ * @constant ErrorCode_NotImplemented             This code has not been implemented yet.
+ */
+typedef enum ErrorCodes {
     ErrorCode_UnknownError             =   1,
     ErrorCode_CouldntCreateSharedStore = 100,
     ErrorCode_CouldntLoadImageProperties    ,
     ErrorCode_InvalidFileFormat             ,
     ErrorCode_IndexOutOfBounds              ,
     ErrorCode_NotImplemented                ,
-};
+} ErrorCodes;
 
-    // Keys of image properties.
+/*!
+ * @functiongroup Keys of image properties.
+ */
 
-extern NSString *const kImagePropertyOrientation;     // Portrait or Landscape.
-extern NSString *const kImagePropertyThumbnail;       // Image thumbnail.
-extern NSString *const kImagePropertyDateTaken;       // Date original photo was taken.
-extern NSString *const kImagePropertyViewMode;        // Crosseyed, Walleyed, Red/Green, Random-dot
+/*!
+ * @constant kImagePropertyOrientation
+ * Portrait or Landscape.
+ */
+extern NSString *const kImagePropertyOrientation;
+
+/*! 
+ * @constant  kImagePropertyThumbnail
+ * Image thumbnail. 
+ */
+extern NSString *const kImagePropertyThumbnail;
+
+/*! 
+ * @constant kImagePropertyDateTaken
+ * Date original photo was taken. 
+ */
+extern NSString *const kImagePropertyDateTaken;
+
+/*! 
+ * @constant kImagePropertyViewMode
+ * Crosseyed, Walleyed, Red/Green, Random-dot etc. 
+ */
+extern NSString *const kImagePropertyViewMode;
+
+
     // Keys for loading and saving.
-extern NSString *const kVersion;         // Save file version.
+
+/*! 
+ * @constant kVersion
+ * Save file version. 
+ */
+extern NSString *const kVersion;

@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Patrick Wallace. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 #import "FullImageViewController.h"
 #import "StereogramViewController.h"
 @class PhotoStore;

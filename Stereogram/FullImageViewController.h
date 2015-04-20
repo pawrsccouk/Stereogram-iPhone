@@ -10,12 +10,12 @@
 @class FullImageViewController, Stereogram;
 
     /// Result of the user's review of the image. Do they want to keep it or delete it.
-typedef NS_ENUM(NSInteger, ApprovalResults) {
+typedef enum ApprovalResults {
         /// User wants to keep this image.
     ApprovalResult_Approved,
         /// User wants to discard this image.
     ApprovalResult_Discarded
-};
+} ApprovalResults;
 
 @protocol FullImageViewControllerDelegate <NSObject>
     

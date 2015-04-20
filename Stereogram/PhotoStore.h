@@ -1,77 +1,89 @@
-//
-//  PhotoStore.h
-//  Stereogram
-//
-//  Created by Patrick Wallace on 20/01/2013.
-//  Copyright (c) 2013 Patrick Wallace. All rights reserved.
-//
+/*! @header PhotoStore
+ *  @abstract PhotoStore is an object holding a collection of stereograms.
+ *  @author Created by Patrick Wallace on 20/01/2013.
+ *  @copyright Copyright (c) 2013 Patrick Wallace. All rights reserved.
+ */
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 @class Stereogram;
+
+NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Error domain and codes
 
-extern NSString *const PhotoStoreErrorDomain;
-
-typedef NS_ENUM(NSInteger, PhotoStoreErrorCodes) {
-    PhotoStoreErrorCode_UnknownError             =   1,
-    PhotoStoreErrorCode_CouldntCreateSharedStore = 100,
-    PhotoStoreErrorCode_CouldntLoadImageProperties    ,
-    PhotoStoreErrorCode_IndexOutOfBounds              ,
-    PhotoStoreErrorCode_CouldntCreateStereogram
-};
-
-    // How the stereogram should be viewed.
-typedef NS_ENUM(NSInteger, ViewModes) {
-    ViewMode_Crosseyed,    // Adjacent pictures, view crosseyed.
-    ViewMode_Walleyed,     // Adjacent pictures, view wall-eyed
-    ViewMode_RedGreen,     // Superimposed pictures, use red green glasses.
-    ViewMode_RandomDot,    // "Magic Eye" format.
-    ViewMode_AnimatedGIF
-};
-
-
-// Methods take an NSError* error argument. These methods return the object on success or nil on failure, in which case they also set the *error to indicate what went wrong, if error is not NULL.  Methods that don't return a value return YES or NO and set *error.
-
+/*! This acts as a collection of stereograms and handles creating them from pairs of images. */
 @interface PhotoStore : NSObject
 
-    /// Number of stereograms stored in here.
+/*! Number of stereograms stored in this photo store. */
 @property (nonatomic, readonly) NSUInteger count;
 
-    /// Size of an image thumbnail.
+/*! Size of an image thumbnail. */
 @property (nonatomic, readonly) CGSize thumbnailSize;
 
-    /// Constructor. If something fails it returns nil and an error.
--(instancetype) init: (NSError **)error NS_DESIGNATED_INITIALIZER;
+/*! Constructor. If something fails it returns nil and an error. */
+-(nullable instancetype) init: (NSError * __nullable *)error NS_DESIGNATED_INITIALIZER;
 
 #pragma mark - Handling stereograms
 
-    /// Adds the stereogram to the store. Assumes the stereogram has already been successfully created and saved.
+/*! Adds the stereogram to the store. Assumes the stereogram has already been successfully created and saved.
+ * @param stereogram The stereogram to add.
+ *
+ * If the stereogram is already contained, this will not add it twice.
+ */
 -(void) addStereogram: (Stereogram *)stereogram;
 
-    /// Creates a new stereogram from the images provided, then saves it, adds it to this collection and returns it.
--(Stereogram *) createStereogramFromLeftImage: (UIImage *)leftImage
-                                   rightImage: (UIImage *)rightImage
-                                        error: (NSError **)errorPtr;
+/*! Creates a new stereogram from the images provided, saves it to disk and adds it to this collection.
+ @param leftImage The left-hand image assuming the stereogram is in cross-eyed mode.
+ @param rightImage The right-hand image assuming the stereogram is in cross-eyed mode.
+ @param errorPtr Optional pointer to an error object to return error information.
+ @return The new stereogram or nil if something went wrong.
+ */
+-(nullable Stereogram *) createStereogramFromLeftImage: (UIImage *)leftImage
+                                            rightImage: (UIImage *)rightImage
+                                                 error: (NSError **)errorPtr;
 
-    /// Retrieves the stereogram in the collection which is at index position <index>.
+/*! Retrieves a stereogram from the collection
+ @return index The index of the stereogram to return.
+ */
 -(Stereogram *) stereogramAtIndex: (NSUInteger)index;
 
-    /// Deletes the stereograms at the specified index paths.
+/*! Deletes the stereograms at the specified index paths.
+ @param indexPaths An array of NSIndexPath objects referring to the stereograms to delete.
+ @param errorPtr Optional pointer to an error object to return error information.
+ @return YES if all deletes were successful, NO if one of the deletes returned an error.
+ 
+ If any delete fails, this method stops at once with the error. No cleanup or rollback is done.
+ */
 -(BOOL) deleteStereogramsAtIndexPaths: (NSArray *)indexPaths
                                 error: (NSError **)errorPtr;
 
-    /// Given a stereogram object, attempt to delete it from disk and remove it from this collection.
+/*! Delete a stereogram from disk and remove it from this collection.
+ @param stereogram The stereogram to remove.
+ @param errorPtr Optional pointer to an error object to return error information.
+ @return YES if the deletes was successful, NO if the delete returned an error.
+ */
 -(BOOL) deleteStereogram: (Stereogram *)stereogram
                    error: (NSError **)errorPtr;
 
-    /// Overwrites the stereogram at the given position with a new image.
-    /// Returns an error if there is no stereogram at index already.
+/*! Replaces a stereogram with a new one.
+ @param index Index of the stereogram to replace.
+ @param errorPtr Optional pointer to an error object to return error information.
+ @return YES if the stereogram was replaced, NO if there was an error during the replacement.
+ 
+ A stereogram must already exist to be replaced, otherwise this will return an error.
+ */
 -(BOOL) replaceStereogramAtIndex: (NSUInteger)index
                   withStereogram: (Stereogram *)newImage
                            error: (NSError **)errorPtr;
 
-    /// Copies the stereogram at position <index> into the camera roll.
+/*! Copies a stereogram into the device's camera roll.
+ @param index The index of the stereogram to copy.
+ @param errorPtr Optional pointer to an error object to return error information.
+ @return YES if the copy was successful, NO if there was an error.
+ */
 -(BOOL) copyStereogramToCameraRoll: (NSUInteger)index
                              error: (NSError **)errorPtr;
 @end
+
+
+NS_ASSUME_NONNULL_END

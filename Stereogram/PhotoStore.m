@@ -1,10 +1,10 @@
-//
-//  PhotoStore.m
-//  Stereogram
-//
-//  Created by Patrick Wallace on 20/01/2013.
-//  Copyright (c) 2013 Patrick Wallace. All rights reserved.
-//
+    ///
+    ///  PhotoStore.m
+    ///  Stereogram
+    ///
+    ///  Created by Patrick Wallace on 20/01/2013.
+    ///  Copyright (c) 2013 Patrick Wallace. All rights reserved.
+    ///
 
 #import "PhotoStore.h"
 #import "PWFunctional.h"
@@ -13,18 +13,19 @@
 
 NSString *const PhotoStoreErrorDomain = @"PhotoStore";
 
-
+    /*! PhotoStore private extensions. */
 @interface PhotoStore () {
     
-        /// Path to the place where the photos are stored.
+        /*! Path to the place where the photos are stored. */
     NSURL *_photoFolderURL;
     
-        /// Array of stereogram objects currently stored.
+        /*! Array of stereogram objects currently stored. */
     NSMutableArray *_stereograms;
 }
 
 @end
 
+    /*! PhotoStore implementation */
 @implementation PhotoStore
 
 -(instancetype) init: (NSError **)errorPtr {

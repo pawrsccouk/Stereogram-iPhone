@@ -28,7 +28,6 @@
 		577108EF16B8CC1E007D32DA /* PWActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108EE16B8CC1E007D32DA /* PWActionSheet.m */; };
 		577108F816BF5BFA007D32DA /* Notes.txt in Resources */ = {isa = PBXBuildFile; fileRef = 577108F716BF5BFA007D32DA /* Notes.txt */; };
 		57DE76401AD833FB000F9CF0 /* ImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE763F1AD833FB000F9CF0 /* ImageManager.m */; };
-		57DE76431AD83579000F9CF0 /* ThumbnailCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE76421AD83579000F9CF0 /* ThumbnailCache.m */; };
 		57DE76461AD838F7000F9CF0 /* ErrorData.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE76451AD838F7000F9CF0 /* ErrorData.m */; };
 		57F1082916AC2DCD00907CBE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082816AC2DCD00907CBE /* UIKit.framework */; };
 		57F1082B16AC2DCD00907CBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082A16AC2DCD00907CBE /* Foundation.framework */; };
@@ -84,8 +83,6 @@
 		577108F716BF5BFA007D32DA /* Notes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Notes.txt; path = Stereogram/Notes.txt; sourceTree = "<group>"; };
 		57DE763E1AD833FB000F9CF0 /* ImageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageManager.h; sourceTree = "<group>"; };
 		57DE763F1AD833FB000F9CF0 /* ImageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageManager.m; sourceTree = "<group>"; };
-		57DE76411AD83579000F9CF0 /* ThumbnailCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailCache.h; sourceTree = "<group>"; };
-		57DE76421AD83579000F9CF0 /* ThumbnailCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailCache.m; sourceTree = "<group>"; };
 		57DE76441AD838F7000F9CF0 /* ErrorData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorData.h; sourceTree = "<group>"; };
 		57DE76451AD838F7000F9CF0 /* ErrorData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorData.m; sourceTree = "<group>"; };
 		57F1082416AC2DCD00907CBE /* Stereogram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stereogram.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -178,8 +175,6 @@
 				57F1084B16AC300400907CBE /* PhotoStore.m */,
 				57587D101ADDEFA500A16D64 /* Stereogram.h */,
 				57587D111ADDEFA500A16D64 /* Stereogram.m */,
-				57DE76411AD83579000F9CF0 /* ThumbnailCache.h */,
-				57DE76421AD83579000F9CF0 /* ThumbnailCache.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -356,7 +351,6 @@
 				577108E016B3A76A007D32DA /* UIImage+Alpha.m in Sources */,
 				577108E116B3A76A007D32DA /* UIImage+Resize.m in Sources */,
 				577108E216B3A76A007D32DA /* UIImage+RoundedCorner.m in Sources */,
-				57DE76431AD83579000F9CF0 /* ThumbnailCache.m in Sources */,
 				57DE76401AD833FB000F9CF0 /* ImageManager.m in Sources */,
 				577108EC16B8B5CB007D32DA /* PWAlertView.m in Sources */,
 				577108EF16B8CC1E007D32DA /* PWActionSheet.m in Sources */,
@@ -434,6 +428,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Stereogram/Stereogram-Prefix.pch";
 				INFOPLIST_FILE = "Stereogram/Stereogram-Info.plist";
@@ -453,6 +448,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Stereogram/Stereogram-Prefix.pch";
 				INFOPLIST_FILE = "Stereogram/Stereogram-Info.plist";

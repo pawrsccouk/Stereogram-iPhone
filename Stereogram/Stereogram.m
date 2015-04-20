@@ -9,7 +9,6 @@
 #import "Stereogram.h"
 #import "ErrorData.h"
 #import "ImageManager.h"
-#import "ThumbnailCache.h"
 #import "UIImage+Resize.h"
 #import "PWFunctional.h"
 
@@ -20,10 +19,10 @@ NSString *const kViewingMethod = @"ViewingMethod";
 static NSString *const LeftPhotoFileName = @"LeftPhoto.jpg", *const RightPhotoFileName = @"RightPhoto.jpg", *const PropertyListFileName = @"Properties.plist";
 
 
-typedef NS_ENUM(NSInteger, WhichImage) {
+typedef enum WhichImage {
     LeftImage,
     RightImage
-};
+} WhichImage;
 
 @interface Stereogram () {
         // URLs to the left and right images. Used to load the images when needed.
@@ -295,12 +294,12 @@ typedef NS_ENUM(NSInteger, WhichImage) {
     return description;
 }
 
--(ViewingMethod) viewingMethod {
+-(enum ViewingMethod) viewingMethod {
     NSNumber *viewingMethodNumber = _properties[kViewingMethod];
     return viewingMethodNumber.integerValue;
 }
 
--(void)setViewingMethod:(ViewingMethod)viewingMethod {
+-(void) setViewingMethod: (enum ViewingMethod)viewingMethod {
     if (viewingMethod != self.viewingMethod) {
         NSNumber *viewingMethodNumber = [NSNumber numberWithInteger:viewingMethod];
         _properties[kViewingMethod] = viewingMethodNumber;

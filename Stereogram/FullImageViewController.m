@@ -28,6 +28,8 @@
 @implementation FullImageViewController
 @synthesize delegate = _delegate, imageView = _imageView, scrollView = _scrollView;
 
+#pragma mark Constructors
+
 -(instancetype) initWithStereogram: (Stereogram *)stereogram
                        atIndexPath: (NSIndexPath *)indexPath
                           delegate: (id<FullImageViewControllerDelegate>)delegate {
@@ -78,6 +80,8 @@
     return self;
 }
 
+#pragma mark Overrides
+
 - (void) viewDidLoad {
     [super viewDidLoad];
         // Calculate the size of the underlying image, and then use that to set the scrollview's bounds.
@@ -96,54 +100,8 @@
     [self setupScrollviewAnimated:YES];
 }
 
--(void) keepPhoto {
-    id<FullImageViewControllerDelegate> delegate = self.delegate;
-    NSAssert(delegate, @"No delegate assigned to view controller %@", self);
-    if ([delegate respondsToSelector:@selector(fullImageViewController:approvingStereogram:result:)]) {
-        [delegate fullImageViewController:self
-                      approvingStereogram:_stereogram
-                                   result:ApprovalResult_Approved];
-    }
-    [delegate dismissedFullImageViewController:self];
-}
+#pragma mark Callbacks
 
--(void) discardPhoto {
-    id<FullImageViewControllerDelegate> delegate = self.delegate;
-    NSAssert(delegate, @"No delegate assigned to view controller %@", self);
-    if ([delegate respondsToSelector:@selector(fullImageViewController:approvingStereogram:result:)]) {
-        [delegate fullImageViewController:self
-                      approvingStereogram:_stereogram
-                                   result:ApprovalResult_Discarded];
-    }
-    [delegate dismissedFullImageViewController:self];
-}
-
-
--(BOOL) showActivityIndicator {
-    return !_activityIndicator.hidden;
-}
-
--(void) setShowActivityIndicator: (BOOL)hidden {
-    _activityIndicator.hidden = !hidden;
-    if (hidden) {
-        [_activityIndicator startAnimating];
-    } else {
-        [_activityIndicator stopAnimating];
-    }
-}
-
--(void) setupActivityIndicator {
-        // Add the activity indicator to the view if it is not there already. It starts off hidden.
-    if (![_activityIndicator isDescendantOfView:self.view]) {
-        [self.view addSubview:_activityIndicator];
-    }
-    
-        // Ensure the activity indicator fits in the frame.
-    CGSize activitySize = _activityIndicator.bounds.size;
-    CGSize parentSize = self.view.bounds.size;
-    CGRect frame = CGRectMake((parentSize.width / 2) - (activitySize.width / 2), (parentSize.height / 2) - (activitySize.height / 2), activitySize.width, activitySize.height);
-    _activityIndicator.frame = frame;
-}
 
 -(IBAction) changeViewingMethod: (id)sender {
     
@@ -188,6 +146,56 @@
         }
     });
 }
+
+-(void) keepPhoto {
+    id<FullImageViewControllerDelegate> delegate = self.delegate;
+    NSAssert(delegate, @"No delegate assigned to view controller %@", self);
+    if ([delegate respondsToSelector:@selector(fullImageViewController:approvingStereogram:result:)]) {
+        [delegate fullImageViewController:self
+                      approvingStereogram:_stereogram
+                                   result:ApprovalResult_Approved];
+    }
+    [delegate dismissedFullImageViewController:self];
+}
+
+-(void) discardPhoto {
+    id<FullImageViewControllerDelegate> delegate = self.delegate;
+    NSAssert(delegate, @"No delegate assigned to view controller %@", self);
+    if ([delegate respondsToSelector:@selector(fullImageViewController:approvingStereogram:result:)]) {
+        [delegate fullImageViewController:self
+                      approvingStereogram:_stereogram
+                                   result:ApprovalResult_Discarded];
+    }
+    [delegate dismissedFullImageViewController:self];
+}
+
+#pragma mark Activity Indicator
+-(BOOL) showActivityIndicator {
+    return !_activityIndicator.hidden;
+}
+
+-(void) setShowActivityIndicator: (BOOL)hidden {
+    _activityIndicator.hidden = !hidden;
+    if (hidden) {
+        [_activityIndicator startAnimating];
+    } else {
+        [_activityIndicator stopAnimating];
+    }
+}
+
+-(void) setupActivityIndicator {
+        // Add the activity indicator to the view if it is not there already. It starts off hidden.
+    if (![_activityIndicator isDescendantOfView:self.view]) {
+        [self.view addSubview:_activityIndicator];
+    }
+    
+        // Ensure the activity indicator fits in the frame.
+    CGSize activitySize = _activityIndicator.bounds.size;
+    CGSize parentSize = self.view.bounds.size;
+    CGRect frame = CGRectMake((parentSize.width / 2) - (activitySize.width / 2), (parentSize.height / 2) - (activitySize.height / 2), activitySize.width, activitySize.height);
+    _activityIndicator.frame = frame;
+}
+
 
 -(void) logData {
     CGRect frame = self.view.frame;

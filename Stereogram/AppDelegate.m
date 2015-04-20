@@ -12,6 +12,7 @@
 #import "PWAlertView.h"
 #import "PWActionSheet.h"
 #import "NSError_AlertSupport.h"
+#import "ErrorData.h"
 #import "WelcomeViewController.h"
 
 @interface AppDelegate () {
@@ -59,8 +60,8 @@ didFinishLaunchingWithOptions: (NSDictionary *)launchOptions {
 
 -(void) terminateWithError: (NSError *)error {
     if (!error) {
-        error = [NSError errorWithDomain: PhotoStoreErrorDomain
-                                    code: PhotoStoreErrorCode_CouldntCreateSharedStore
+        error = [NSError errorWithDomain: kErrorDomainPhotoStore
+                                    code: ErrorCode_CouldntCreateSharedStore
                                 userInfo: @{ NSLocalizedDescriptionKey : @"Unknown error"}];
     }
     PWAlertView *alertView = [[PWAlertView alloc] initWithTitle:@""
@@ -76,14 +77,12 @@ didFinishLaunchingWithOptions: (NSDictionary *)launchOptions {
 }
 
 
-- (void)applicationWillResignActive:(UIApplication *)application
-{
+- (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
+- (void)applicationDidEnterBackground:(UIApplication *)application {
         // Ask the system for a little more time to save the data.  It creates a task-id and gives us a few seconds to save.
         // Then it calls the expiration handler, which must finish the task. If not, the app is killed.
         

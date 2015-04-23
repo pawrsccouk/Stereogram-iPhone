@@ -11,6 +11,7 @@
 #import "ImageManager.h"
 #import "UIImage+Resize.h"
 #import "PWFunctional.h"
+#import "NSError_AlertSupport.h"
 
 static const CGFloat _thumbSize = 100;
 static const CGSize _thumbnailSize = (CGSize) { .width = _thumbSize, .height = _thumbSize };
@@ -19,19 +20,27 @@ NSString *const kViewingMethod = @"ViewingMethod";
 static NSString *const LeftPhotoFileName = @"LeftPhoto.jpg", *const RightPhotoFileName = @"RightPhoto.jpg", *const PropertyListFileName = @"Properties.plist";
 
 
+
 typedef enum WhichImage {
     LeftImage,
     RightImage
 } WhichImage;
 
 @interface Stereogram () {
-        // URLs to the left and right images. Used to load the images when needed.
-    NSURL *_leftImageURL, *_rightImageURL;
+        // URL to the root of the directory, under which we'll find the left and right images. Used to load the images when needed.
+    NSURL *_baseURL;
     NSMutableDictionary *_properties;
     
         /// Cached images in memory. Free these if needed.
     UIImage *_leftImage, *_rightImage, *_stereogramImage, *_thumbnailImage;
 }
+
+/*! URL to the left image under the base URL */
+@property (nonatomic, readonly) NSURL *leftImageURL;
+
+/*! URL to the right image under the base URL */
+@property (nonatomic, readonly) NSURL *rightImageURL;
+
 
 @end
 
@@ -57,9 +66,8 @@ typedef enum WhichImage {
         return nil;
     }
     NSAssert(urls.count == 2, @"Invalid URL array %@ returned from writeToURL.", urls);
-    return [[self alloc] initWithPropertyList:propertyList.mutableCopy
-                                 leftImageURL:urls[0]
-                                rightImageURL:urls[1]];
+    return [[self alloc] initWithBaseURL:baseURL
+                            propertyList:propertyList.mutableCopy];
 }
 
 
@@ -74,9 +82,9 @@ typedef enum WhichImage {
                                                          error:errorPtr];
     
     NSMutableArray *stereogramArray = [NSMutableArray array];
-    for (NSURL *url in fileNames) {
-        Stereogram *stereogram = [[Stereogram alloc] initWithURL:url
-                                                           error:errorPtr];
+    for (NSURL *stereogramURL in fileNames) {
+        Stereogram *stereogram = [Stereogram stereogramWithURL:stereogramURL
+                                                         error:errorPtr];
         if (!stereogram) {
             return nil;
         }
@@ -86,18 +94,38 @@ typedef enum WhichImage {
     return stereogramArray;
 }
 
++(instancetype) stereogramWithURL: (NSURL *)baseURL
+                            error: (NSError **)errorPtr {
+        // Return an error if any of these are missing. Also load the properties file.
+    
+    NSDictionary *defaultPropertyDict = @{ kViewingMethod : @(ViewingMethod_CrossEye) };
+    
+    NSError *error = nil;
+    BOOL ok = fileExists(baseURL, LeftPhotoFileName   , &error)
+    &&        fileExists(baseURL, RightPhotoFileName  , &error)
+    &&        fileExists(baseURL, PropertyListFileName, &error);
+    if (!ok) {
+        return nil;
+    }
+    
+        // Load the property list at the given URL.
+    NSDictionary *propertyList = defaultPropertyDict;
+    if (!loadPropertyList([baseURL URLByAppendingPathComponent:PropertyListFileName], &error)) {
+        return nil;
+    }
+    return [[Stereogram alloc] initWithBaseURL:baseURL propertyList:propertyList.mutableCopy];
+}
+
 
 #pragma mark - Constructors
 
     // Designated initializer.
--(instancetype) initWithPropertyList: (NSMutableDictionary *)propertyList
-                        leftImageURL: (NSURL *)leftImageURL
-                       rightImageURL: (NSURL *)rightImageURL {
+-(instancetype) initWithBaseURL: (NSURL *)baseURL
+                   propertyList: (NSMutableDictionary *)propertyList {
     self = [super init];
     if (!self) { return nil; }
     
-    _leftImageURL = leftImageURL;
-    _rightImageURL = rightImageURL;
+    _baseURL = baseURL;
     _properties = propertyList;
     self.viewingMethod = ViewingMethod_CrossEye;  // Default
 
@@ -113,49 +141,48 @@ typedef enum WhichImage {
     return self;
 }
 
--(instancetype) initWithURL: (NSURL *)url
-                      error: (NSError **)errorPtr {
-    
-        // URL should be pointing to a directory. Inside this there should be 3 files: LeftImage.jpg, RightImage.jpg, properties.plist
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *directoryContents = [fileManager contentsOfDirectoryAtURL:url
-                                            includingPropertiesForKeys:nil
-                                                               options:NSDirectoryEnumerationSkipsHiddenFiles
-                                                                 error:errorPtr];
-    if (!directoryContents) {
-        return nil;  // init failed. *errorPtr has the info.
-    }
-    NSMutableDictionary *propertyList = nil;
-    NSURL *leftImageURL = nil, *rightImageURL = nil;
-    for (NSURL *componentURL in directoryContents) {
-        if ([componentURL.lastPathComponent isEqualToString:LeftPhotoFileName]) {
-            leftImageURL = componentURL.copy;
-        } else if ([componentURL.lastPathComponent isEqualToString:RightPhotoFileName]) {
-            rightImageURL = componentURL.copy;
-        } else if ([componentURL.lastPathComponent isEqualToString:PropertyListFileName]) {
-            NSData *propertyData = [NSData dataWithContentsOfURL:componentURL
-                                                          options:0
-                                                            error:errorPtr];
-            if (!propertyData) {
-                return nil;  // errorPtr has the error data.
-            }
-            propertyList = [NSPropertyListSerialization propertyListWithData:propertyData
-                                                                     options:NSPropertyListMutableContainersAndLeaves
-                                                                      format:NULL
-                                                                       error:errorPtr];
-            if (!propertyList) {
-                return nil; // errorPtr has the error data.
-            }
-        } else {
-            NSLog(@"Unknown component %@ found in Stereogram directory %@", componentURL.lastPathComponent, url);
-        }
-    }
-    NSAssert(leftImageURL,  @"Missing leftImageURL after initWithURL:error for URL of %@", url);
-    NSAssert(rightImageURL, @"Missing rightImageURL after initWithURL:error for URL of %@", url);
-    return [self initWithPropertyList:propertyList
-                         leftImageURL:leftImageURL
-                        rightImageURL:rightImageURL];
-}
+
+
+//        // URL should be pointing to a directory. Inside this there should be 3 files: LeftImage.jpg, RightImage.jpg, properties.plist
+//    NSFileManager *fileManager = [NSFileManager defaultManager];
+//    NSArray *directoryContents = [fileManager contentsOfDirectoryAtURL:url
+//                                            includingPropertiesForKeys:nil
+//                                                               options:NSDirectoryEnumerationSkipsHiddenFiles
+//                                                                 error:errorPtr];
+//    if (!directoryContents) {
+//        return nil;  // init failed. *errorPtr has the info.
+//    }
+//    NSMutableDictionary *propertyList = nil;
+//    NSURL *leftImageURL = nil, *rightImageURL = nil;
+//    for (NSURL *componentURL in directoryContents) {
+//        if ([componentURL.lastPathComponent isEqualToString:LeftPhotoFileName]) {
+//            leftImageURL = componentURL.copy;
+//        } else if ([componentURL.lastPathComponent isEqualToString:RightPhotoFileName]) {
+//            rightImageURL = componentURL.copy;
+//        } else if ([componentURL.lastPathComponent isEqualToString:PropertyListFileName]) {
+//            NSData *propertyData = [NSData dataWithContentsOfURL:componentURL
+//                                                          options:0
+//                                                            error:errorPtr];
+//            if (!propertyData) {
+//                return nil;  // errorPtr has the error data.
+//            }
+//            propertyList = [NSPropertyListSerialization propertyListWithData:propertyData
+//                                                                     options:NSPropertyListMutableContainersAndLeaves
+//                                                                      format:NULL
+//                                                                       error:errorPtr];
+//            if (!propertyList) {
+//                return nil; // errorPtr has the error data.
+//            }
+//        } else {
+//            NSLog(@"Unknown component %@ found in Stereogram directory %@", componentURL.lastPathComponent, url);
+//        }
+//    }
+//    NSAssert(leftImageURL,  @"Missing leftImageURL after initWithURL:error for URL of %@", url);
+//    NSAssert(rightImageURL, @"Missing rightImageURL after initWithURL:error for URL of %@", url);
+//    return [self initWithPropertyList:propertyList
+//                         leftImageURL:leftImageURL
+//                        rightImageURL:rightImageURL];
+
 
 
 -(void) dealloc {
@@ -175,17 +202,16 @@ typedef enum WhichImage {
 
 
 -(BOOL) deleteFromDisk: (NSError **)errorPtr {
-    NSURL *sampleURL = _leftImageURL ? _leftImageURL : _rightImageURL;
-    if (!sampleURL) {
+    if (!_baseURL) {
         return YES;  // Nothing to do.
     }
-    NSURL *objectFolderURL = sampleURL.URLByDeletingLastPathComponent;
+    NSURL *objectFolderURL = _baseURL.URLByDeletingLastPathComponent;
     NSLog(@"Deleting %@", objectFolderURL);
     NSFileManager *fileManager = [NSFileManager defaultManager];
     BOOL success = [fileManager removeItemAtURL:objectFolderURL
                                           error:errorPtr];
     if (success) {
-        _leftImageURL = _rightImageURL = nil;
+        _baseURL = nil;
         _thumbnailImage = _stereogramImage = _leftImage = _rightImage = nil;
     }
     return success;
@@ -236,12 +262,14 @@ typedef enum WhichImage {
 
 -(UIImage *) thumbnailImage: (NSError **)errorPtr {
     if (!_thumbnailImage) {
+        NSURL *urlToLoad = self.leftImageURL;
             // Get either the left or the right image file URL to use as the thumbnail.
-        NSData *data = [NSData dataWithContentsOfURL:_leftImageURL
+        NSData *data = [NSData dataWithContentsOfURL:urlToLoad
                                              options:0
                                                error:errorPtr];
         if (!data) {
-            data = [NSData dataWithContentsOfURL:_rightImageURL
+            urlToLoad = self.rightImageURL;
+            data = [NSData dataWithContentsOfURL:urlToLoad
                                          options:0
                                            error:errorPtr];
         }
@@ -256,7 +284,7 @@ typedef enum WhichImage {
                 *errorPtr = [NSError errorWithDomain:kErrorDomainPhotoStore
                                                 code:ErrorCode_InvalidFileFormat
                                             userInfo:@{NSLocalizedDescriptionKey : @"Invalid image format in file",
-                                                       NSFilePathErrorKey        : _leftImageURL.path }];
+                                                       NSFilePathErrorKey        : urlToLoad.path }];
             }
             return nil;
         }
@@ -288,9 +316,17 @@ typedef enum WhichImage {
 
 #pragma mark Properties
 
+-(NSURL *)leftImageURL {
+    return [_baseURL URLByAppendingPathComponent:LeftPhotoFileName];
+}
+
+-(NSURL *)rightImageURL {
+    return [_baseURL URLByAppendingPathComponent:RightPhotoFileName];
+}
+
 -(NSString *)description {
-    NSString *description = [NSString stringWithFormat:@"%@ <viewingMethod = %ld, leftURL = %@, rightURL = %@>"
-                             , super.description, (long)self.viewingMethod, _leftImageURL, _rightImageURL];
+    NSString *description = [NSString stringWithFormat:@"%@ <viewingMethod = %ld, baseURL = %@, Proprty Dict = %@>"
+                             , super.description, (long)self.viewingMethod, _baseURL, _properties];
     return description;
 }
 
@@ -396,6 +432,45 @@ static NSArray *writeToURL(NSURL *url, NSDictionary *propertyList, UIImage *left
     return @[leftImageURL, rightImageURL]; // Success. Return the URLs of the left and right images.
 }
 
+    /// Checks if a file exists given a base directory URL and filename.
+    ///
+    /// :param: baseURL The Base URL to look in.
+    /// :param: fileName The name of the file to check for.
+    /// :returns: .Success if the file was present, .Error(NSError) if it was not.
+
+static BOOL fileExists(NSURL *baseURL, NSString *fileName, NSError **errorPtr) {
+    NSString *fullURLPath = [baseURL URLByAppendingPathComponent:fileName].path;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fullURLPath]) {
+        return YES;
+    }
+    
+    if (errorPtr) {
+        NSDictionary *userInfo = @{ NSFilePathErrorKey : fullURLPath ? fullURLPath : @"<no path>" };
+        NSError *error = [NSError errorWithDomain: kErrorDomainPhotoStore code: ErrorCode_FileNotFound userInfo: userInfo];
+        *errorPtr = error;
+    }
+    return NO;
+}
+
+/*! Load a property list stored at URL and return it.
+ *
+ * @param url File URL describing a path to a .plist file.
+ * @param errorPtr
+ * @return A Dictionary on success, nil on failure.
+ */
+NSDictionary *loadPropertyList(NSURL *url, NSError **errorPtr) {
+    NSData *propertyData = [NSData dataWithContentsOfURL:url options:0 error:errorPtr];
+    if (propertyData) {
+        NSInteger options = NSPropertyListMutableContainersAndLeaves;
+        NSMutableDictionary *propObject = [NSPropertyListSerialization propertyListWithData:propertyData
+                                                                                    options:options
+                                                                                     format:nil
+                                                                                      error:errorPtr];
+        NSCAssert(propObject != nil, @"Property list object %@ cannot be converted to a dictionary", propObject);
+        return propObject;
+    }
+    return nil;
+}
 
 
 -(UIImage *) loadImage: (WhichImage)whichImage
@@ -403,7 +478,7 @@ static NSArray *writeToURL(NSURL *url, NSDictionary *propertyList, UIImage *left
     switch (whichImage) {
         case LeftImage:
             if (!_leftImage) {
-                NSData *imageData = [NSData dataWithContentsOfURL:_leftImageURL
+                NSData *imageData = [NSData dataWithContentsOfURL:self.leftImageURL
                                                           options:0
                                                             error:errorPtr];
                 if (!imageData) {
@@ -414,7 +489,7 @@ static NSArray *writeToURL(NSURL *url, NSDictionary *propertyList, UIImage *left
             return _leftImage;
         case RightImage:
             if (!_rightImage) {
-                NSData *imageData = [NSData dataWithContentsOfURL:_rightImageURL
+                NSData *imageData = [NSData dataWithContentsOfURL:self.rightImageURL
                                                           options:0
                                                             error:errorPtr];
                 _rightImage = [UIImage imageWithData:imageData];

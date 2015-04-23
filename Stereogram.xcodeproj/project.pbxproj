@@ -26,7 +26,7 @@
 		577108E216B3A76A007D32DA /* UIImage+RoundedCorner.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108DF16B3A76A007D32DA /* UIImage+RoundedCorner.m */; };
 		577108EC16B8B5CB007D32DA /* PWAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108EB16B8B5CA007D32DA /* PWAlertView.m */; };
 		577108EF16B8CC1E007D32DA /* PWActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108EE16B8CC1E007D32DA /* PWActionSheet.m */; };
-		577108F816BF5BFA007D32DA /* Notes.txt in Resources */ = {isa = PBXBuildFile; fileRef = 577108F716BF5BFA007D32DA /* Notes.txt */; };
+		577108F816BF5BFA007D32DA /* Notes.md in Resources */ = {isa = PBXBuildFile; fileRef = 577108F716BF5BFA007D32DA /* Notes.md */; };
 		57DE76401AD833FB000F9CF0 /* ImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE763F1AD833FB000F9CF0 /* ImageManager.m */; };
 		57DE76461AD838F7000F9CF0 /* ErrorData.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE76451AD838F7000F9CF0 /* ErrorData.m */; };
 		57F1082916AC2DCD00907CBE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082816AC2DCD00907CBE /* UIKit.framework */; };
@@ -80,7 +80,7 @@
 		577108EB16B8B5CA007D32DA /* PWAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlertView.m; sourceTree = "<group>"; };
 		577108ED16B8CC1D007D32DA /* PWActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWActionSheet.h; sourceTree = "<group>"; };
 		577108EE16B8CC1E007D32DA /* PWActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWActionSheet.m; sourceTree = "<group>"; };
-		577108F716BF5BFA007D32DA /* Notes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Notes.txt; path = Stereogram/Notes.txt; sourceTree = "<group>"; };
+		577108F716BF5BFA007D32DA /* Notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = Notes.md; path = Stereogram/Notes.md; sourceTree = "<group>"; };
 		57DE763E1AD833FB000F9CF0 /* ImageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageManager.h; sourceTree = "<group>"; };
 		57DE763F1AD833FB000F9CF0 /* ImageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageManager.m; sourceTree = "<group>"; };
 		57DE76441AD838F7000F9CF0 /* ErrorData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorData.h; sourceTree = "<group>"; };
@@ -200,7 +200,7 @@
 			isa = PBXGroup;
 			children = (
 				57587D091ADD1EBD00A16D64 /* AppIcon.sketch */,
-				577108F716BF5BFA007D32DA /* Notes.txt */,
+				577108F716BF5BFA007D32DA /* Notes.md */,
 				577108D916B3A76A007D32DA /* UIImage-categories */,
 				57F1082E16AC2DCD00907CBE /* Stereogram */,
 				57F1082716AC2DCD00907CBE /* Frameworks */,
@@ -323,7 +323,7 @@
 				57587D041ADC655100A16D64 /* WelcomeView.xib in Resources */,
 				572CB27216B19069002CB1B9 /* CameraOverlayView.xib in Resources */,
 				57587D061ADC6E5500A16D64 /* Welcome Text.html in Resources */,
-				577108F816BF5BFA007D32DA /* Notes.txt in Resources */,
+				577108F816BF5BFA007D32DA /* Notes.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

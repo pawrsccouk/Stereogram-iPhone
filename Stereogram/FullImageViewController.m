@@ -15,6 +15,7 @@
     Stereogram *_stereogram;
     UIActivityIndicatorView *_activityIndicator;
     NSIndexPath *_indexPath;
+    UIBarButtonItem __weak *_selectViewModeButtonItem;
 }
 
     /// Designated Initializer.
@@ -57,10 +58,11 @@
         _stereogram = image;
         _delegate = delegate;
         _indexPath = indexPath;
-        UIBarButtonItem *toggleViewMethodButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Toggle View Method"
+        UIBarButtonItem *selectViewMethodButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Change View Method"
                                                                                        style:UIBarButtonItemStyleBordered
                                                                                       target:self
-                                                                                      action:@selector(changeViewingMethod:)];
+                                                                                      action:@selector(selectViewingMethod:)];
+        _selectViewModeButtonItem = selectViewMethodButtonItem;
             // If we are using this to approve an image, then display "Keep" and "Discard" buttons as well as the change viewing method button.
         if (approval) {
             UIBarButtonItem *keepButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Keep"
@@ -72,9 +74,9 @@
                                                                                  target:self
                                                                                  action:@selector(discardPhoto)];
             self.navigationItem.rightBarButtonItems = @[keepButtonItem, discardButtonItem];
-            self.navigationItem.leftBarButtonItem = toggleViewMethodButtonItem;
+            self.navigationItem.leftBarButtonItem = selectViewMethodButtonItem;
         } else {
-            self.navigationItem.rightBarButtonItem = toggleViewMethodButtonItem;
+            self.navigationItem.rightBarButtonItem = selectViewMethodButtonItem;
         }
     }
     return self;
@@ -102,21 +104,49 @@
 
 #pragma mark Callbacks
 
+    /// Prompt the user with a menu of possible viewing methods they can select.
 
--(IBAction) changeViewingMethod: (id)sender {
+-(void) selectViewingMethod: (id)sender {
+    
+        // TODO: Make a menu
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle: @"Select viewing style"
+                                                                             message: @"Choose one of the styles below"
+                                                                      preferredStyle: UIAlertControllerStyleActionSheet ];
+    
+    UIAlertAction *animationAction = [UIAlertAction actionWithTitle: @"Animation"
+                                                              style: UIAlertActionStyleDefault
+                                                            handler: ^(UIAlertAction *action) {
+                                                                [self changeViewingMethod:ViewingMethod_AnimatedGIF];
+                                                            }];
+    [alertController addAction:animationAction];
+    
+    UIAlertAction *crossEyedAction = [UIAlertAction actionWithTitle: @"Cross-eyed"
+                                                              style: UIAlertActionStyleDefault
+                                                            handler: ^(UIAlertAction *action) {
+        [self changeViewingMethod:ViewingMethod_CrossEye];
+    }];
+    [alertController addAction:crossEyedAction];
+    
+    UIAlertAction *wallEyedAction = [UIAlertAction actionWithTitle: @"Wall-eyed"
+                                                             style: UIAlertActionStyleDefault
+                                                           handler: ^(UIAlertAction *action) {
+        [self changeViewingMethod:ViewingMethod_WallEye];
+    }];
+    [alertController addAction:wallEyedAction];
+    
+    alertController.popoverPresentationController.barButtonItem = _selectViewModeButtonItem;
+    [self presentViewController:alertController animated: YES completion: nil];
+}
+
+
+-(void) changeViewingMethod: (ViewingMethod)viewingMethod {
     
     self.showActivityIndicator = YES;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        switch(_stereogram.viewingMethod) {
-            case ViewingMethod_CrossEye: _stereogram.viewingMethod = ViewingMethod_WallEye ; break;
-            case ViewingMethod_WallEye:  _stereogram.viewingMethod = ViewingMethod_CrossEye; break;
-            default:
-                [NSException raise:@"Not implemented"
-                            format:@"Stereogram %@ viewing method is not implemented.", _stereogram];
-                break;
-        }
-            // Reload the image while we are in the background thread.
+        _stereogram.viewingMethod = viewingMethod;
+        
+             // Reload the image while we are in the background thread.
         NSError *error = nil;
         if ([_stereogram refresh:&error]) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -126,7 +156,7 @@
                 UIImage *fullImage = [_stereogram stereogramImage:nil];
                 NSAssert(fullImage, @"Stereogram %@ image was not properly cached.", _stereogram);
                 self.imageView.image = fullImage;
-                [self.imageView sizeToFit];
+                [self setupScrollviewAnimated:YES];
                     // Notify the system that the image has been changed in the view.
                 if ([self.delegate respondsToSelector:@selector(fullImageViewController:amendedStereogram:atIndexPath:)]) {
                     [self.delegate fullImageViewController:self

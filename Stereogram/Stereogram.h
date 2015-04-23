@@ -64,6 +64,22 @@ typedef enum ViewingMethod {
 +(NSArray *) allStereogramsUnderURL: (NSURL*)url
                               error: (NSError * __nullable *)errorPtr;
 
+
+/*!
+ * Initialize this object by loading image data from the specified URL.
+ *
+ *
+ *
+ * @param errorPtr Optional error information if something went wrong.
+ * @return A new Stereogram if successful, nil if not.
+ *
+ * Convenience initializer.
+ */
++(nullable instancetype) stereogramWithURL: (NSURL *)url
+                                     error: (NSError * __nullable *)errorPtr;
+
+
+
 #pragma mark -
 
 /*! 
@@ -111,29 +127,15 @@ typedef enum ViewingMethod {
 #pragma mark Initializers
 
 /*!
- * Initialize this object by loading image data from the specified URL.
- * @param errorPtr Optional error information if something went wrong.
- * @return A new Stereogram if successful, nil if not.
- *
- * Convenience initializer.
- */
--(nullable instancetype) initWithURL: (NSURL *)url
-                               error: (NSError * __nullable *)errorPtr;
-
-/*!
  * Initialize this object with a left and a right image and a viewing mode.
+ *
+ * @param baseURL A file URL to the root directory for this stereogram.  The left and right images will be stored under this.
  * @param propertyList An Apple-format property dictionary for this stereogram.
- * @param leftImage A file URL to the left-hand image.
- * @param rightImage A file URL to the right-hand image.
  *
  * Designated initializer.
- * 
- * This does not copy the images. It expects that the images are already set up in the right place.
- * Both images should be in the same directory.
  */
--(instancetype) initWithPropertyList: (NSMutableDictionary *)propertyList
-                        leftImageURL: (NSURL *)leftImage
-                       rightImageURL: (NSURL *)rightImage
+-(instancetype) initWithBaseURL: (NSURL *)baseURL
+                   propertyList: (NSMutableDictionary *)propertyList
     NS_DESIGNATED_INITIALIZER;
 
 

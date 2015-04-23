@@ -10,7 +10,7 @@
     /*! Error domain for the Photo Store. */
 static NSString * const kErrorDomainPhotoStore;
 
-/*! 
+/*!
  * Error codes for common issues accessing the photo store.
  *
  * @constant ErrorCode_UnknownError               API failed without notifying why.
@@ -18,16 +18,19 @@ static NSString * const kErrorDomainPhotoStore;
  * @constant ErrorCode_CouldntLoadImageProperties Error loading properties of a stereogram
  * @constant ErrorCode_InvalidFileFormat          Stereogram file format is not valid.
  * @constant ErrorCode_IndexOutOfBounds           Invalid index of stereogram in PhotoStore
+ * @constant ErrorCode_FileNotFound               One of the stereogram's required files is missing.
  * @constant ErrorCode_NotImplemented             This code has not been implemented yet.
+ *
  */
-typedef enum ErrorCodes {
+enum ErrorCodes {
     ErrorCode_UnknownError             =   1,
     ErrorCode_CouldntCreateSharedStore = 100,
     ErrorCode_CouldntLoadImageProperties    ,
     ErrorCode_InvalidFileFormat             ,
     ErrorCode_IndexOutOfBounds              ,
+    ErrorCode_FileNotFound                  ,
     ErrorCode_NotImplemented                ,
-} ErrorCodes;
+};
 
 /*!
  * @functiongroup Keys of image properties.

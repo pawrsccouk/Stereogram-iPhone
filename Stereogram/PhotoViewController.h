@@ -7,11 +7,12 @@
 //
 
 @import UIKit;
+@import MessageUI;
 #import "FullImageViewController.h"
 #import "StereogramViewController.h"
 @class PhotoStore;
 
-@interface PhotoViewController : UIViewController <UINavigationControllerDelegate, UICollectionViewDelegate, FullImageViewControllerDelegate, StereogramViewControllerDelegate> {
+@interface PhotoViewController : UIViewController <UINavigationControllerDelegate, UICollectionViewDelegate, FullImageViewControllerDelegate, StereogramViewControllerDelegate, MFMailComposeViewControllerDelegate> {
 }
 @property (nonatomic, weak) IBOutlet UICollectionView *photoCollectionView;
 

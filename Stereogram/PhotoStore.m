@@ -10,6 +10,7 @@
 #import "PWFunctional.h"
 #import "Stereogram.h"
 #import "ErrorData.h"
+#import "UIImage+Resize.h"
 
 NSString *const PhotoStoreErrorDomain = @"PhotoStore";
 
@@ -60,12 +61,18 @@ NSString *const PhotoStoreErrorDomain = @"PhotoStore";
     }
 }
 
+
 -(Stereogram *) createStereogramFromLeftImage: (UIImage *)leftImage
                                    rightImage: (UIImage *)rightImage
                                         error: (NSError **)errorPtr {
-    Stereogram *newStereogram = [Stereogram createAndSaveFromLeftImage:leftImage
-                                                            rightImage:rightImage
-                                                               baseURL:_photoFolderURL
+    UIImage *scaledLeft  = [leftImage  resizedImage:CGSizeMake(leftImage.size.width / 2.0, leftImage.size.height / 2.0)
+                               interpolationQuality:kCGInterpolationHigh];
+    UIImage *scaledRight = [rightImage resizedImage:CGSizeMake(rightImage.size.width / 2.0, rightImage.size.height / 2.0)
+                               interpolationQuality:kCGInterpolationHigh];
+    
+    Stereogram *newStereogram = [Stereogram stereogramWithDirectoryURL:_photoFolderURL
+                                                             leftImage:scaledLeft
+                                                            rightImage:scaledRight
                                                                  error:errorPtr];
     if (!newStereogram) {
         return nil;

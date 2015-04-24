@@ -32,12 +32,18 @@ NS_ASSUME_NONNULL_BEGIN
  */
 -(void) addStereogram: (Stereogram *)stereogram;
 
-/*! Creates a new stereogram from the images provided, saves it to disk and adds it to this collection.
- @param leftImage The left-hand image assuming the stereogram is in cross-eyed mode.
- @param rightImage The right-hand image assuming the stereogram is in cross-eyed mode.
- @param errorPtr Optional pointer to an error object to return error information.
- @return The new stereogram or nil if something went wrong.
+
+/*!
+ * Create a new Stereogram object using the images provided and save it under a unique name under a base URL.
+ *
+ * @note This scales left and right images to 50% of their original size. This is to reduce memory pressure since the stereogram will be twice the size of its individual components.
+ *
+ * @param leftImage  The left-hand image in the stereogram.
+ * @param rightImage The right-hand image in the stereogram.
+ * @param errorPtr   A Pointer to an NSError object to return errors to the caller.
+ * @returns A new Stereogram object or nil if something went wrong.
  */
+
 -(nullable Stereogram *) createStereogramFromLeftImage: (UIImage *)leftImage
                                             rightImage: (UIImage *)rightImage
                                                  error: (NSError **)errorPtr;

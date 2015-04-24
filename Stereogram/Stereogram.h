@@ -41,21 +41,24 @@ typedef enum ViewingMethod {
  */
 +(CGSize) thumbnailSize;
 
-/*! 
- Create a new stereogram from two images and save it to disk.
- @param baseURL The directory to put the new object in.
- @param leftImage The first image in the stereogram.
- @param rightImage The second image in the stereogram
- @param errorPtr Optional error information if something went wrong.
- @return A new object referencing the data given or nil if something went wrong.
- @note This saves the images to disk, then initialises a new stereogram with the new filenames.
+/*!
+ * Create a new stereogram from two images.
+ *
+ * @param directoryURL A File URL pointing to a parent directory. The new stereogram will be given a unique name and stored in here.
+ * @param leftImage The left image to store.
+ * @param rightIamge The right image to store.
+ * @param errorPtr Optional pointer to an object to pass error information back to the caller.
+ * @return Either a new Stereogram object or nil if something failed.
  */
-+(nullable instancetype) createAndSaveFromLeftImage: (UIImage *)leftImage
-                                         rightImage: (UIImage *)rightImage
-                                            baseURL: (NSURL *)baseURL
-                                              error: (NSError * __nullable *)errorPtr;
 
-/*! 
++(instancetype) stereogramWithDirectoryURL: (NSURL * )directoryURL
+                                 leftImage: (UIImage *)leftImage
+                                rightImage: (UIImage *)rightImage
+                                     error: (NSError **)errorPtr;
+
+
+
+/*!
  * Load all the stereograms in a given directory and return them in an array.
  * @param url The base directory to search. Must be a file URL pointing to a directory.
  * @param errorPtr Optional error information if something went wrong.
@@ -78,15 +81,50 @@ typedef enum ViewingMethod {
 +(nullable instancetype) stereogramWithURL: (NSURL *)url
                                      error: (NSError * __nullable *)errorPtr;
 
+#pragma mark Initializers
+
+/*!
+ * Initialize this object with a left and a right image and a viewing mode.
+ *
+ * @param baseURL A file URL to the root directory for this stereogram.  The left and right images will be stored under this.
+ * @param propertyList An Apple-format property dictionary for this stereogram.
+ *
+ * Designated initializer.
+ */
+-(instancetype) initWithBaseURL: (NSURL *)baseURL
+                   propertyList: (NSDictionary *)propertyList
+NS_DESIGNATED_INITIALIZER;
 
 
-#pragma mark -
+
+/*!
+ * Initialize a stereogram from two images.
+ *
+ * @param directoryURL A File URL pointing to a parent directory. The new stereogram will be given a unique name and stored in here.
+ * @param leftImage The left image to store.
+ * @param rightIamge The right image to store.
+ * @param errorPtr Optional pointer to an object to pass error information back to the caller.
+ * @return Either a new Stereogram object or nil if something failed.
+ */
+
+-(instancetype) initWithDirectoryURL: (NSURL * )directoryURL
+                           leftImage: (UIImage *)leftImage
+                          rightImage: (UIImage *)rightImage
+                               error: (NSError **)errorPtr;
+
+
+
+#pragma mark Properties
 
 /*! 
  * @property viewingMethod
  * The current way the user wants to display this stereogram. Affects the result of stereogramImage.
  */
 @property (nonatomic) enum ViewingMethod viewingMethod;
+
+
+#pragma mark Methods
+
 
 /*! 
  * Combine leftImage and rightImage according to viewingMethod.
@@ -109,6 +147,18 @@ typedef enum ViewingMethod {
  */
 -(nullable UIImage *) thumbnailImage: (NSError * __nullable *)errorPtr;
 
+
+/*!
+ * Return the image representation data in a form suitable for exporting beyond this application.
+ * For example, in an email or written out to a file.
+ *
+ * @param mimeTypePtr Pointer to a string which will be passed the MIME type of the data.
+ * @param errorPtr    Optional pointer to an NSError object which if set will be provided if something went wrong.
+ * @return A populated NSData object on success, or nil and a value in errorPtr on failure.
+ */
+-(nullable NSData *) exportDataWithMimeType: (NSString * __nullable * __nonnull )mimeTypePtr
+                                      error: (NSError * __nullable *)errorPtr;
+
 /*! 
  * Update the stereogram and thumbnail, replacing the cached images.
  *
@@ -123,20 +173,6 @@ typedef enum ViewingMethod {
  * @return YES if successful, NO if not.
  */
 -(BOOL) deleteFromDisk: (NSError * __nullable *)errorPtr;
-
-#pragma mark Initializers
-
-/*!
- * Initialize this object with a left and a right image and a viewing mode.
- *
- * @param baseURL A file URL to the root directory for this stereogram.  The left and right images will be stored under this.
- * @param propertyList An Apple-format property dictionary for this stereogram.
- *
- * Designated initializer.
- */
--(instancetype) initWithBaseURL: (NSURL *)baseURL
-                   propertyList: (NSMutableDictionary *)propertyList
-    NS_DESIGNATED_INITIALIZER;
 
 
 @end

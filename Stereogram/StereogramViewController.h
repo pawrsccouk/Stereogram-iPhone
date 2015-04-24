@@ -29,17 +29,33 @@
 #pragma mark -
 
 @interface StereogramViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
-    // The stereogram the user has taken, if any.
+
+/*! The stereogram the user has taken, if any. 
+ * 
+ * Call 'reset' to clear the stereogram out and avoid memory pressure.
+ */
 @property (nonatomic, readonly) Stereogram *stereogram;
+
+
 @property (nonatomic, unsafe_unretained) id<StereogramViewControllerDelegate> delegate;
 
 -(instancetype) initWithPhotoStore: (PhotoStore *)photoStore
                           delegate: (id<StereogramViewControllerDelegate>)delegate;
 
-    // Reset the controller back to the default state. If we stored a stereogram from a previous run, it will be destroyed here, so take a copy first.
+/*!
+ * Reset the controller back to the default state. 
+ *
+ * If we stored a stereogram from a previous run, it will be destroyed here, so take a copy first.
+ */
+
 -(void) reset;
 
-    // Display the camera above the specified view controller, take the user through the specified steps to produce a stereogram image and put the result in self.stereogram.
+    /*!
+     * Display the camera above the specified view controller, take the user through the specified steps
+     * to produce a stereogram image and put the result in self.stereogram.
+     *
+     * @param parentViewController The view controller presenting this one.
+     */
 
 -(void) takePicture: (UIViewController *)parentViewController;
 

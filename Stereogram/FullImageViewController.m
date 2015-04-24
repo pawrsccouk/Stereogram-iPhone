@@ -10,12 +10,15 @@
 #import "ImageManager.h"
 #import "NSError_AlertSupport.h"
 #import "Stereogram.h"
+#import "PWAlertView.h"
+#import "PWActionSheet.h"
 
 @interface FullImageViewController () {
     Stereogram *_stereogram;
     UIActivityIndicatorView *_activityIndicator;
     NSIndexPath *_indexPath;
     UIBarButtonItem __weak *_selectViewModeButtonItem;
+    PWAlertView *_alertView;
 }
 
     /// Designated Initializer.
@@ -109,33 +112,33 @@
 -(void) selectViewingMethod: (id)sender {
     
         // TODO: Make a menu
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle: @"Select viewing style"
+    _alertView = [PWAlertView alertViewWithTitle: @"Select viewing style"
                                                                              message: @"Choose one of the styles below"
                                                                       preferredStyle: UIAlertControllerStyleActionSheet ];
     
-    UIAlertAction *animationAction = [UIAlertAction actionWithTitle: @"Animation"
+    PWAction *animationAction = [PWAction actionWithTitle: @"Animation"
                                                               style: UIAlertActionStyleDefault
-                                                            handler: ^(UIAlertAction *action) {
+                                                            handler: ^(PWAction *action) {
                                                                 [self changeViewingMethod:ViewingMethod_AnimatedGIF];
                                                             }];
-    [alertController addAction:animationAction];
+    [_alertView addAction:animationAction];
     
-    UIAlertAction *crossEyedAction = [UIAlertAction actionWithTitle: @"Cross-eyed"
+    PWAction *crossEyedAction = [PWAction actionWithTitle: @"Cross-eyed"
                                                               style: UIAlertActionStyleDefault
-                                                            handler: ^(UIAlertAction *action) {
+                                                            handler: ^(PWAction *action) {
         [self changeViewingMethod:ViewingMethod_CrossEye];
     }];
-    [alertController addAction:crossEyedAction];
+    [_alertView addAction:crossEyedAction];
     
-    UIAlertAction *wallEyedAction = [UIAlertAction actionWithTitle: @"Wall-eyed"
+    PWAction *wallEyedAction = [PWAction actionWithTitle: @"Wall-eyed"
                                                              style: UIAlertActionStyleDefault
-                                                           handler: ^(UIAlertAction *action) {
+                                                           handler: ^(PWAction *action) {
         [self changeViewingMethod:ViewingMethod_WallEye];
     }];
-    [alertController addAction:wallEyedAction];
+    [_alertView addAction:wallEyedAction];
     
-    alertController.popoverPresentationController.barButtonItem = _selectViewModeButtonItem;
-    [self presentViewController:alertController animated: YES completion: nil];
+    _alertView.popoverPresentationItem = _selectViewModeButtonItem;
+    [_alertView show];
 }
 
 

@@ -14,9 +14,12 @@
 #import "FullImageViewController.h"
 #import "PWAlertView.h"
 #import "PWActionSheet.h"
+#import "NSError_AlertSupport.h"
+#import "ErrorData.h"
 #import "ImageManager.h"
 #import "CollectionViewThumbnailProvider.h"
 #import "Stereogram.h"
+#import "PWFunctional.h"
 
 static NSString *const IMAGE_THUMBNAIL_CELL_ID = @"CollectionViewCell_Thumbnail";
 
@@ -30,6 +33,24 @@ static inline UICollectionViewFlowLayout* cast_UICollectionViewFlowLayout(id lay
     NSCAssert([layout isKindOfClass:[UICollectionViewFlowLayout class]], @"Photo collection layout is not a flow layout");
     return (UICollectionViewFlowLayout *)layout;
 }
+
+/*! HTML text to use as an email body.
+ *
+ * Contains two replaceable parameters:
+ *
+ * #. Text to use for the main body. Example: "Here are 2 images exported from Stereogram"
+ * #. A date on which they were exported.
+ */
+static NSString *emailBodyTemplate =
+    @"<html>"
+    @"  <head/>"
+    @"  <body>"
+    @"    <H1>Exported Stereograms</H1>"
+    @"    <p>%@<br/>"
+    @"       Exported on %@"
+    @"    </p>"
+    @"  </body>"
+    @"</html>";
 
 
 #pragma mark - 
@@ -187,6 +208,21 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
     }
 }
 
+#pragma mark MFMailComposeViewController delegate
+
+-(void) mailComposeController: (MFMailComposeViewController *)controller
+          didFinishWithResult: (MFMailComposeResult)result
+                        error: (NSError *)error {
+        // Dismiss the view controller window, and if there was an error display it after the main view has been removed.
+    [self dismissViewControllerAnimated:YES completion: ^{
+        if (result == MFMailComposeResultFailed) {
+            NSError *err = error ? error : [NSError unknownErrorWithLocation:@"MFMailComposeViewController"];
+            [err showAlertWithTitle: @"Error sending mail" parentViewController: self];
+        }
+    }];
+    
+}
+
 #pragma mark Private methods
 
     /// Kick off the picture-taking process. Present the camera view controller with our custom overlay on top.
@@ -201,6 +237,8 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
     if (self.photoCollectionView.indexPathsForSelectedItems.count == 0) {
         return; // Do nothing if there are no items to act on.
     }
+    
+    _actionSheet = [[PWActionSheet alloc] initWithTitle:@"Action"];
     
     PWAction *cancelAction = [PWAction cancelAction];
     
@@ -218,12 +256,84 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
     PWAction *copyAction = [PWAction actionWithTitle:@"Copy to gallery"
                                              handler:copyBlock];
     
-    
-    _actionSheet = [[PWActionSheet alloc] initWithTitle:@"Select an action"];
-    [_actionSheet addActions:@[cancelAction, deleteAction, copyAction]];
+    PWActionHandler emailBlock = ^(PWAction *action) {
+        [self sendPhotosViaEmail:self.photoCollectionView.indexPathsForSelectedItems];
+    };
+    PWAction *emailAction = [PWAction actionWithTitle:@"Email"
+                                              handler:emailBlock];
+    [_actionSheet addActions:@[cancelAction, deleteAction, copyAction, emailAction]];
     [_actionSheet showFromBarButtonItem:_exportItem
                                animated:YES];
 }
+
+-(void) sendPhotosViaEmail: (NSArray *)indexPaths {
+        /// Present an email message with the selected stereograms attached.
+        ///
+        /// :param: selectedIndexes - An array of NSIndexPath objects identifying stereograms in the photo store which we want to export.
+    
+    
+            // Abort if there are no email accounts on this device.
+        if (![MFMailComposeViewController canSendMail]) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : @"This device is not set up to send email."};
+            NSError *error = [[NSError alloc] initWithDomain: kErrorDomainPhotoStore
+                                                        code: ErrorCode_FeatureUnavailable
+                                                    userInfo: userInfo];
+            [error showAlertWithTitle:@"Export via email"
+                 parentViewController: self];
+            return;
+        }
+        
+            // Find all the stereograms we requested for export.
+    NSError *error = nil;
+    Stereogram *failedStereogram = nil;
+    NSMutableArray *allImages = [NSMutableArray array];
+    NSArray *stereograms = [indexPaths transformedArrayUsingBlock:^Stereogram *(NSIndexPath *object) {
+        return [_photoStore stereogramAtIndex:[object indexAtPosition:1]];
+    }];
+    for (Stereogram *stereogram in stereograms) {
+        NSString *mimeType = nil;
+        NSData *exportData = [stereogram exportDataWithMimeType:&mimeType error:&error];
+        if (!exportData) {
+            failedStereogram = stereogram;
+            break; // Exit the loop on the first error.
+        }
+        [allImages addObject:@[exportData, mimeType]];
+     }
+    
+    if (failedStereogram) {
+        error = error ? error : [NSError unknownErrorWithCaller: @"sendPhotosViaEmail:"
+                                                         target: failedStereogram
+                                                         method: @selector(exportDataWithMimeType:error:)];
+        [error showAlertWithTitle: @"Error exporting to email" parentViewController: self];
+        return;
+    }
+        
+            // Present a mail compose view with the images as attachments.
+        
+    MFMailComposeViewController *mailVC = [[MFMailComposeViewController alloc] init];
+    mailVC.mailComposeDelegate = self;
+    mailVC.subject = @"Exported Stereograms.";
+    NSString *mainText = (stereograms.count != 1
+                          ? [NSString stringWithFormat: @"Here are %d images exported from Stereogram.", stereograms.count]
+                          : @"Here is an image exported from Stereogram.");
+    NSString *bodyText = [NSString stringWithFormat: emailBodyTemplate, mainText, [NSDate date].description];
+    [mailVC setMessageBody:bodyText isHTML:YES];
+    
+    NSUInteger index = 1;
+    for (NSArray *stereogramData in allImages) {
+        NSString *fileName = [NSString stringWithFormat:@"Image%d", index++];
+        [mailVC addAttachmentData:stereogramData[0]
+                         mimeType:stereogramData[1]
+                         fileName:fileName];
+    }
+    [self presentViewController:mailVC
+                       animated:YES
+                     completion:nil];
+    
+            // Now stop editing, which will deselect all the items.
+    [self setEditing:NO animated:YES];
+}
+
 
     /// Present a FullImageViewController in "View" mode showing the image at the given index path.
 -(void) showImageAtIndexPath: (NSIndexPath*)indexPath {
@@ -353,6 +463,7 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
             }
             [self setEditing:NO animated:YES];
             [photoCollection reloadData];
+            _alertView = nil;
         };
         
         PWAction *deleteAction = [PWAction actionWithTitle:@"Delete"

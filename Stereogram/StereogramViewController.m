@@ -70,6 +70,7 @@ inline static NSString *stringFromState(State state);
     return _state == Complete ? _stereogram : nil;
 }
 
+
 -(void) assertState {
     switch (_state) {
         case Complete:
@@ -155,18 +156,6 @@ inline static NSString *stringFromState(State state);
 
 #pragma mark Image Picker Delegate
 
--(UIImage *)makeStereogramWithFirstPhoto:(UIImage *)firstPhoto
-                             secondPhoto:(UIImage *)secondPhoto
-                                   error:(NSError **)errorPtr {
-    UIImage *stereogram = [ImageManager makeStereogramWithLeftPhoto:firstPhoto
-                                                         rightPhoto:secondPhoto];
-    if (!stereogram) { return nil; }
-    UIImage *resizedStereogram = [stereogram resizedImage:CGSizeMake(stereogram.size.width / 2, stereogram.size.height / 2)
-                                     interpolationQuality:kCGInterpolationHigh];
-    return resizedStereogram;
-}
-
-
 -(void) imagePickerController:(UIImagePickerController *)picker
 didFinishPickingMediaWithInfo:(NSDictionary *)info {
     [self assertState];
@@ -189,8 +178,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info {
                 
                 NSError *error = nil;
                 _stereogram = [_photoStore createStereogramFromLeftImage:_firstPhoto
-                                                rightImage:secondPhoto
-                                                     error:&error];
+                                                              rightImage:secondPhoto
+                                                                   error:&error];
                 if (_stereogram) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         

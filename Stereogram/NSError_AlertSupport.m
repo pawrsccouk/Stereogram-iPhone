@@ -6,8 +6,9 @@
 //  Copyright (c) 2013 Patrick Wallace. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "UIKit/UIKit.h"
+#import "ErrorData.h"
 
 @implementation NSError (AlertSupport)
 
@@ -26,12 +27,39 @@
 //                                       animated:YES
 //                                     completion:nil];
 
+    NSLog(@"Presenting view for error %@, userInfo: %@", self, self.userInfo);
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
                                                         message:errorText
                                                        delegate:nil
                                               cancelButtonTitle:@"Close"
                                               otherButtonTitles:nil];
     [alertView show];
+}
+
+NSString * const kLocationKey = @"Location", *const kCallerKey = @"Caller", *const kTargetKey = @"Target";
+
++(NSError *) unknownErrorWithLocation: (NSString *)location {
+    NSString *errorText = [NSString stringWithFormat:@"Unknown error in %@", location];
+    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : errorText,
+                                kLocationKey : location.copy
+                                };
+    return [NSError errorWithDomain: kErrorDomainPhotoStore
+                                         code: ErrorCode_UnknownError
+                                     userInfo: userInfo];
+}
+
++(NSError *) unknownErrorWithCaller: (NSString *)caller
+                             target: (id)target
+                             method: (SEL)method {
+    NSString *methodString = NSStringFromSelector(method);
+    NSString *errorText = [NSString stringWithFormat: @"Unknown error in [%@ %@] called from %@", [target class], methodString, caller];
+    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : errorText   ,
+                                kTargetKey                : target      ,
+                                kLocationKey              : methodString,
+                                kCallerKey                : caller      , };
+    return [NSError errorWithDomain: kErrorDomainPhotoStore
+                               code: ErrorCode_UnknownError
+                           userInfo: userInfo];
 }
 
 @end

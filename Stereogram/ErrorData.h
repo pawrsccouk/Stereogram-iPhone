@@ -20,6 +20,7 @@ static NSString * const kErrorDomainPhotoStore;
  * @constant ErrorCode_IndexOutOfBounds           Invalid index of stereogram in PhotoStore
  * @constant ErrorCode_FileNotFound               One of the stereogram's required files is missing.
  * @constant ErrorCode_NotImplemented             This code has not been implemented yet.
+ * @constant ErrorCode_FeatureUnavailable         This operation requires a feature which your device doesn't have.
  *
  */
 enum ErrorCodes {
@@ -30,6 +31,7 @@ enum ErrorCodes {
     ErrorCode_IndexOutOfBounds              ,
     ErrorCode_FileNotFound                  ,
     ErrorCode_NotImplemented                ,
+    ErrorCode_FeatureUnavailable            ,
 };
 
 /*!

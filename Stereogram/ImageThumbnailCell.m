@@ -9,9 +9,19 @@
 #import "ImageThumbnailCell.h"
 
 @interface ImageThumbnailCell () {
+    /*! The view containing the image thumbnail i.e. the cell content. */
     UIImageView __weak *_imageView;
+    
+    /*! A view containing a tick image which will be overlaid above selected cell images. */
     UIImageView __weak *_selectionOverlayView;
 }
+
+/*!
+ * Class Method. Cache the selection tick image the first time it is needed and return it.
+ *
+ * @returns The image to display if the cell is selected.
+ */
++(UIImage *)selectedImage;
 @end
 
 
@@ -27,14 +37,14 @@
         [self.contentView addSubview:imageView];
         _imageView = imageView;
         
-            // Now add the overlay view which will show when the object is selected.
+            // Now add the overlay view which will show a tick when the object is selected.
         CGSize selImageSize = self.selectedImageSize;
         CGPoint selImageOrigin = CGPointMake(frame.size.width - selImageSize.width, frame.size.height - selImageSize.height);
         CGRect selectOverlayFrame = { .origin = selImageOrigin, .size = selImageSize };
-        imageView = [[UIImageView alloc] initWithFrame:selectOverlayFrame];
-        imageView.image = [self.class unselectedImage];
-        [self.contentView addSubview:imageView];
-        _selectionOverlayView = imageView;
+        UIImageView *tickView = [[UIImageView alloc] initWithFrame:selectOverlayFrame];
+        tickView.image = nil;
+        [self.contentView addSubview:tickView];
+        _selectionOverlayView = tickView;
     }
     return self;
 }
@@ -55,25 +65,16 @@
 
 -(void) setSelected: (BOOL)selected {
     [super setSelected:selected];
-    _selectionOverlayView.image = selected ? [self.class selectedImage] : [self.class unselectedImage];
+    _selectionOverlayView.image = selected ? [self.class selectedImage] : nil;
 }
 
 +(UIImage *) selectedImage {
-    static UIImage *selectedImage;
-    if(! selectedImage) {
-        selectedImage = [UIImage imageNamed:@"Tick Overlay"];
-        NSAssert(selectedImage, @"Image called Tick Overlay was not in the bundle.");
+    static UIImage *_selectedImage;
+    if(! _selectedImage) {
+        _selectedImage = [UIImage imageNamed:@"Tick Overlay"];
+        NSAssert(_selectedImage, @"Image called Tick Overlay was not in the bundle.");
     }
-    return selectedImage;
-}
-
-+(UIImage *) unselectedImage {
-    static UIImage *notSelectedImage;
-    if(! notSelectedImage) {
-        notSelectedImage = [UIImage imageNamed:@"Unticked Overlay"];
-        NSAssert(notSelectedImage, @"Image called Unticked Overlay was not found in the bundle.");
-    }
-    return notSelectedImage;
+    return _selectedImage;
 }
 
 @end

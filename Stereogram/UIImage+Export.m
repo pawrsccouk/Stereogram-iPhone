@@ -12,9 +12,6 @@
 
 @implementation UIImage (Export)
 
-    /*!
-     * Return this image as an NSData object representing a GIF.
-     */
 
 -(NSData *) GIFData {
     CFMutableDataRef mutableData = CFDataCreateMutable(kCFAllocatorDefault, 0);
@@ -30,10 +27,6 @@
     CGImageDestinationFinalize(cgImage);
     return CFBridgingRelease(mutableData);
 }
-
-    /*!
-     * Return this image as an NSData object representing a JPEG.
-     */
 
 -(NSData *) JPEGData {
     return UIImageJPEGRepresentation(self, 1.0);

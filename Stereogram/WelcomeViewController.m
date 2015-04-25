@@ -18,24 +18,29 @@ static UIWebView *cast_UIWebView(UIView *view) {
 
 @interface WelcomeViewController () {
     StereogramViewController *_stereogramViewController;
+    PhotoStore *_photoStore;
 }
 
 @end
 
 @implementation WelcomeViewController
-@synthesize photoStore = _photoStore;
 
 #pragma mark Initialisers
 
--(instancetype) initWithNibName: (NSString *)nibNameOrNil
-                         bundle: (NSBundle *)nibBundleOrNil {
-    return [super initWithNibName:@"WelcomeView"
-                           bundle: nibBundleOrNil];
+-(instancetype) initWithPhotoStore:(PhotoStore *)photoStore {
+    self = [super initWithNibName:@"WelcomeView"
+                           bundle: nil];
+    if (!self) {
+        return nil;
+    }
+    _photoStore = photoStore;
+    return self;
 }
 
 -(id) initWithCoder: (NSCoder *)aDecoder {
-    NSAssert(NO, @"init(coder:) has not been implemented");
-    return nil;
+    [NSException raise:@"Not implemented."
+                format:@"%@ has not been implemented", NSStringFromSelector(_cmd)];
+    return [self initWithPhotoStore:nil];
 }
 
 #pragma mark Overrides
@@ -66,7 +71,7 @@ static UIWebView *cast_UIWebView(UIView *view) {
 #pragma mark Callbacks
 
 -(void) takePicture {
-    _stereogramViewController = [[StereogramViewController alloc] initWithPhotoStore:self.photoStore
+    _stereogramViewController = [[StereogramViewController alloc] initWithPhotoStore:_photoStore
                                                                             delegate:self];
     [_stereogramViewController takePicture:self];
 }

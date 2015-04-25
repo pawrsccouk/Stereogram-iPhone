@@ -118,11 +118,10 @@ inline static NSString *stringFromState(State state);
 
                 // Set up a custom overlay view for the camera. Ensure our custom view frame fits within the camera view's frame.
             if (!_cameraOverlayController) {
-                _cameraOverlayController= [[CameraOverlayViewController alloc] init];
+                _cameraOverlayController= [[CameraOverlayViewController alloc] initWithPickerController:picker];
             }
             _cameraOverlayController.view.frame = picker.view.frame;
             picker.cameraOverlayView = _cameraOverlayController.view;
-            _cameraOverlayController.imagePickerController = picker;
             _cameraOverlayController.helpText = @"Take the first photo";
             [_parentController presentViewController:picker
                                             animated:YES

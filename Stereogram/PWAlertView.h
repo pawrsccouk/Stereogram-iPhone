@@ -1,16 +1,17 @@
-//
-//  PWAlertView.h
-//  Stereogram
-//
-//  Created by Patrick Wallace on 30/01/2013.
-//  Copyright (c) 2013 Patrick Wallace. All rights reserved.
-//
+/*!
+ * @file PWAlertView.h
+ * @author Patrick Wallace on 30/01/2013.
+ * @copyright 2013 Patrick Wallace. All rights reserved.
+ */
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 @class PWAction;
 
-/*! A variant of NSAlertView which uses blocks instead of delegates.
+/*!
+ * A variant of NSAlertView which uses blocks instead of delegates.
+ *
  * Internally calls UIAlertView with the delegate set to self, and handles the button text.
+ * Similar to UIAlertController which we can switch to if we only want to target iOS8.
  */
 
 @interface PWAlertView : NSObject <UIAlertViewDelegate>

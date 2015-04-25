@@ -34,14 +34,12 @@ didFinishLaunchingWithOptions: (NSDictionary *)launchOptions {
         _photoStore = [[PhotoStore alloc] init:&error];
         if (_photoStore) {
             
-            PhotoViewController *photoViewController = [[PhotoViewController alloc] init];
-            photoViewController.photoStore = _photoStore;
+            PhotoViewController *photoViewController = [[PhotoViewController alloc] initWithPhotoStore:_photoStore];
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:photoViewController];
             
                 // If photoStore is empty after creation, push a special view controller which doesn't have a collection view, but instead has some welcome text. When the user takes the first photo, pop that welcome view controller to reveal the standard collection view.
             if (_photoStore.count == 0) {
-                WelcomeViewController *welcomeViewController = [[WelcomeViewController alloc] init];
-                welcomeViewController.photoStore = _photoStore;
+                WelcomeViewController *welcomeViewController = [[WelcomeViewController alloc] initWithPhotoStore:_photoStore];
                 [navigationController pushViewController:welcomeViewController
                                                 animated:NO];
             }
@@ -86,26 +84,27 @@ didFinishLaunchingWithOptions: (NSDictionary *)launchOptions {
         // Ask the system for a little more time to save the data.  It creates a task-id and gives us a few seconds to save.
         // Then it calls the expiration handler, which must finish the task. If not, the app is killed.
         
-    __block UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
-            // This is called when time runs out for your background task.
-        NSLog(@"Background task terminated early.");
-        [application endBackgroundTask:bgTask];
-        bgTask = UIBackgroundTaskInvalid;
-    }];
-    
-        // This starts the task on a background thread. Here we save the data.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-            // TODO: Implement save-on-background.
+// Save-on-background is not currently needed. When it is needed again I'll re-enable this code to handle it.
+//
+//    __block UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
+//            // This is called when time runs out for your background task.
+//        NSLog(@"Background task terminated early.");
+//        [application endBackgroundTask:bgTask];
+//        bgTask = UIBackgroundTaskInvalid;
+//    }];
+//    
+//        // This starts the task on a background thread. Here we save the data.
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        
 //        NSError *error = nil;
 //        if (![_photoStore saveProperties:&error]) {
 //            // Can't inform the user here, as the app has been replaced. Do we present it for them when the app restores?
 //            NSLog(@"Error saving the image properties. Error %@ user info %@", error, error.userInfo);
 //        }
 //        NSLog(@"Background task save complete.");
-        [application endBackgroundTask:bgTask];
-        bgTask = UIBackgroundTaskInvalid;
-    });
+//        [application endBackgroundTask:bgTask];
+//        bgTask = UIBackgroundTaskInvalid;
+//    });
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application

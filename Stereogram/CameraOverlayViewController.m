@@ -7,27 +7,34 @@
 //
 
 #import "CameraOverlayViewController.h"
-static inline CGRect activityFrame(CGRect parentBounds, CGSize activitySize);
 
 @interface CameraOverlayViewController () {
-    UIActivityIndicatorView *activityView;
+    UIActivityIndicatorView *_activityView;
+    UIImagePickerController *_parentPicker;
 }
 
--(instancetype) initWithNibName: (NSString *)nibNameOrNil
-                         bundle: (NSBundle *)nibBundleOrNil NS_DESIGNATED_INITIALIZER;
+#pragma mark Interface Builder
+
+@property (nonatomic, weak) IBOutlet UIBarButtonItem *helpTextItem;
+@property (nonatomic, weak) IBOutlet UIImageView *crosshair;
+
 @end
+
+
 
 #pragma mark -
 
+
+
 @implementation CameraOverlayViewController
 
--(instancetype) initWithNibName: (NSString *)nibNameOrNil
-                         bundle: (NSBundle *)nibBundleOrNil {
+-(instancetype) initWithPickerController:(UIImagePickerController *)parentController {
     self = [super initWithNibName:@"CameraOverlayView"
-                           bundle:nibBundleOrNil];
+                           bundle:nil];
     if (self) {
             // Create the activity view, but don't attach it to anything yet.
-        activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        _activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        _parentPicker = parentController;
     }
     return self;
 }
@@ -41,43 +48,38 @@ static inline CGRect activityFrame(CGRect parentBounds, CGSize activitySize);
 }
 
 -(void) showWaitIcon: (BOOL)showIcon {
+    
+        // Return the frame used for the activity view, given the parent bounds and the child's size.
     if(showIcon) {
         self.crosshair.hidden = YES;
-        activityView.frame = activityFrame(self.view.bounds, activityView.bounds.size);
-        [self.view addSubview:activityView];
-        [activityView startAnimating];
+        _activityView.frame = (CGRect) {
+            .origin = CGPointMake((self.view.bounds.size.width  / 2) - (_activityView.bounds.size.width  / 2),
+                                  (self.view.bounds.size.height / 2) - (_activityView.bounds.size.height / 2)),
+            .size = _activityView.bounds.size
+        };
+        [self.view addSubview:_activityView];
+        [_activityView startAnimating];
     }
     else {
         self.crosshair.hidden = NO;
-        [activityView stopAnimating];
-        [activityView removeFromSuperview];
+        [_activityView stopAnimating];
+        [_activityView removeFromSuperview];
     }
 }
 
 #pragma mark Interface Builder
 
 -(IBAction) takePhoto: (id)sender {
-    NSAssert(self.imagePickerController, @"camera controller is nil.");
-    [self.imagePickerController takePicture];
+    NSAssert(_parentPicker, @"camera controller is nil.");
+    [_parentPicker takePicture];
 }
 
 -(IBAction) cancel: (id)sender {
-    UIImagePickerController *picker = self.imagePickerController;
-    NSAssert(picker && picker.delegate, @"camera controller is nil or has a nil delegate.");
-    NSAssert([picker.delegate respondsToSelector:@selector(imagePickerControllerDidCancel:)],
-             @"Delegate %@ doesn't respond to cancel message", picker.delegate);
+    NSAssert(_parentPicker && _parentPicker.delegate, @"camera controller %@ is nil or has a nil delegate.", _parentPicker);
+    NSAssert([_parentPicker.delegate respondsToSelector:@selector(imagePickerControllerDidCancel:)],
+             @"Delegate %@ doesn't respond to cancel message", _parentPicker.delegate);
 
-    [picker.delegate imagePickerControllerDidCancel:picker];
+    [_parentPicker.delegate imagePickerControllerDidCancel:_parentPicker];
 }
 @end
 
-#pragma mark -
-
-    // Return the frame used for the activity view, given the parent bounds and the child's size.
-static CGRect activityFrame(CGRect parentBounds, CGSize activitySize) {
-    return (CGRect){
-        .origin = CGPointMake((parentBounds.size.width  / 2) - (activitySize.width  / 2),
-                              (parentBounds.size.height / 2) - (activitySize.height / 2)),
-        .size = activitySize
-    };
-}

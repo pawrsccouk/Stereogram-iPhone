@@ -7,7 +7,9 @@
 
 @import Foundation;
 
-    /*! Error domain for the Photo Store. */
+/*!
+ * Error domain for the Photo Store.
+ */
 static NSString * const kErrorDomainPhotoStore;
 
 /*!

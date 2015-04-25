@@ -16,16 +16,18 @@
 @interface FullImageViewController () {
     Stereogram *_stereogram;
     UIActivityIndicatorView *_activityIndicator;
-    NSIndexPath *_indexPath;
+    id _userInfo;
     UIBarButtonItem __weak *_selectViewModeButtonItem;
     PWAlertView *_alertView;
 }
+@property (nonatomic, weak) IBOutlet UIImageView *imageView;
+@property (nonatomic, weak) IBOutlet UIScrollView *scrollView;
 
     /// Designated Initializer.
 -(instancetype) initWithStereogram: (Stereogram *)stereogram
-                       atIndexPath: (NSIndexPath *)indexPath
                        forApproval: (BOOL)forApproval
-                          delegate: (id<FullImageViewControllerDelegate>)delegate NS_DESIGNATED_INITIALIZER;
+                          delegate: (id<FullImageViewControllerDelegate>)delegate
+                          userInfo: (id)userInfo NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -35,32 +37,32 @@
 #pragma mark Constructors
 
 -(instancetype) initWithStereogram: (Stereogram *)stereogram
-                       atIndexPath: (NSIndexPath *)indexPath
-                          delegate: (id<FullImageViewControllerDelegate>)delegate {
+                          delegate: (id<FullImageViewControllerDelegate>)delegate
+                          userInfo: (id)userInfo {
     return [self initWithStereogram:stereogram
-                        atIndexPath:indexPath
                         forApproval:NO
-                           delegate:delegate];
+                           delegate:delegate
+                           userInfo:userInfo];
 }
 
 -(instancetype) initWithStereogram: (Stereogram *)stereogram
                        forApproval: (BOOL)forApproval
                           delegate: (id<FullImageViewControllerDelegate>)delegate {
     return [self initWithStereogram:stereogram
-                        atIndexPath:nil
                         forApproval:forApproval
-                           delegate:delegate];
+                           delegate:delegate
+                           userInfo:nil];
 }
 
 -(instancetype) initWithStereogram: (Stereogram *)image
-                       atIndexPath: (NSIndexPath *)indexPath
                        forApproval: (BOOL)approval
-                          delegate: (id<FullImageViewControllerDelegate>)delegate {
+                          delegate: (id<FullImageViewControllerDelegate>)delegate
+                          userInfo: (id)userInfo {
     self = [super initWithNibName:@"FullImageView" bundle:nil];
     if (self) {
         _stereogram = image;
         _delegate = delegate;
-        _indexPath = indexPath;
+        _userInfo = userInfo;
         UIBarButtonItem *selectViewMethodButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Change View Method"
                                                                                        style:UIBarButtonItemStyleBordered
                                                                                       target:self
@@ -113,28 +115,28 @@
     
         // TODO: Make a menu
     _alertView = [PWAlertView alertViewWithTitle: @"Select viewing style"
-                                                                             message: @"Choose one of the styles below"
-                                                                      preferredStyle: UIAlertControllerStyleActionSheet ];
+                                         message: @"Choose one of the styles below"
+                                  preferredStyle: UIAlertControllerStyleActionSheet ];
     
     PWAction *animationAction = [PWAction actionWithTitle: @"Animation"
-                                                              style: UIAlertActionStyleDefault
-                                                            handler: ^(PWAction *action) {
-                                                                [self changeViewingMethod:ViewingMethod_AnimatedGIF];
-                                                            }];
+                                                    style: UIAlertActionStyleDefault
+                                                  handler: ^(PWAction *action) {
+                                                      [self changeViewingMethod:ViewingMethod_AnimatedGIF];
+                                                  }];
     [_alertView addAction:animationAction];
     
     PWAction *crossEyedAction = [PWAction actionWithTitle: @"Cross-eyed"
-                                                              style: UIAlertActionStyleDefault
-                                                            handler: ^(PWAction *action) {
-        [self changeViewingMethod:ViewingMethod_CrossEye];
-    }];
+                                                    style: UIAlertActionStyleDefault
+                                                  handler: ^(PWAction *action) {
+                                                      [self changeViewingMethod:ViewingMethod_CrossEye];
+                                                  }];
     [_alertView addAction:crossEyedAction];
     
     PWAction *wallEyedAction = [PWAction actionWithTitle: @"Wall-eyed"
-                                                             style: UIAlertActionStyleDefault
-                                                           handler: ^(PWAction *action) {
-        [self changeViewingMethod:ViewingMethod_WallEye];
-    }];
+                                                   style: UIAlertActionStyleDefault
+                                                 handler: ^(PWAction *action) {
+                                                     [self changeViewingMethod:ViewingMethod_WallEye];
+                                                 }];
     [_alertView addAction:wallEyedAction];
     
     _alertView.popoverPresentationItem = _selectViewModeButtonItem;
@@ -164,7 +166,7 @@
                 if ([self.delegate respondsToSelector:@selector(fullImageViewController:amendedStereogram:atIndexPath:)]) {
                     [self.delegate fullImageViewController:self
                                          amendedStereogram:_stereogram
-                                               atIndexPath:_indexPath];
+                                                  userInfo:_userInfo];
                 }
                 
             });

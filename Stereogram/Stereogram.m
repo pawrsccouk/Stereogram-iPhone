@@ -381,7 +381,7 @@ typedef enum WhichImage {
 
 -(enum ViewingMethod) viewingMethod {
     NSNumber *viewingMethodNumber = _properties[kViewingMethod];
-    return viewingMethodNumber.integerValue;
+    return (enum ViewingMethod)viewingMethodNumber.integerValue;
 }
 
 /*!

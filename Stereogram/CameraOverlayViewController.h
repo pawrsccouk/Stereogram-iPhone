@@ -6,29 +6,35 @@
 //  Copyright (c) 2013 Patrick Wallace. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
+@class UIImagePickerController;
+
+/*!
+ * View controller presenting a view which will be displayed over the camera view and will hold our crosshairs and custom icons.
+ */
 
 @interface CameraOverlayViewController : UIViewController
 
-#pragma mark Interface Builder
-
-@property (nonatomic, weak) IBOutlet UIBarButtonItem *helpTextItem;
-@property (nonatomic, weak) IBOutlet UIImageView *crosshair;
-
-    // I am replacing the standard buttons with my own, so I need to forward the messages to the image picker.
--(IBAction) takePhoto: (id)sender;
--(IBAction) cancel: (id)sender;
-
 #pragma mark Properties
 
-@property (nonatomic, strong) UIImagePickerController *imagePickerController;
-
-    // Set the help text to display to the user.
+/*!
+ * Help text to display to the user. 
+ */
 @property (nonatomic, copy) NSString *helpText;
 
 #pragma mark Methods
 
-    // if showIcon, Trigger a wait icon as the device is processing in the background. Otherwise hide the icon.
--(void)showWaitIcon:(BOOL) showIcon;
+/*!
+ * Show or hide a wait icon over this view.  This should be running when the view is running a long operation on another queue.
+ */
+-(void)showWaitIcon: (BOOL)showIcon;
+
+/*!
+ * Initialize this object.
+ *
+ * @param parentController The picker controller window our view needs to appear in front of.  
+ * We need to forward the photo-taking actions to this view.
+ */
+-(instancetype)initWithPickerController: (UIImagePickerController *)parentController NS_DESIGNATED_INITIALIZER;
 
 @end

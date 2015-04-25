@@ -12,17 +12,27 @@
 #import "StereogramViewController.h"
 @class PhotoStore;
 
+/*
+ * View controller presenting a view which shows a collection of thumbnail images and allows the user to select or deselect them.
+ * It also allows the user to initiate the photo-taking process and is generally the main view in the application.
+ */
 @interface PhotoViewController : UIViewController <UINavigationControllerDelegate, UICollectionViewDelegate, FullImageViewControllerDelegate, StereogramViewControllerDelegate, MFMailComposeViewControllerDelegate> {
 }
-@property (nonatomic, weak) IBOutlet UICollectionView *photoCollectionView;
 
-    /// Designated Initializer. Initialize the object and set the default value for photoStore.
+/*!
+ * Designated Initializer. Initialize the object and set the default value for photoStore.
+ *
+ * @param photoStore The photo store from which to take image thumbnails. Also update operations will be applied to the images in this store.
+ */
 -(instancetype)initWithPhotoStore: (PhotoStore*)photoStore NS_DESIGNATED_INITIALIZER;
 
-    /// Convenience Initializer. Initialize the object setting photoStore to nil.
+/*! Convenience Initializer. Initialize the object setting photoStore to nil. */
 -(instancetype)init;
 
-    /// This is the photoStore that houses the image we will display.  Any user actions taken on the displayed image will be updated in the photo store.
+/*!
+ * This is the photoStore that houses the image we will display.
+ * Any user actions taken on the displayed image will be updated in the photo store.
+ */
 @property (nonatomic, strong) PhotoStore *photoStore;
 
 @end

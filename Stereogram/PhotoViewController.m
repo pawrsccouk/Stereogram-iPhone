@@ -63,6 +63,7 @@ static NSString *emailBodyTemplate =
     PWAlertView *_alertView;
     PWActionSheet *_actionSheet;
 }
+@property (nonatomic, weak) IBOutlet UICollectionView *photoCollectionView;
 @end
 
 @implementation PhotoViewController
@@ -172,7 +173,8 @@ static NSString *emailBodyTemplate =
 
 -(void) fullImageViewController: (FullImageViewController *)controller
               amendedStereogram: (Stereogram *)newStereogram
-                    atIndexPath: (NSIndexPath *)indexPath {
+                       userInfo: (id)userInfo {
+    NSIndexPath *indexPath = userInfo;
         // If indexPath is nil, we are calling it in approval mode and the image doesn't exist in the library yet. In which case, don't do anything, as we will handle it in the approvedImage delegate method.
         // If indexPath is valid, we are updating an existing entry. So replace the image at the path with the new image provided.
     if (indexPath) {
@@ -314,14 +316,14 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
     mailVC.mailComposeDelegate = self;
     mailVC.subject = @"Exported Stereograms.";
     NSString *mainText = (stereograms.count != 1
-                          ? [NSString stringWithFormat: @"Here are %d images exported from Stereogram.", stereograms.count]
+                          ? [NSString stringWithFormat: @"Here are %lu images exported from Stereogram.", (unsigned long)stereograms.count]
                           : @"Here is an image exported from Stereogram.");
     NSString *bodyText = [NSString stringWithFormat: emailBodyTemplate, mainText, [NSDate date].description];
     [mailVC setMessageBody:bodyText isHTML:YES];
     
     NSUInteger index = 1;
     for (NSArray *stereogramData in allImages) {
-        NSString *fileName = [NSString stringWithFormat:@"Image%d", index++];
+        NSString *fileName = [NSString stringWithFormat:@"Image%lu", (unsigned long)index++];
         [mailVC addAttachmentData:stereogramData[0]
                          mimeType:stereogramData[1]
                          fileName:fileName];
@@ -341,8 +343,8 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
     NSAssert(stereogram, @"No stereogram at index path %@", indexPath);
     if (stereogram) {
         FullImageViewController *imageViewController = [[FullImageViewController alloc] initWithStereogram:stereogram
-                                                                                               atIndexPath:indexPath
-                                                                                                  delegate:self];
+                                                                                                  delegate:self
+                                                                                                  userInfo:indexPath];
         [self.navigationController pushViewController:imageViewController animated:YES];
     } else {
         NSLog(@"Error accessing image at index %ld", (long)indexPath.item);

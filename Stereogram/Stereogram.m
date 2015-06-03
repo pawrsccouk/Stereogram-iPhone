@@ -26,9 +26,10 @@ typedef enum WhichImage {
     RightImage
 } WhichImage;
 
+
+
+
 @interface Stereogram () {
-        // URL to the root of the directory, under which we'll find the left and right images. Used to load the images when needed.
-    NSURL *_baseURL;
     NSMutableDictionary *_properties;
     
         /// Cached images in memory. Free these if needed.
@@ -85,7 +86,7 @@ typedef enum WhichImage {
                                         userInfo:@{NSLocalizedDescriptionKey : @"File exists and is not a directory.",
                                                    NSFilePathErrorKey        : directoryURL.path}];
         }
-        return NO;
+        return nil;
     }
     
         // Create the directory (ignoring any errors about it already existing).
@@ -98,18 +99,18 @@ typedef enum WhichImage {
         if (errorPtr) {
             *errorPtr = error;
         }
-        return NO;
+        return nil;
             // END IF
     }
         // Directory exists now. Add the files underneath it.
     NSURL *leftURL = [newStereogramURL URLByAppendingPathComponent:LeftPhotoFileName];
     if (!saveImageIntoURL(leftImage, leftURL, errorPtr)) {
-        return NO;
+        return nil;
     }
     
     NSURL *rightURL = [newStereogramURL URLByAppendingPathComponent:RightPhotoFileName];
     if (!saveImageIntoURL(rightImage, rightURL, errorPtr)) {
-        return NO;
+        return nil;
     }
     
     NSURL *propertyFileURL = [newStereogramURL URLByAppendingPathComponent:PropertyListFileName];
@@ -140,7 +141,7 @@ typedef enum WhichImage {
         }
         [stereogramArray addObject:stereogram];
     }
-    NSLog(@"allStereogramsUnderURL: returned %ld stereogram files: %@", (unsigned long)stereogramArray.count, stereogramArray);
+//    NSLog(@"allStereogramsUnderURL: returned %ld stereogram files: %@", (unsigned long)stereogramArray.count, stereogramArray);
     return stereogramArray;
 }
 
@@ -185,7 +186,8 @@ typedef enum WhichImage {
 
     _thumbnailImage = _stereogramImage = nil;
     
-    NSAssert(self.viewingMethod >= 0 && self.viewingMethod < ViewingMethod_NUM_METHODS, @"initWithPropertyList:leftImageURL:rightImageURL: invalid viewing method: %ld", (long)self.viewingMethod);
+    NSAssert(self.viewingMethod >= 0 && self.viewingMethod < ViewingMethod_NUM_METHODS
+			 , @"initWithPropertyList:leftImageURL:rightImageURL: invalid viewing method: %ld", (long)self.viewingMethod);
     
         // Notify when memory is low, so I can delete this cache.
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -214,10 +216,9 @@ typedef enum WhichImage {
     if (!_baseURL) {
         return YES;  // Nothing to do.
     }
-    NSURL *objectFolderURL = _baseURL.URLByDeletingLastPathComponent;
-    NSLog(@"Deleting %@", objectFolderURL);
+//    NSLog(@"Deleting %@", _baseURL);
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    BOOL success = [fileManager removeItemAtURL:objectFolderURL
+    BOOL success = [fileManager removeItemAtURL:_baseURL
                                           error:errorPtr];
     if (success) {
         _baseURL = nil;
@@ -273,7 +274,7 @@ typedef enum WhichImage {
             _stereogramImage = nil;
             break;
     }
-    NSLog(@"Stereogram %@ created stereogram image %@", self, _stereogramImage);
+//    NSLog(@"Stereogram %@ created stereogram image %@", self, _stereogramImage);
     return _stereogramImage;
 }
 
@@ -330,10 +331,10 @@ typedef enum WhichImage {
     NSData *data;
     if (self.viewingMethod == ViewingMethod_AnimatedGIF) {
         *mimeTypePtr = @"image/gif";
-        data = stereogramImage.GIFData;
+        data = stereogramImage.asGIFData;
     } else {
         *mimeTypePtr = @"image/jpeg";
-        data = stereogramImage.JPEGData;
+        data = stereogramImage.asJPEGData;
     }
     return data;
 }
@@ -404,6 +405,7 @@ typedef enum WhichImage {
     }
 }
 
+
 #pragma mark Private 
 
 /*!
@@ -435,6 +437,12 @@ static NSURL *getUniqueStereogramURL(NSURL *photoDir) {
 }
 
 static BOOL saveImageIntoURL(UIImage *image, NSURL *url, NSError **errorPtr) {
+	if (!image) {
+		if (errorPtr) {
+			*errorPtr = [NSError parameterErrorWithNilParameter:@"image"];
+		}
+		return NO;
+	}
     NSData *fileData = UIImageJPEGRepresentation(image, 1.0);
     return [fileData writeToURL:url
                         options:NSDataWritingAtomic
@@ -520,8 +528,6 @@ NSDictionary *loadPropertyList(NSURL *url, NSError **errorPtr) {
     }
     return nil;
 }
-
-
 
 
 @end

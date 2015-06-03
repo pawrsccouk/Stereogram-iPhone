@@ -5,7 +5,7 @@
  @abstract This contains the Stereogram class, used for representing a pair of images and some associated properties.
 */
 
-@import Foundation;
+@import UIKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,7 +27,7 @@ typedef enum ViewingMethod {
     ViewingMethod_NUM_METHODS
 } ViewingMethod;
 
-/*! 
+/*!
  * @class Stereogram
  * This holds data for one stereogram and can load and save it if given a file URL.
  * The data is stored in one directory per stereogram, with the left and right images and properties stored under that.
@@ -116,7 +116,14 @@ NS_DESIGNATED_INITIALIZER;
 
 #pragma mark Properties
 
-/*! 
+	/*!
+	 * URL to the root of the directory, under which we'll find the left and right images.
+	 * Used to load the images when needed.
+	 */
+@property (nonatomic, readonly) NSURL *baseURL;
+
+
+/*!
  * @property viewingMethod
  * The current way the user wants to display this stereogram. Affects the result of stereogramImage.
  */
@@ -173,7 +180,6 @@ NS_DESIGNATED_INITIALIZER;
  * @return YES if successful, NO if not.
  */
 -(BOOL) deleteFromDisk: (NSError * __nullable *)errorPtr;
-
 
 @end
 

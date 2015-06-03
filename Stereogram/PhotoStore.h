@@ -4,7 +4,7 @@
  *  @copyright Copyright (c) 2013 Patrick Wallace. All rights reserved.
  */
 
-@import Foundation;
+@import UIKit;
 @class Stereogram;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,9 +21,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CGSize thumbnailSize;
 
 /*! Constructor. If something fails it returns nil and an error. */
--(nullable instancetype) init: (NSError * __nullable *)error NS_DESIGNATED_INITIALIZER;
+-(nullable instancetype) initWithFolderURL: (NSURL*)url
+									 error: (NSError * __nullable *)error NS_DESIGNATED_INITIALIZER;
 
 #pragma mark - Handling stereograms
+
+/*!
+ * An enumerator for running over all the stereograms in the store.
+ */
+@property (nonatomic, readonly) NSEnumerator *objectEnumerator;
 
 /*! Adds the stereogram to the store. Assumes the stereogram has already been successfully created and saved.
  * @param stereogram The stereogram to add.
@@ -89,6 +95,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 -(BOOL) copyStereogramToCameraRoll: (NSUInteger)index
                              error: (NSError **)errorPtr;
+
+
+
 @end
 
 

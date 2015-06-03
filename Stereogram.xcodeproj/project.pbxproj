@@ -28,6 +28,19 @@
 		577108EC16B8B5CB007D32DA /* PWAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108EB16B8B5CA007D32DA /* PWAlertView.m */; };
 		577108EF16B8CC1E007D32DA /* PWActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 577108EE16B8CC1E007D32DA /* PWActionSheet.m */; };
 		577108F816BF5BFA007D32DA /* Notes.md in Resources */ = {isa = PBXBuildFile; fileRef = 577108F716BF5BFA007D32DA /* Notes.md */; };
+		57730EE71B1E810A0092189F /* One Stereogram in Resources */ = {isa = PBXBuildFile; fileRef = 57730EE31B1E810A0092189F /* One Stereogram */; };
+		57730EE81B1E810A0092189F /* PhotoStore 1 Directory in Resources */ = {isa = PBXBuildFile; fileRef = 57730EE41B1E810A0092189F /* PhotoStore 1 Directory */; };
+		57730EE91B1E810A0092189F /* PhotoStore 2 Directory in Resources */ = {isa = PBXBuildFile; fileRef = 57730EE51B1E810A0092189F /* PhotoStore 2 Directory */; };
+		57730EEA1B1E810A0092189F /* PhotoStore Empty Directory in Resources */ = {isa = PBXBuildFile; fileRef = 57730EE61B1E810A0092189F /* PhotoStore Empty Directory */; };
+		57730EEF1B1E89320092189F /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57730EEE1B1E89320092189F /* Media.xcassets */; };
+		57B9007E1B1E440300B4BF9B /* ErrorData.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE76451AD838F7000F9CF0 /* ErrorData.m */; };
+		57B9007F1B1E440300B4BF9B /* ImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE763F1AD833FB000F9CF0 /* ImageManager.m */; };
+		57B900801B1E440300B4BF9B /* PhotoStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F1084B16AC300400907CBE /* PhotoStore.m */; };
+		57B900811B1E440300B4BF9B /* Stereogram.m in Sources */ = {isa = PBXBuildFile; fileRef = 57587D111ADDEFA500A16D64 /* Stereogram.m */; };
+		57B900821B1E440300B4BF9B /* UIImage+Export.m in Sources */ = {isa = PBXBuildFile; fileRef = 572A55001AE955D2005B4375 /* UIImage+Export.m */; };
+		57B900861B1E479600B4BF9B /* PhotoStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B900831B1E479600B4BF9B /* PhotoStoreTests.m */; };
+		57B900871B1E479600B4BF9B /* StereogramTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B900841B1E479600B4BF9B /* StereogramTestCase.m */; };
+		57B900881B1E479600B4BF9B /* StereogramTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B900851B1E479600B4BF9B /* StereogramTests.m */; };
 		57DE76401AD833FB000F9CF0 /* ImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE763F1AD833FB000F9CF0 /* ImageManager.m */; };
 		57DE76461AD838F7000F9CF0 /* ErrorData.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE76451AD838F7000F9CF0 /* ErrorData.m */; };
 		57F1082916AC2DCD00907CBE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1082816AC2DCD00907CBE /* UIKit.framework */; };
@@ -41,6 +54,16 @@
 		57F1084C16AC300400907CBE /* PhotoStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F1084B16AC300400907CBE /* PhotoStore.m */; };
 		57F1084E16AC35BF00907CBE /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F1084D16AC35BF00907CBE /* MobileCoreServices.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		57B900731B1E438400B4BF9B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57F1081B16AC2DCD00907CBE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 57F1082316AC2DCD00907CBE;
+			remoteInfo = Stereogram;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		5713AA021ADB6B84006A0718 /* CollectionViewThumbnailProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionViewThumbnailProvider.h; sourceTree = "<group>"; };
@@ -84,6 +107,17 @@
 		577108ED16B8CC1D007D32DA /* PWActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWActionSheet.h; sourceTree = "<group>"; };
 		577108EE16B8CC1E007D32DA /* PWActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWActionSheet.m; sourceTree = "<group>"; };
 		577108F716BF5BFA007D32DA /* Notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = Notes.md; path = Stereogram/Notes.md; sourceTree = "<group>"; };
+		57730EE21B1E62FE0092189F /* StereogramTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StereogramTestCase.h; sourceTree = "<group>"; };
+		57730EE31B1E810A0092189F /* One Stereogram */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "One Stereogram"; path = "Resources/One Stereogram"; sourceTree = "<group>"; };
+		57730EE41B1E810A0092189F /* PhotoStore 1 Directory */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "PhotoStore 1 Directory"; path = "Resources/PhotoStore 1 Directory"; sourceTree = "<group>"; };
+		57730EE51B1E810A0092189F /* PhotoStore 2 Directory */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "PhotoStore 2 Directory"; path = "Resources/PhotoStore 2 Directory"; sourceTree = "<group>"; };
+		57730EE61B1E810A0092189F /* PhotoStore Empty Directory */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "PhotoStore Empty Directory"; path = "Resources/PhotoStore Empty Directory"; sourceTree = "<group>"; };
+		57730EEE1B1E89320092189F /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Media.xcassets; path = Resources/Media.xcassets; sourceTree = "<group>"; };
+		57B9006D1B1E438400B4BF9B /* Stereogram Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Stereogram Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		57B900701B1E438400B4BF9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		57B900831B1E479600B4BF9B /* PhotoStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoStoreTests.m; sourceTree = "<group>"; };
+		57B900841B1E479600B4BF9B /* StereogramTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StereogramTestCase.m; sourceTree = "<group>"; };
+		57B900851B1E479600B4BF9B /* StereogramTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StereogramTests.m; sourceTree = "<group>"; };
 		57DE763E1AD833FB000F9CF0 /* ImageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageManager.h; sourceTree = "<group>"; };
 		57DE763F1AD833FB000F9CF0 /* ImageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageManager.m; sourceTree = "<group>"; };
 		57DE76441AD838F7000F9CF0 /* ErrorData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorData.h; sourceTree = "<group>"; };
@@ -107,6 +141,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		57B9006A1B1E438400B4BF9B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		57F1082116AC2DCD00907CBE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -201,6 +242,31 @@
 			name = Controllers;
 			sourceTree = "<group>";
 		};
+		57B9006E1B1E438400B4BF9B /* Stereogram Tests */ = {
+			isa = PBXGroup;
+			children = (
+				57730EE21B1E62FE0092189F /* StereogramTestCase.h */,
+				57B900841B1E479600B4BF9B /* StereogramTestCase.m */,
+				57B900831B1E479600B4BF9B /* PhotoStoreTests.m */,
+				57B900851B1E479600B4BF9B /* StereogramTests.m */,
+				57B9006F1B1E438400B4BF9B /* Supporting Files */,
+			);
+			path = "Stereogram Tests";
+			sourceTree = "<group>";
+		};
+		57B9006F1B1E438400B4BF9B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				57730EE31B1E810A0092189F /* One Stereogram */,
+				57730EE41B1E810A0092189F /* PhotoStore 1 Directory */,
+				57730EE51B1E810A0092189F /* PhotoStore 2 Directory */,
+				57730EE61B1E810A0092189F /* PhotoStore Empty Directory */,
+				57730EEE1B1E89320092189F /* Media.xcassets */,
+				57B900701B1E438400B4BF9B /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		57F1081916AC2DCD00907CBE = {
 			isa = PBXGroup;
 			children = (
@@ -210,6 +276,7 @@
 				57F1082E16AC2DCD00907CBE /* Stereogram */,
 				57F1082716AC2DCD00907CBE /* Frameworks */,
 				57F1082516AC2DCD00907CBE /* Products */,
+				57B9006E1B1E438400B4BF9B /* Stereogram Tests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -217,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				57F1082416AC2DCD00907CBE /* Stereogram.app */,
+				57B9006D1B1E438400B4BF9B /* Stereogram Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -271,6 +339,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		57B9006C1B1E438400B4BF9B /* Stereogram Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 57B900771B1E438400B4BF9B /* Build configuration list for PBXNativeTarget "Stereogram Tests" */;
+			buildPhases = (
+				57B900691B1E438400B4BF9B /* Sources */,
+				57B9006A1B1E438400B4BF9B /* Frameworks */,
+				57B9006B1B1E438400B4BF9B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				57B900741B1E438400B4BF9B /* PBXTargetDependency */,
+			);
+			name = "Stereogram Tests";
+			productName = "Stereogram Tests";
+			productReference = 57B9006D1B1E438400B4BF9B /* Stereogram Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		57F1082316AC2DCD00907CBE /* Stereogram */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 57F1084216AC2DCD00907CBE /* Build configuration list for PBXNativeTarget "Stereogram" */;
@@ -298,6 +384,12 @@
 				LastTestingUpgradeCheck = 0630;
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Patrick Wallace";
+				TargetAttributes = {
+					57B9006C1B1E438400B4BF9B = {
+						CreatedOnToolsVersion = 6.3.2;
+						TestTargetID = 57F1082316AC2DCD00907CBE;
+					};
+				};
 			};
 			buildConfigurationList = 57F1081E16AC2DCD00907CBE /* Build configuration list for PBXProject "Stereogram" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -312,11 +404,24 @@
 			projectRoot = "";
 			targets = (
 				57F1082316AC2DCD00907CBE /* Stereogram */,
+				57B9006C1B1E438400B4BF9B /* Stereogram Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		57B9006B1B1E438400B4BF9B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57730EEF1B1E89320092189F /* Media.xcassets in Resources */,
+				57730EE71B1E810A0092189F /* One Stereogram in Resources */,
+				57730EEA1B1E810A0092189F /* PhotoStore Empty Directory in Resources */,
+				57730EE91B1E810A0092189F /* PhotoStore 2 Directory in Resources */,
+				57730EE81B1E810A0092189F /* PhotoStore 1 Directory in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		57F1082216AC2DCD00907CBE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -335,6 +440,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		57B900691B1E438400B4BF9B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57B900881B1E479600B4BF9B /* StereogramTests.m in Sources */,
+				57B900821B1E440300B4BF9B /* UIImage+Export.m in Sources */,
+				57B9007F1B1E440300B4BF9B /* ImageManager.m in Sources */,
+				57B900861B1E479600B4BF9B /* PhotoStoreTests.m in Sources */,
+				57B9007E1B1E440300B4BF9B /* ErrorData.m in Sources */,
+				57B900871B1E479600B4BF9B /* StereogramTestCase.m in Sources */,
+				57B900801B1E440300B4BF9B /* PhotoStore.m in Sources */,
+				57B900811B1E440300B4BF9B /* Stereogram.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		57F1082016AC2DCD00907CBE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -365,6 +485,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		57B900741B1E438400B4BF9B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 57F1082316AC2DCD00907CBE /* Stereogram */;
+			targetProxy = 57B900731B1E438400B4BF9B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		57F1083116AC2DCD00907CBE /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
@@ -377,6 +505,79 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		57B900751B1E438400B4BF9B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "Stereogram Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Stereogram.app/Stereogram";
+			};
+			name = Debug;
+		};
+		57B900761B1E438400B4BF9B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "Stereogram Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Stereogram.app/Stereogram";
+			};
+			name = Release;
+		};
 		57F1084016AC2DCD00907CBE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -472,6 +673,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		57B900771B1E438400B4BF9B /* Build configuration list for PBXNativeTarget "Stereogram Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				57B900751B1E438400B4BF9B /* Debug */,
+				57B900761B1E438400B4BF9B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		57F1081E16AC2DCD00907CBE /* Build configuration list for PBXProject "Stereogram" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

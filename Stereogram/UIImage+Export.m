@@ -13,7 +13,7 @@
 @implementation UIImage (Export)
 
 
--(NSData *) GIFData {
+-(NSData *) asGIFData {
     CFMutableDataRef mutableData = CFDataCreateMutable(kCFAllocatorDefault, 0);
     NSUInteger numFrames = self.images ? self.images.count : 1;
     CGImageDestinationRef cgImage = CGImageDestinationCreateWithData(mutableData, kUTTypeGIF, numFrames, nil);
@@ -28,7 +28,7 @@
     return CFBridgingRelease(mutableData);
 }
 
--(NSData *) JPEGData {
+-(NSData *) asJPEGData {
     return UIImageJPEGRepresentation(self, 1.0);
 }
 

@@ -5,7 +5,7 @@
 @copyright (c) 2015 Patrick Wallace. All rights reserved.
 */
 
-@import Foundation;
+@import UIKit;
 NS_ASSUME_NONNULL_BEGIN
 
 /*! Collection of class functions for handling images.

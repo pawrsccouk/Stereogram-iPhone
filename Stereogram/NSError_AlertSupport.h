@@ -48,4 +48,23 @@ extern NSString * const kLocationKey, *const kCallerKey, *const kTargetKey;
                              target: (id)target
                              method: (SEL)method;
 
+
+/*!
+ * Returns a default error for use when a parameter is nil and shouldn't be.
+ *
+ * @param parameter  The name of the parameter that was nil.
+ * @return A default error which includes CALLER, TARGET and METHOD in the error message and userInfo dictionary.
+ */
++(NSError *) parameterErrorWithNilParameter: (NSString *)parameter;
+
+/*!
+ * Returns a default error for use when a parameter has an invalid value.
+ *
+ * @param parameter    The name of the parameter that was wrong.
+ * @param valuePassed  The value of the parameter that was wrong.
+ * @return A default error which includes CALLER, TARGET and METHOD in the error message and userInfo dictionary.
+ */
++(NSError *) parameterErrorWithParameter: (NSString *)parameter
+							 valuePassed: (id)valuePassed;
+
 @end

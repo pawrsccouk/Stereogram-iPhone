@@ -456,7 +456,7 @@ didDeselectItemAtIndexPath: (NSIndexPath *)indexPath {
                                       preferredStyle:UIAlertControllerStyleAlert];
         
         PWActionHandler deleteActionBlock = ^(PWAction *action) {
-            NSLog(@"Deleting images at index paths: %@", indexPaths);
+//            NSLog(@"Deleting images at index paths: %@", indexPaths);
             NSError *error = nil;
             if (![self.photoStore deleteStereogramsAtIndexPaths:indexPaths
                                                           error:&error]) {

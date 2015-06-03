@@ -10,7 +10,7 @@
 /*!
  * Error domain for the Photo Store.
  */
-static NSString * const kErrorDomainPhotoStore;
+extern NSString * const kErrorDomainPhotoStore;
 
 /*!
  * Error codes for common issues accessing the photo store.
@@ -23,7 +23,7 @@ static NSString * const kErrorDomainPhotoStore;
  * @constant ErrorCode_FileNotFound               One of the stereogram's required files is missing.
  * @constant ErrorCode_NotImplemented             This code has not been implemented yet.
  * @constant ErrorCode_FeatureUnavailable         This operation requires a feature which your device doesn't have.
- *
+ * @constant ErrorCode_InvalidParameter           The parameter to a given function is not valid.
  */
 enum ErrorCodes {
     ErrorCode_UnknownError             =   1,
@@ -34,6 +34,7 @@ enum ErrorCodes {
     ErrorCode_FileNotFound                  ,
     ErrorCode_NotImplemented                ,
     ErrorCode_FeatureUnavailable            ,
+	ErrorCode_InvalidParameter              ,
 };
 
 /*!

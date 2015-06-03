@@ -8,6 +8,7 @@
 
 #import "ErrorData.h"
 
+NSString * const kErrorDomainPhotoStore = @"PhotoStore";
 
     // Keys for the image properties.
 NSString * const kImagePropertyOrientation   = @"Orientation";     // Portrait or Landscape.

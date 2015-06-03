@@ -10,6 +10,7 @@
 #import "PWFunctional.h"
 #import "Stereogram.h"
 #import "ErrorData.h"
+#import "NSError_AlertSupport.h"
 #import "UIImage+Resize.h"
 
 NSString *const PhotoStoreErrorDomain = @"PhotoStore";
@@ -29,31 +30,49 @@ NSString *const PhotoStoreErrorDomain = @"PhotoStore";
     /*! PhotoStore implementation */
 @implementation PhotoStore
 
--(instancetype) init: (NSError **)errorPtr {
-    self = [super init];
-    if (self) {
-        if (![self setup:errorPtr]) {
-            return nil;
-        }
-    }
-    return self;
+-(instancetype) initWithFolderURL: (NSURL*)folderURL
+							error: (NSError **)errorPtr {
+	self = [super init];
+	if (self) {
+			// Check the folder is valid.
+		if (!folderURL) {
+			if (errorPtr) {
+				*errorPtr = [NSError parameterErrorWithNilParameter:@"folderURL"];
+			}
+			return nil;
+		}
+		NSFileManager *fileManager = [NSFileManager defaultManager];
+		BOOL isDir = NO, res = [fileManager fileExistsAtPath:folderURL.path isDirectory:&isDir];
+		if (!(isDir && res)) {
+			if (errorPtr) {
+				*errorPtr = [NSError unknownErrorWithLocation:@"PhotoStore initWithFolderURL:error"];
+			}
+			return nil;
+		}
+		_photoFolderURL = folderURL;
+		_stereograms = [Stereogram allStereogramsUnderURL:_photoFolderURL error:errorPtr].mutableCopy;
+		if (!_stereograms) { return nil; }
+	}
+	return self;
 }
 
--(instancetype) init {
-    self = [self init:nil];
-    NSAssert(NO, @"Don't use [init], use [init:] instead.");
-    return self;
+- (NSEnumerator * __nonnull)objectEnumerator {
+	return _stereograms.objectEnumerator;
 }
 
-
--(BOOL) setup: (NSError **)errorPtr {
-    _photoFolderURL = photoFolderURL(errorPtr);
-    if (!_photoFolderURL) {
-        return NO;
-    }
-    _stereograms = [Stereogram allStereogramsUnderURL:_photoFolderURL error:errorPtr].mutableCopy;
-    return _stereograms;
-}
+//-(instancetype) init {
+//    self = [self init:nil];
+//    NSAssert(NO, @"Don't use [init], use [init:] instead.");
+//    return self;
+//}
+//
+//
+//-(BOOL) setup: (NSError **)errorPtr {
+//    _photoFolderURL = photoFolderURL(errorPtr);
+//    if (!_photoFolderURL) {
+//        return NO;
+//    }
+//}
 
 -(void) addStereogram: (Stereogram *)stereogram {
     if (![_stereograms containsObject:stereogram]) {
@@ -149,33 +168,35 @@ NSString *const PhotoStoreErrorDomain = @"PhotoStore";
     return _stereograms[index];
 }
 
-static NSURL *photoFolderURL(NSError **errorPtr) {
-    
-    NSArray *folders = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSURL *baseURL = [NSURL fileURLWithPath:folders[0] isDirectory:YES];
-    NSURL *photoDir = [baseURL URLByAppendingPathComponent:@"Pictures" isDirectory:YES];
-    if (!photoDir) {
-        if (errorPtr) {
-            *errorPtr = [NSError errorWithDomain:kErrorDomainPhotoStore
-                                            code:ErrorCode_CouldntCreateSharedStore
-                                        userInfo:@{NSLocalizedDescriptionKey : @"Couldn't locate directory for storing images."}];
-        }
-        return nil;
-    }
-    
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    BOOL isDirectory = NO, fileExists = [fileManager fileExistsAtPath:photoDir.path
-                                                          isDirectory:&isDirectory];
-    if(fileExists && isDirectory) {
-        return photoDir;
-    }
-        // If the directory doesn't exist, then let the file manager try and create it.
-    return [fileManager createDirectoryAtURL:photoDir
-                 withIntermediateDirectories:NO
-                                  attributes:nil
-                                       error:errorPtr]
-    ? photoDir : nil;
-}
+
+
+//static NSURL *photoFolderURL(NSError **errorPtr) {
+//    
+//    NSArray *folders = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//    NSURL *baseURL = [NSURL fileURLWithPath:folders[0] isDirectory:YES];
+//    NSURL *photoDir = [baseURL URLByAppendingPathComponent:@"Pictures" isDirectory:YES];
+//    if (!photoDir) {
+//        if (errorPtr) {
+//            *errorPtr = [NSError errorWithDomain:kErrorDomainPhotoStore
+//                                            code:ErrorCode_CouldntCreateSharedStore
+//                                        userInfo:@{NSLocalizedDescriptionKey : @"Couldn't locate directory for storing images."}];
+//        }
+//        return nil;
+//    }
+//    
+//    NSFileManager *fileManager = [NSFileManager defaultManager];
+//    BOOL isDirectory = NO, fileExists = [fileManager fileExistsAtPath:photoDir.path
+//                                                          isDirectory:&isDirectory];
+//    if(fileExists && isDirectory) {
+//        return photoDir;
+//    }
+//        // If the directory doesn't exist, then let the file manager try and create it.
+//    return [fileManager createDirectoryAtURL:photoDir
+//                 withIntermediateDirectories:NO
+//                                  attributes:nil
+//                                       error:errorPtr]
+//    ? photoDir : nil;
+//}
 
 
 @end

@@ -36,17 +36,23 @@
     [alertView show];
 }
 
-NSString * const kLocationKey = @"Location", *const kCallerKey = @"Caller", *const kTargetKey = @"Target";
+NSString *const kLocationKey = @"Location", *const kCallerKey = @"Caller", *const kTargetKey = @"Target";
+NSString *const kParameterKey = @"Parameter", *const kParameterValueKey = @"ParameterValue";
+
+
 
 +(NSError *) unknownErrorWithLocation: (NSString *)location {
     NSString *errorText = [NSString stringWithFormat:@"Unknown error in %@", location];
     NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : errorText,
-                                kLocationKey : location.copy
+                                kLocationKey              : location.copy
                                 };
     return [NSError errorWithDomain: kErrorDomainPhotoStore
                                          code: ErrorCode_UnknownError
                                      userInfo: userInfo];
 }
+
+
+
 
 +(NSError *) unknownErrorWithCaller: (NSString *)caller
                              target: (id)target
@@ -60,6 +66,27 @@ NSString * const kLocationKey = @"Location", *const kCallerKey = @"Caller", *con
     return [NSError errorWithDomain: kErrorDomainPhotoStore
                                code: ErrorCode_UnknownError
                            userInfo: userInfo];
+}
+
+
++(NSError*) parameterErrorWithNilParameter: (NSString *)parameterName {
+	NSString *errorText = [NSString stringWithFormat: @"Parameter %@ is nil.", parameterName];
+	NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : errorText
+								, kParameterKey           : parameterName };
+	return [NSError errorWithDomain:kErrorDomainPhotoStore
+							   code:ErrorCode_InvalidParameter
+						   userInfo:userInfo];
+}
+
++(NSError *) parameterErrorWithParameter: (NSString *)parameterName
+							 valuePassed: (id)value {
+	NSString *errorText = [NSString stringWithFormat: @"Parameter %@ is not valid. It was %@", parameterName, value];
+	NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : errorText
+								, kParameterKey           : parameterName
+								, kParameterValueKey      : value };
+	return [NSError errorWithDomain:kErrorDomainPhotoStore
+							   code:ErrorCode_InvalidParameter
+						   userInfo:userInfo];
 }
 
 @end
